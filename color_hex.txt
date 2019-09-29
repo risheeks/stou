@@ -1,0 +1,2 @@
+red: #ff2700
+pink: #fec0ae
