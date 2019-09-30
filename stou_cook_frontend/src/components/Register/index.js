@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css'
-import './RegistrationForm.css';
+import './index.css';
 import sha256 from 'crypto-js/sha256';
 
 class Register extends Component {
@@ -135,78 +135,84 @@ class Register extends Component {
     }
     
     return (
-      <div className="container">
-        <div className="register-form">
-          <div className="title">Create Your Stou Account</div>
-          <div className="form">
-            <div>
-              <FormLabel>
-                First Name
-                <FormControl
-                  type="text"
-                  value={this.state.firstName}
-                  name="firstName" id="firstName"
-                  className={shouldMarkError("firstName") ? "error" : ""}
-                  onChange={(e) => this.handleChange(e, "firstName")} />
-              </FormLabel>
-              <span className="required-field" style={this.requiredStyle('firstName')}>{this.errorMessages('firstName')}</span>
-            </div>
+    <div className="Register container">
+        <div className="title">Create Your Stou Account</div>
+        <div className="form">
+        <FormGroup controlId="firstname" bsSize="large">
+            <FormLabel>
+            First Name
+            <FormControl
+                type="text"
+                value={this.state.firstName}
+                name="firstName" id="firstName"
+                className={shouldMarkError("firstName") ? "error" : ""}
+                onChange={(e) => this.handleChange(e, "firstName")} />
+            </FormLabel>
+            <span className="required-field" style={this.requiredStyle('firstName')}>{this.errorMessages('firstName')}</span>
+        </FormGroup>
 
-            <div>
-              <FormLabel>
-                Last Name
-                <FormControl
-                  type="text" 
-                  value={this.state.lastName} 
-                  name="lastName" id="lastName"
-                  className={shouldMarkError("lastName") ? "error" : ""}
-                  onChange={(e) => this.handleChange(e, "lastName")} />
-              </FormLabel>
-              <span className="required-field" style={this.requiredStyle('lastName')}>{this.errorMessages('lastName')}</span>
-            </div>
+        <FormGroup controlId="lastname" bsSize="large">
+            <FormLabel>
+            Last Name
+            <FormControl
+                type="text" 
+                value={this.state.lastName} 
+                name="lastName" id="lastName"
+                className={shouldMarkError("lastName") ? "error" : ""}
+                onChange={(e) => this.handleChange(e, "lastName")} />
+            </FormLabel>
+            <span className="required-field" style={this.requiredStyle('lastName')}>{this.errorMessages('lastName')}</span>
+        </FormGroup>
 
-            <div>
-              <FormLabel>
-                Username
-                <FormControl
-                  type="text"
-                  value={this.state.username}
-                  name="username"
-                  className={shouldMarkError("username") ? "error" : ""}
-                  onChange={(e) => this.handleChange(e, "username")} />
-              </FormLabel>
-              <span className="required-field" style={this.requiredStyle('username')}>{this.errorMessages('username')}</span>
-            </div>
+        <FormGroup controlId="username" bsSize="large">
+            <FormLabel>
+            Username
+            <FormControl
+                type="text"
+                value={this.state.username}
+                name="username"
+                className={shouldMarkError("username") ? "error" : ""}
+                onChange={(e) => this.handleChange(e, "username")} />
+            </FormLabel>
+            <span className="required-field" style={this.requiredStyle('username')}>{this.errorMessages('username')}</span>
+        </FormGroup>
 
-            <div>
-              <FormLabel>
-                Password
-                <FormControl
-                  type="password"
-                  value={this.state.password}
-                  name="password"
-                  className={shouldMarkError("password") ? "error" : ""}
-                  onChange={(e) => this.handleChange(e, "password")} />
-              </FormLabel>
-              <span className="note" style={helpMessage('password')}>At least 8 characters</span>
-              <span className="required-field" style={this.requiredStyle('password')}>{this.errorMessages('password')}</span>
-            </div>
-            <div>
-              <FormLabel>
-                Email
-                <FormControl
-                  type="text"
-                  name="email"
-                  value={this.state.email}
-                  className={shouldMarkError("email") ? "error" : ""}
-                  onChange={(e) => this.handleChange(e, "email")} />
-              </FormLabel>
-              <span className="required-field" style={this.requiredStyle('email')}>{this.errorMessages('email')}</span>
-            </div>          
-            <Button className="sb-btn" type="button" onClick={this.checkOnSubmit}>SUBMIT</Button>            
-          </div>
+        <FormGroup controlId="password" bsSize="large">
+            <FormLabel>
+            Password
+            <FormControl
+                type="password"
+                value={this.state.password}
+                name="password"
+                className={shouldMarkError("password") ? "error" : ""}
+                onChange={(e) => this.handleChange(e, "password")} />
+            </FormLabel>
+            <span className="note" style={helpMessage('password')}>At least 8 characters</span>
+            <span className="required-field" style={this.requiredStyle('password')}>{this.errorMessages('password')}</span>
+        </FormGroup>
+        <FormGroup controlId="email" bsSize="large">
+            <FormLabel>
+            Email
+            <FormControl
+                type="text"
+                name="email"
+                value={this.state.email}
+                className={shouldMarkError("email") ? "error" : ""}
+                onChange={(e) => this.handleChange(e, "email")} />
+            </FormLabel>
+            <span className="required-field" style={this.requiredStyle('email')}>{this.errorMessages('email')}</span>
+        </FormGroup>
+        <Button
+        block
+        bsSize="large"
+        className="submit-button"
+        onClick={this.checkOnSubmit}
+        type="submit"
+        >
+        Submit
+        </Button>    
         </div>
-      </div>
+    </div>
     );
   } 
   
