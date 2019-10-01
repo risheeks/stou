@@ -5,7 +5,7 @@ export class Home extends Component {
     render() {
         return (
             <div>
-                <Login />
+                <h1>THIS IS HOME</h1>
             </div>
         );
     }
