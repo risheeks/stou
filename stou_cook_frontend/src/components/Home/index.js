@@ -6,8 +6,7 @@ export class Home extends Component {
     render() {
         return (
             <div>
-                <Login />
-                <Register/>
+                <h1>THIS IS HOME</h1>
             </div>
         );
     }
