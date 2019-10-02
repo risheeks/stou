@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
+import { Link } from 'react-router-dom';
 // import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import "./index.css";
+import "../../styles/Main.css";
 
 export default class Login extends Component {
   constructor(props) {
@@ -51,15 +52,18 @@ export default class Login extends Component {
               type="password"
             />
           </FormGroup>
-          <Button
-            block
-            bsSize="large"
-            className="submit-button"
-            disabled={!this.validateForm()}
-            type="submit"
-          >
-            Login
-          </Button>
+          <div>
+            <Button
+              block
+              bsSize="large"
+              className="submit-button"
+              disabled={!this.validateForm()}
+              type="submit"
+            >
+              Login
+            </Button>
+            <Link to="/register" className="btn btn-link">Register</Link>
+          </div>
         </form>
       </div>
     );

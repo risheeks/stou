@@ -24,3 +24,16 @@
 .submit-button {
     background-color: #ff2700 !important;
 }
+
+@media all and (min-width: 480px) {
+    .Login {
+      padding: 60px 0;
+      border: 1px solid rgb(202, 202, 202);
+      width: 450px;
+    }
+  
+    .Login form {
+      margin: 0 auto;
+      max-width: 320px;
+    }
+}
