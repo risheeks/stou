@@ -40,7 +40,7 @@ class Register extends Component {
   
     this.handleChange = this.handleChange.bind(this);
     this.checkData = this.checkData.bind(this);
-    this.toggleModal = this.toggleModal.bind(this);
+    //this.toggleModal = this.toggleModal.bind(this);
     this.checkOnSubmit = this.checkOnSubmit.bind(this);
   }
 
