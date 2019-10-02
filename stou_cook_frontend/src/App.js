@@ -18,6 +18,7 @@ function App() {
         <Header />
         <Route exact={true} path="/" component={Home} />
         <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
       </Router>
     </div>
   );
