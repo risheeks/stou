@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Button, FormGroup, FormControl, FormLabel, Alert } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './index.css';
+import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
 
 class Register extends Component {
@@ -42,7 +43,6 @@ class Register extends Component {
   
     this.handleChange = this.handleChange.bind(this);
     this.checkData = this.checkData.bind(this);
-    //this.toggleModal = this.toggleModal.bind(this);
     this.checkOnSubmit = this.checkOnSubmit.bind(this);
   }
 
@@ -122,6 +122,13 @@ class Register extends Component {
     
     if (!formHasErrors) {
         //this.toggleModal();
+        var apiCall = "http://192.168.43.177:3000";
+        apiCall = apiCall + "/register?firstName=${encryptedFirstName}&lastName=${encryptedLastName}&Email=${encryptedEmail}&Password=${encryptedPassword}&Role=Customer";
+        axios.post(apiCall)
+        .then(res => {
+          console.log(res.data);
+          this.setState({ name: res.data });
+        })
         console.log(firstName + " " + lastName + " " + password + " " + confirmpassword + " " + email)
     }
     this.setState({
@@ -135,6 +142,23 @@ class Register extends Component {
     });
     /* Form gave an error */
 
+  }
+
+  getProfile() {
+    // console.log("CHECK")
+    var apiCall = "http://192.168.43.177:3000";
+    apiCall = apiCall + "/register?firstName=Adrian&lastName=Raj&Email=raj5@purdue.edu&Password=pass&Role=Customer";
+    axios.post(apiCall)
+      .then(res => {
+        console.log(res.data);
+        this.setState({ name: res.data });
+    })
+    // this.state.name = this.state.persons;
+    // this.state.name = 'Risheek Narayanadevarakere';
+    this.state.email = 'naraya15@purdue.edu';
+    this.state.phoneNumber = '3463427632';
+    this.state.cuisines = 'Indian';
+    this.state.aboutMe = 'Chill Guy!';
   }
   
   render() {
