@@ -75,9 +75,9 @@ export class AddFoodItem extends Component {
               onChange={this.onImageChange}
               ref={input => this.inputElement = input}
             />
-            <FormGroup controlId="foodname" bsSize="large">
+            <FormGroup controlId="name" bsSize="large">
               <FormLabel>Name your dish</FormLabel>
-              <FormControl
+              <FormControl className="email"
                 autoFocus
                 type="text"
                 value={this.state.foodname}
