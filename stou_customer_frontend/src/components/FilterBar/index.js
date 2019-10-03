@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import { Button, FormGroup, FormControl, FormLabel, Form } from "react-bootstrap";
+import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 // import axios from 'axios';
 import "../../styles/Main.css";
 
-export default class Login extends Component {
+export class FilterBar extends Component {
   constructor(props) {
     super(props);
 
@@ -32,8 +32,7 @@ export default class Login extends Component {
 
   render() {
     return (
-      <div className="Login container">
-        <Form onSubmit={this.handleSubmit}>
+      <div className="filterbar-container">
           <FormGroup controlId="email" bsSize="large">
             <FormLabel>Email/Username</FormLabel>
             <FormControl className="email"
@@ -63,8 +62,9 @@ export default class Login extends Component {
             </Button>
             <Link to="/register" className="btn btn-link">Register</Link>
           </div>
-        </Form>
       </div>
     );
   }
 }
+
+export default FilterBar;
