@@ -1,0 +1,96 @@
+.navbar-logo {
+    max-width: 5rem;
+}
+
+.navbar {
+    background-color: #ff2700;
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+.navbar-content {
+    align-self: right;
+}
+
+.navbar-content > .nav-link {
+    color: white !important;
+}
+
+.navbar-content > .active {
+    color: grey !important;
+    background-color: white !important;
+}
+
+.submit-button {
+    background-color: #ff2700 !important;
+}
+
+.checkbox-div {
+    align-content: left !important;
+    display: inline-block;
+}
+
+.addfood-container {
+    padding: 50px 50px;
+    border: 1px solid rgb(202, 202, 202);
+    width: 50%;
+    margin-top: 2%;
+}
+
+.outer-container {
+    align-items: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.image-upload-input {
+    visibility: hidden;
+}
+
+.image-upload-preview {
+    cursor: pointer;
+    max-width: 15rem;
+}
+
+.form-text {
+    text-align: left;
+}
+
+.form-value {
+    text-align: center;
+}
+
+.profile {
+    width: 600px;
+    border: 1px solid rgb(202, 202, 202);
+    padding: 60px;
+}
+
+.text-about-me {
+    width: 400px;
+}
+
+@media all and (min-width: 480px) {
+    .Login {
+      padding: 60px 0;
+      border: 1px solid rgb(202, 202, 202);
+      width: 450px;
+    }
+  
+    .Login form {
+      margin: 0 auto;
+      max-width: 320px;
+    }
+}
+
+#profile-container {
+    width: 150px;
+    height: 150px;
+    overflow: hidden;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+    border-radius: 50%;
+}

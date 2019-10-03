@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 // import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import "../../styles/Main.css";
 
 export default class Login extends Component {

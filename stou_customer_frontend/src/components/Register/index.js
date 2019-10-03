@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
-import 'bootstrap/dist/css/bootstrap.min.css'
 import './index.css';
 import sha256 from 'crypto-js/sha256';
 
