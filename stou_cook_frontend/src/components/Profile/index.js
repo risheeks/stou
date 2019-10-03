@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
+import { Button, FormGroup, FormControl, FormLabel, Form } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "../../styles/Main.css";
 
@@ -47,8 +47,7 @@ export default class Profile extends React.Component {
     return (
       <div className="container profile">
         <div className="form-area">  
-            <form role="form">
-              {this.props.show}
+            <Form role="form">
               <br styles="clear:both" />
               <div id="profile-container">
                 <image id="profileImage" src='stou_cook_frontend/wineandcode.png' />
@@ -87,7 +86,7 @@ export default class Profile extends React.Component {
               >
                 Update
               </Button>
-            </form>
+            </Form>
         </div>
       </div>
     )
