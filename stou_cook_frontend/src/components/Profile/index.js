@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Button, FormGroup, FormControl, FormLabel, Image } from "react-bootstrap";
+import axios from 'axios';
 import uploadimage from '../../constants/images/wineandcode.png';
 import "../../styles/Main.css";
 
@@ -33,11 +34,20 @@ export default class Profile extends React.Component {
   }
 
   updateProfile() {
-
+    this.getProfile();
   }
 
   getProfile() {
-    this.state.name = 'Risheek Narayanadevarakere';
+    // console.log("CHECK")
+    var apiCall = "http://192.168.43.177:3000";
+    apiCall = apiCall + "/test";
+    axios.get(apiCall)
+      .then(res => {
+        console.log(res.data);
+        this.setState({ name: res.data });
+    })
+    // this.state.name = this.state.persons;
+    // this.state.name = 'Risheek Narayanadevarakere';
     this.state.email = 'naraya15@purdue.edu';
     this.state.phoneNumber = '3463427632';
     this.state.cuisines = 'Indian';
