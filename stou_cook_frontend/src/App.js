@@ -10,6 +10,7 @@ import Login from './components/Login';
 import Home from './components/Home';
 import Header from './components/Common/Header';
 import AddFoodItem from './components/AddFoodItem';
+import Profile from './components/Profile';
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
         <Route path="/addfood" component={AddFoodItem} />
+        <Route path="/profile" component={Profile} />
       </Router>
     </div>
   );

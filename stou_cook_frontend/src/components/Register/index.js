@@ -40,7 +40,7 @@ class Register extends Component {
   
     this.handleChange = this.handleChange.bind(this);
     this.checkData = this.checkData.bind(this);
-    this.toggleModal = this.toggleModal.bind(this);
+    //this.toggleModal = this.toggleModal.bind(this);
     this.checkOnSubmit = this.checkOnSubmit.bind(this);
   }
 
@@ -117,11 +117,6 @@ class Register extends Component {
     if (formHasErrors) {
     }
   }
-  toggleModal(){
-    this.setState(prevState => ({
-      modalisOpen: !prevState.modalisOpen
-    }));
-  }
   
   render() {
     const errors = this.validate(this.state.firstName, this.state.lastName, this.state.username, this.state.password, this.state.email);
@@ -136,7 +131,7 @@ class Register extends Component {
     
     return (
     <div className="Register container">
-        <div className="title">Create Your Stou Account</div>
+        {/* <div className="title">Create Your Stou Account</div> */}
         <div className="form">
         <FormGroup controlId="firstname" bsSize="large">
             <FormLabel>
