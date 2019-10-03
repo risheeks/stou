@@ -25,6 +25,24 @@
     background-color: #ff2700 !important;
 }
 
+.form-text {
+    text-align: left;
+}
+
+.form-value {
+    text-align: center;
+}
+
+.profile {
+    width: 600px;
+    border: 1px solid rgb(202, 202, 202);
+    padding: 60px;
+}
+
+.text-about-me {
+    width: 400px;
+}
+
 @media all and (min-width: 480px) {
     .Login {
       padding: 60px 0;
@@ -36,4 +54,15 @@
       margin: 0 auto;
       max-width: 320px;
     }
+}
+
+#profile-container {
+    width: 150px;
+    height: 150px;
+    overflow: hidden;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+    border-radius: 50%;
 }
