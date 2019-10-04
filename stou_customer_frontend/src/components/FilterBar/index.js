@@ -1,23 +1,41 @@
 import React, { Component } from "react";
-import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
+import { Button, FormGroup, FormControl, FormLabel, FormCheck, Form, ToggleButton, ToggleButtonGroup, Card } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 // import axios from 'axios';
-import "../../styles/Main.css";
 
 export class FilterBar extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      email: "",
-      password: ""
+      cuisines: ['Chinese', 'Indian', 'Asian', 'Mexican', 'Japanese', 'Italian', 'Thai', 'French', 'Mediterranean'],
+      allergens: ['Dairy', 'Shellfish', 'Nuts', 'Eggs', 'Others'],
+      chosenAllergens: [],
+      chosenCuisines: [],
+      price: '26',
     };
   }
 
-  
+  onAllergenCheckChange = (e, allergen) => {
+    const { chosenAllergens } = this.state;
+    if (e.target.checked) {
+      chosenAllergens.push(allergen);
+    } else {
+      let index = chosenAllergens.indexOf(allergen);
+      chosenAllergens.splice(index, 1);
+    }
+    this.setState({ chosenAllergens });
+  }
 
-  validateForm() {
-    return this.state.email.length > 0 && this.state.password.length > 0;
+  onCuisineCheckChange = (e, cuisine) => {
+    const { chosenCuisines } = this.state;
+    if (e.target.checked) {
+      chosenCuisines.push(cuisine);
+    } else {
+      let index = chosenCuisines.indexOf(cuisine);
+      chosenCuisines.splice(index, 1);
+    }
+    this.setState({ chosenCuisines });
   }
 
   handleChange = event => {
@@ -30,39 +48,66 @@ export class FilterBar extends Component {
     event.preventDefault();
   }
 
+  getSelectedPrice = () => {
+    if (this.state.price === '26') {
+      return '25+';
+    }
+    return this.state.price;
+  }
+
   render() {
+    const { allergens, cuisines } = this.state;
+
     return (
-      <div className="filterbar-container">
-          <FormGroup controlId="email" bsSize="large">
-            <FormLabel>Email/Username</FormLabel>
-            <FormControl className="email"
-              autoFocus
-              type="email"
-              value={this.state.email}
-              onChange={this.handleChange}
-            />
-          </FormGroup>
-          <FormGroup controlId="password" bsSize="large">
-            <FormLabel>Password</FormLabel>
-            <FormControl
-              value={this.state.password}
-              onChange={this.handleChange}
-              type="password"
-            />
-          </FormGroup>
-          <div>
-            <Button
-              block
-              bsSize="large"
-              className="submit-button"
-              disabled={!this.validateForm()}
-              type="submit"
-            >
-              Login
-            </Button>
-            <Link to="/register" className="btn btn-link">Register</Link>
+      <Card className="filterbar-container">
+        <div>
+          <Card.Title>Allergens</Card.Title>
+          <div className="checkbox-div">
+            {allergens.map((allergen, index) =>
+              <ToggleButtonGroup className="single-checkbox-div" type="checkbox">
+                <ToggleButton className="single-checkbox" key={index} value={index} onChange={e => this.onCuisineCheckChange(e, allergen)}>{allergen}</ToggleButton>
+              </ToggleButtonGroup>
+            )}
           </div>
-      </div>
+        </div>
+        <hr></hr>
+        <div>
+          <Card.Title>Cuisines</Card.Title>
+          <div className="checkbox-div">
+            {cuisines.map((cuisine, index) =>
+              <ToggleButtonGroup className="single-checkbox-div" type="checkbox">
+                <ToggleButton className="single-checkbox" key={index} value={index} onChange={e => this.onCuisineCheckChange(e, cuisine)}>{cuisine}</ToggleButton>
+              </ToggleButtonGroup>
+            )}
+          </div>
+        </div>
+        <hr></hr>
+        <Card.Title>Price</Card.Title>
+        <div className="basic-horizontal-div">
+          <p className="price-range-text">$1 </p>
+          <FormGroup controlId="price">
+            <FormControl
+              type="range"
+              onChange={this.handleChange}
+              value={this.state.price}
+              min={1}
+              max={26}
+            />
+          </FormGroup>
+          <p className="price-range-text"> $25+</p>
+        </div>
+        <p className="price-range-text">${this.getSelectedPrice()}</p>
+        <div>
+          <Button
+            block
+            bsSize="large"
+            className="submit-button filter-button"
+            type="submit"
+          >
+            Filter
+            </Button>
+        </div>
+      </Card>
     );
   }
 }

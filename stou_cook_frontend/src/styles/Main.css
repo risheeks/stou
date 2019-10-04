@@ -25,11 +25,6 @@
     background-color: #ff2700 !important;
 }
 
-.checkbox-div {
-    align-content: left !important;
-    display: inline-block;
-}
-
 .addfood-container {
     padding: 50px 50px;
     border: 1px solid rgb(202, 202, 202);

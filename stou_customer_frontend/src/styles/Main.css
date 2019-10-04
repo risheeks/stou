@@ -1,3 +1,7 @@
+.basic-checkbox {
+    margin: 0;
+}
+
 .navbar-logo {
     max-width: 5rem;
 }
@@ -26,8 +30,33 @@
 }
 
 .checkbox-div {
-    align-content: left !important;
-    display: inline-block;
+    max-width: 100%;
+}
+
+.single-checkbox-div {
+    margin: 5px 5px;
+}
+
+.single-checkbox {
+    background-color: #ffffff;
+    border-color: #ff2700;
+    color: #ff2700;
+}
+
+.single-checkbox.active {
+    background-color: #ff2700 !important;
+    border-color: #ff2700 !important;
+}
+
+.single-checkbox:active {
+    background-color: #ff2700 !important;
+    color: #ff2700;
+    border-color: #ff2700;
+}
+
+.single-checkbox:hover {
+    background-color: #ff2700 !important;
+    border-color: #ff2700;
 }
 
 .addfood-container {
@@ -69,6 +98,26 @@
 
 .text-about-me {
     width: 400px;
+}
+
+.filterbar-container {
+    width: 20%;
+    margin: 2% 2%;
+    padding: 2% 2%;
+}
+
+.basic-horizontal-div {
+    display: flex;
+    flex-direction: row;
+}
+
+.price-range-text {
+    margin: 5px 5px;
+    margin-bottom: 0;
+}
+
+.filter-button {
+    margin-top: 10px;
 }
 
 @media all and (min-width: 480px) {
