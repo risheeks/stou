@@ -15,6 +15,7 @@ const loginReducer = function login(state = initialState, action) {
         }
         // Sign out of currently logged in account
         case 'SIGN_OUT': {
+            console.log("Signout")
             return state = {
                 ...state,
                 auth_token: null,

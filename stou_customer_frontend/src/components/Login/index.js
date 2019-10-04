@@ -15,6 +15,13 @@ export class Login extends Component {
     };
   }
 
+  componentDidMount() {
+    console.log(this.props.auth_token);
+    if(this.props.auth_token && this.props.auth_token.length > 0) {
+      this.props.history.push('/');
+    }
+  }
+
   validateForm() {
     return this.state.email.length > 0 && this.state.password.length > 0;
   }
@@ -27,22 +34,29 @@ export class Login extends Component {
 
   handleSubmit = event => {
     const { email, password } = this.state;
+    let SHA256 = require("crypto-js/sha256");
+    let encryptedPassword = SHA256(password);
     axios.post(`${serverURL}/login`, {
       data: {
         role: "Customer",
-        email,
-        password
+        email: btoa(email),
+        password: encryptedPassword.toString()
       }
     })
       .then(res => {
+        console.log(res);
         this.props.getToken(res.data['token'], email);
         this.props.history.push('/');
+      })
+      .catch(err => {
+        console.log(err);
       })
   }
 
   render() {
     return (
       <div className="Login container">
+        { this.props.auth_token ? this.props.history.push('/') : null}
         <form onSubmit={this.handleSubmit}>
           <FormGroup controlId="email" bsSize="large">
             <FormLabel>Email/Username</FormLabel>

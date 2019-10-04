@@ -3,9 +3,10 @@ import { Row, Col, Container, Button, FormGroup, FormControl, FormLabel, Image, 
 import axios from 'axios';
 import uploadimage from '../../constants/images/wineandcode.png';
 import "../../styles/Main.css";
+import { serverURL } from "../../config";
+import { withRouter } from 'react-router-dom';
 
-
-export default class Profile extends React.Component {
+class Profile extends React.Component {
   constructor(props) {
     super(props);
     this.handleAboutMeChange = this.handleAboutMeChange.bind(this);
@@ -22,9 +23,9 @@ export default class Profile extends React.Component {
 
   }
   componentDidMount() {
-    // document.getElementById('addHyperLink').className = "";
-    // document.getElementById('homeHyperlink').className = "";
-    // document.getElementById('profileHyperlink').className = "active";
+    if(!this.props.loggedIn) {
+      this.props.history.push('/login');
+    }
     this.getProfile();
   }
 
@@ -38,7 +39,7 @@ export default class Profile extends React.Component {
 
   getProfile() {
     // console.log("CHECK")
-    var apiCall = "http://192.168.43.177:3000";
+    var apiCall = serverURL;
     apiCall = apiCall + "/profile";
     axios.get(apiCall, {
       params:{
@@ -163,3 +164,5 @@ export default class Profile extends React.Component {
     )
   }
 }
+
+export default withRouter(Profile);

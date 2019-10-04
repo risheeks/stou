@@ -8,7 +8,6 @@ export class Header extends Component {
     handleSignOut = e => {
         e.preventDefault();
         this.props.signOut();
-        this.props.history.push('/');
     }
 
     render() {

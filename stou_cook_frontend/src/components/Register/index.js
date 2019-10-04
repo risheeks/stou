@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Button, FormGroup, FormControl, FormLabel, Alert } from "react-bootstrap";
 import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
+import { serverURL } from '../../config';
+import { withRouter } from 'react-router-dom';
 
 class Register extends Component {
   constructor(props){
@@ -42,6 +44,12 @@ class Register extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.checkData = this.checkData.bind(this);
     this.checkOnSubmit = this.checkOnSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    if(this.props.auth_token && this.props.auth_token.length > 0) {
+      this.props.history.push('/');
+    }
   }
 
   handleChange = (e, name) => {
@@ -105,19 +113,26 @@ class Register extends Component {
       this.state.registerCheck = true;
     }
     // Encrypt
-    var SHA256 = require("crypto-js/sha256");
-    var encryptedPassword = SHA256(password);
+    let SHA256 = require("crypto-js/sha256");
+    let encryptedPassword = SHA256(password);
     
     if (!formHasErrors) {
-        var apiCall = "http://192.168.43.177:3000";
-        apiCall = apiCall + "/register?firstName="+ btoa(firstName)+"&lastName="+btoa(lastName)+"&email="+btoa(email)+"&password="+encryptedPassword+"&role=Customer&cuisines=none";
-        //console.log("CHECK")
-        //g(apiCall)
-        axios.post(apiCall)
-        .then(res => {
-          console.log(res.data);
-          this.setState({ name: res.data });
-        })
+        const data = {
+          firstName: btoa(firstName),
+          lastName: btoa(lastName),
+          email: btoa(email),
+          password: encryptedPassword.toString(),
+          role: 'Homecook'
+        }
+        axios.post(`${serverURL}/register`, {data: data})
+          .then(res => {
+            console.log(res.data);
+            this.props.getToken(res.data['token'], email);
+            this.props.history.push('/');
+          })
+          .catch(err => {
+            console.log(err);
+          })
     }
     this.setState({
       touched: {
@@ -131,23 +146,6 @@ class Register extends Component {
     /* Form gave an error */
 
   }
-
-  // getProfile() {
-  //   // console.log("CHECK")
-  //   var apiCall = "http://192.168.43.177:3000";
-  //   apiCall = apiCall + "/register?firstName=Adrian&lastName=Raj&Email=raj5@purdue.edu&Password=pass&Role=Customer";
-  //   axios.post(apiCall)
-  //     .then(res => {
-  //       console.log(res.data);
-  //       this.setState({ name: res.data });
-  //   })
-  //   // this.state.name = this.state.persons;
-  //   // this.state.name = 'Risheek Narayanadevarakere';
-  //   this.state.email = 'naraya15@purdue.edu';
-  //   this.state.phoneNumber = '3463427632';
-  //   this.state.cuisines = 'Indian';
-  //   this.state.aboutMe = 'Chill Guy!';
-  // }
   
   render() {
     const errors = this.validate(this.state.firstName, this.state.lastName, this.state.password, this.state.confirmpassword, this.state.email);
@@ -162,6 +160,7 @@ class Register extends Component {
     
     return (
     <div className="Register container">
+      { this.props.auth_token ? this.props.history.push('/') : null}
       <Alert hidden={this.state.registerCheck} variant="danger">{this.state.registerErrorMessage}</Alert>
         {/* <div className="title">Create Your Stou Account</div> */}
         <div className="form">
@@ -171,7 +170,7 @@ class Register extends Component {
             <FormControl
                 type="text"
                 value={this.state.firstName}
-                name="firstName" id="firstName"
+                name="firstName"
                 className={shouldMarkError("firstName") ? "error" : ""}
                 onChange={(e) => this.handleChange(e, "firstName")} />
             </FormLabel>
@@ -184,7 +183,7 @@ class Register extends Component {
             <FormControl
                 type="text" 
                 value={this.state.lastName} 
-                name="lastName" id="lastName"
+                name="lastName"
                 className={shouldMarkError("lastName") ? "error" : ""}
                 onChange={(e) => this.handleChange(e, "lastName")} />
             </FormLabel>
@@ -247,4 +246,4 @@ class Register extends Component {
 }
 
 
-export default Register;
+export default withRouter(Register);

@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
-import './index.css';
+import { Button, FormGroup, FormControl, FormLabel, Alert } from "react-bootstrap";
+import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
+import { serverURL } from '../../config';
+import { withRouter } from 'react-router-dom';
 
 class Register extends Component {
   constructor(props){
@@ -9,21 +11,23 @@ class Register extends Component {
    this.state = {
       firstName: '',
       lastName: '',
-      username: '',
       password: '',
+      confirmpassword: '',
       email: '',
+      registerCheck:true,
+      registerErrorMessage: '',
       valid: {
         firstName: true,
         lastName: true,
-        username: true,
         password: true,
+        confirmpassword: true,
         email: true,
       },
       touched: {
         firstName: false,
         lastName: false,
-        username: false,
         password: false,
+        confirmpassword: false,
         email: false
       },
       modalisOpen: false
@@ -32,18 +36,24 @@ class Register extends Component {
     this.rexExpMap = {
       firstName: /^[a-zA-Z\u00c4\u00e4\u00d6\u00f6\u00dc\u00fc\u00df]+$/,
       lastName: /^[a-zA-Z\u00c4\u00e4\u00d6\u00f6\u00dc\u00fc\u00df]+$/,
-      username: /^[a-z\d._]+$/,
       password: /^.{8,}$/,
+      confirmpassword: /^.{8,}$/,
       email: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
     }
   
     this.handleChange = this.handleChange.bind(this);
     this.checkData = this.checkData.bind(this);
-    //this.toggleModal = this.toggleModal.bind(this);
     this.checkOnSubmit = this.checkOnSubmit.bind(this);
   }
 
+  componentDidMount() {
+    if(this.props.auth_token && this.props.auth_token.length > 0) {
+      this.props.history.push('/');
+    }
+  }
+
   handleChange = (e, name) => {
+    this.state.registerCheck = true;
     this.setState({[e.target.name]: e.target.value}, () => {
       this.checkData(this.rexExpMap[name], this.state[name], this.state.valid[name], name)
     });
@@ -62,12 +72,12 @@ class Register extends Component {
       });
     }
   }
-  validate(firstName, lastName, username, password, email) {  
+  validate(firstName, lastName, password, confirmpassword, email) {  
     return {
       firstName: firstName.length === 0,
       lastName: lastName.length === 0,
-      username: username.length === 0,
       password: password.length === 0,
+      confirmpassword: confirmpassword.length === 0,
       email: email.length === 0
     };
   }
@@ -76,49 +86,69 @@ class Register extends Component {
     return {display: show ? 'block' : 'none'}
   }
   errorMessages(name) {
+  
+    if(name === "confirmpassword") {
+      if(name != this.state.password) {
+        return "Passwords does not match"
+      }
+    }
     const requiredStr = 'This field is required.';
     const invalidStr = 'Enter valid '+ name +'.';
     return !this.state.valid[name] && this.state[name] !== "" ? invalidStr : requiredStr
   }
   checkOnSubmit() {
-    const {firstName, lastName, username, password, email } = this.state;    
-    const formFilled = !(firstName === '' || lastName === '' || username === '' || password === '' || email === '');
+    const {firstName, lastName, password, confirmpassword, email } = this.state;    
+    const formFilled = !(firstName === '' || lastName === '' ||password === '' || confirmpassword === '' || email === '');
     const formInvalid = Object.keys(this.state.valid).some(x => !this.state.valid[x]);
     const formHasErrors = !formFilled || formInvalid;
 
-    //AES ENCRYPTION
-    var CryptoJS = require("crypto-js");
+    if (formHasErrors) {
+      this.state.registerErrorMessage = "Registration failed"
+      this.state.registerCheck = false;
+    }else if(password != confirmpassword) {
+      this.state.registerErrorMessage = "Passwords do not match"
+      this.state.registerCheck = false;
+    }
+    else {
+      this.state.registerCheck = true;
+    }
     // Encrypt
-    var ciphertext = CryptoJS.AES.encrypt(password, 'weab66c4xyz09AZMLo').toString();
-    //console.log(ciphertext);
-    // Decrypt
-    var bytes  = CryptoJS.AES.decrypt(ciphertext, 'weab66c4xyz09AZMLo');
-    var originalText = bytes.toString(CryptoJS.enc.Utf8);
-    //console.log(originalText);
-    //SHA256
-    var SHA256 = require("crypto-js/sha256");
-    //console.log(SHA256(password));
+    let SHA256 = require("crypto-js/sha256");
+    let encryptedPassword = SHA256(password);
     
     if (!formHasErrors) {
-        this.toggleModal();
+        const data = {
+          firstName: btoa(firstName),
+          lastName: btoa(lastName),
+          email: btoa(email),
+          password: encryptedPassword.toString(),
+          role: 'Customer'
+        }
+        axios.post(`${serverURL}/register`, {data: data})
+          .then(res => {
+            console.log(res.data);
+            this.props.getToken(res.data['token'], email);
+            this.props.history.push('/');
+          })
+          .catch(err => {
+            console.log(err);
+          })
     }
     this.setState({
       touched: {
         firstName: true,
         lastName: true,
-        username: true,
         password: true,
+        confirmpassword: true,
         email: true,
       },
     });
     /* Form gave an error */
 
-    if (formHasErrors) {
-    }
   }
   
   render() {
-    const errors = this.validate(this.state.firstName, this.state.lastName, this.state.username, this.state.password, this.state.email);
+    const errors = this.validate(this.state.firstName, this.state.lastName, this.state.password, this.state.confirmpassword, this.state.email);
     const shouldMarkError = (field) => {
       const hasError = errors[field];
       const shouldShow = this.state.touched[field];
@@ -130,6 +160,8 @@ class Register extends Component {
     
     return (
     <div className="Register container">
+      { this.props.auth_token ? this.props.history.push('/') : null}
+      <Alert hidden={this.state.registerCheck} variant="danger">{this.state.registerErrorMessage}</Alert>
         {/* <div className="title">Create Your Stou Account</div> */}
         <div className="form">
         <FormGroup controlId="firstname" bsSize="large">
@@ -138,7 +170,7 @@ class Register extends Component {
             <FormControl
                 type="text"
                 value={this.state.firstName}
-                name="firstName" id="firstName"
+                name="firstName"
                 className={shouldMarkError("firstName") ? "error" : ""}
                 onChange={(e) => this.handleChange(e, "firstName")} />
             </FormLabel>
@@ -151,24 +183,11 @@ class Register extends Component {
             <FormControl
                 type="text" 
                 value={this.state.lastName} 
-                name="lastName" id="lastName"
+                name="lastName"
                 className={shouldMarkError("lastName") ? "error" : ""}
                 onChange={(e) => this.handleChange(e, "lastName")} />
             </FormLabel>
             <span className="required-field" style={this.requiredStyle('lastName')}>{this.errorMessages('lastName')}</span>
-        </FormGroup>
-
-        <FormGroup controlId="username" bsSize="large">
-            <FormLabel>
-            Username
-            <FormControl
-                type="text"
-                value={this.state.username}
-                name="username"
-                className={shouldMarkError("username") ? "error" : ""}
-                onChange={(e) => this.handleChange(e, "username")} />
-            </FormLabel>
-            <span className="required-field" style={this.requiredStyle('username')}>{this.errorMessages('username')}</span>
         </FormGroup>
 
         <FormGroup controlId="password" bsSize="large">
@@ -183,6 +202,20 @@ class Register extends Component {
             </FormLabel>
             <span className="note" style={helpMessage('password')}>At least 8 characters</span>
             <span className="required-field" style={this.requiredStyle('password')}>{this.errorMessages('password')}</span>
+        </FormGroup>
+
+        <FormGroup controlId="confirmpassword" bsSize="large">
+            <FormLabel>
+            Confirm Password
+            <FormControl
+                type="password"
+                value={this.state.confirmpassword}
+                name="confirmpassword"
+                className={shouldMarkError("confirmpassword") ? "error" : ""}
+                onChange={(e) => this.handleChange(e, "confirmpassword")} />
+            </FormLabel>
+            {/* <span className="note" style={helpMessage('confirmpassword')}>At least 8 characters</span> */}
+            {/* <span className="required-field" style={this.requiredStyle('confirmpassword')}>{this.errorMessages('confirmpassword')}</span> */}
         </FormGroup>
         <FormGroup controlId="email" bsSize="large">
             <FormLabel>
@@ -213,4 +246,4 @@ class Register extends Component {
 }
 
 
-export default Register;
+export default withRouter(Register);

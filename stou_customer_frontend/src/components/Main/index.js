@@ -32,18 +32,25 @@ const ProtectedRoute
             : <Redirect to="/login" />;
 
 class Main extends Component {
+    componentDidMount() {
+        let tempToken = localStorage.getItem('auth_token');
+        let tempEmail = localStorage.getItem('email');
+        if(tempToken && tempEmail) {
+            this.props.getToken(tempToken, tempEmail);
+        }
+    }
 
     render() {
         const { signOut, auth_token, email, getToken } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
-
+        console.log(auth_token);
         return (
             <Router>
                 <Header signOut={signOut} loggedIn={loggedIn} />
                 <Route exact path="/" render={() => <Home auth_token={auth_token} email={email} />} />
-                <Route path="/login" render={() => <Login loggedIn={loggedIn} getToken={getToken} />} />
-                <Route path="/register" component={Register} />
-                <ProtectedRoute isAllowed={loggedIn} path="/profile" render={() => <Profile auth_token={auth_token} email={email} />} />
+                <Route path="/login" render={() => <Login auth_token={auth_token} email={email} getToken={getToken} />} />
+                <Route path="/register" render={() => <Register auth_token={auth_token} email={email} getToken={getToken} />} />
+                <Route path="/profile" render={() => <Profile auth_token={auth_token} email={email} />} />
             </Router>
         );
     }

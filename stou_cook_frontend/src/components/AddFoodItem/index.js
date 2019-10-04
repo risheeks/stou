@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Button, FormGroup, FormControl, FormLabel, FormCheck, Form, Image, Card, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 import uploadimage from '../../constants/images/uploadimage.png';
+import { withRouter } from 'react-router-dom';
 // import axios from 'axios';
 import "../../styles/Main.css";
 
@@ -19,6 +20,12 @@ export class AddFoodItem extends Component {
       chosenCuisines: [],
     };
     this.inputElement = React.createRef();
+  }
+
+  componentDidMount() {
+    if(!this.props.loggedIn) {
+      this.props.history.push('/login');
+    }
   }
 
   validateForm() {
@@ -159,4 +166,4 @@ export class AddFoodItem extends Component {
   }
 }
 
-export default AddFoodItem;
+export default withRouter(AddFoodItem);
