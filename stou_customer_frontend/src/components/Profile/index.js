@@ -8,12 +8,12 @@ import "../../styles/Main.css";
 export default class Profile extends React.Component {
   constructor(props) {
     super(props);
-    // this.updateProfile = this.updateProfile.bind(this);
-    // this.getProfile = this.getProfile.bind(this);
+    this.updateProfile = this.updateProfile.bind(this);
+    this.getProfile = this.getProfile.bind(this);
     this.state = {
       name: '',
       email: 'chef@chef.com',
-      cuisines: '',
+    //   cuisines: '',
       aboutMe: '',
       uploadedImage: uploadimage
     };
@@ -35,16 +35,12 @@ export default class Profile extends React.Component {
     // this.getProfile();
     var apiCall = "http://192.168.43.177:3000";
     apiCall = apiCall + "/editProfile";
-    console.log(this.state.aboutMe);
-    axios({
-      method: 'post',
-      url: apiCall,
-      data: {
-        email: this.state.email,
+    console.log("update profile called");
+    axios.post(apiCall, {
+      params: {
         name: this.state.name,
         aboutMe: this.state.aboutMe
       }
-      
     })
       .then(res => {
         console.log(res.data);
@@ -58,14 +54,14 @@ export default class Profile extends React.Component {
     axios.get(apiCall, {
       params: {
         email: this.state.email,
-        role: 'Homecook'
+        role: 'Customer'
       }
     })
       .then(res => {
         // console.log(res.data);
         this.setState({ name: res.data.name });
         // this.setState({email: res.data });
-        this.setState({ cuisines: res.data.cuisines });
+        // this.setState({ cuisines: res.data.cuisines });
         this.setState({ aboutMe: res.data.aboutMe });
       })
   }
@@ -113,11 +109,11 @@ export default class Profile extends React.Component {
               <Form.Label value={this.state.name} className='form-value'><h5>{this.state.email}</h5></Form.Label>
             </FormGroup>
             <br />
-            <FormGroup className="form-group">
+            {/* <FormGroup className="form-group">
               <Form.Label className='form-text'><h5>Cuisines</h5></Form.Label>
               <Form.Label value={this.state.name} className='form-value'><h5>{this.state.cuisines}</h5></Form.Label>
             </FormGroup>
-            <br />
+            <br /> */}
             <FormGroup controlId="aboutMe" className="form-group">
               <Form.Label className='form-text'><h5>About Me</h5></Form.Label>
               <Form.Control value={this.state.aboutMe} type="text" onChange={this.handleChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3" as="textarea" />

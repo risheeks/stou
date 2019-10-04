@@ -68,7 +68,7 @@
 }
 
 .text-about-me {
-    width: 400px;
+    width: 80%;
 }
 
 @media all and (min-width: 480px) {
@@ -88,7 +88,8 @@
     border: 1px solid rgb(202, 202, 202);
     /* width: 100% !important; */
     margin-right: auto;
-    height: 100px;
+    padding: 5%;
+    height: 100%;
   }
   .vfo-image {
     max-width:100%;
