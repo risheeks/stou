@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { withRouter } from 'react-router-dom';
+import ResetPassword from '../ResetPassword';
 
 export class Login extends Component {
   constructor(props) {
@@ -51,10 +52,16 @@ export class Login extends Component {
       })
   }
 
+  handleReset = e => {
+    e.preventDefault();
+    this.props.openModal();
+  }
+
   render() {
     return (
       <div className="Login container">
         { this.props.auth_token ? this.props.history.push('/') : null}
+        <ResetPassword show={this.props.showModal} closeModal={this.props.closeModal} />
         <form onSubmit={this.handleSubmit}>
           <FormGroup controlId="email" bsSize="large">
             <FormLabel>Email/Username</FormLabel>
@@ -84,6 +91,7 @@ export class Login extends Component {
               Login
             </Button>
             <Link to="/register" className="btn btn-link">Register</Link>
+            <Link to="/reset" className="btn btn-link" onClick={this.handleReset}>Reset Password</Link>
           </div>
         </form>
       </div>
