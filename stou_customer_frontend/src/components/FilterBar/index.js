@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Button, FormGroup, FormControl, FormLabel, FormCheck, Form, ToggleButton, ToggleButtonGroup, Card } from "react-bootstrap";
 import { Link } from 'react-router-dom';
-// import axios from 'axios';
+import axios from 'axios';
 
 export class FilterBar extends Component {
   constructor(props) {
@@ -45,7 +45,16 @@ export class FilterBar extends Component {
   }
 
   handleSubmit = event => {
-    event.preventDefault();
+    const { chosenAllergens, chosenCuisines, price } = this.state;
+    const data = {
+      allergens: chosenAllergens,
+      cuisines: chosenCuisines,
+      price: price
+    }
+    axios.post(`http://192.168.43.177:3000/filter`, { data: data})
+      .then(res => {
+        console.log(res.data);
+      })
   }
 
   getSelectedPrice = () => {
@@ -65,7 +74,7 @@ export class FilterBar extends Component {
           <div className="checkbox-div">
             {allergens.map((allergen, index) =>
               <ToggleButtonGroup className="single-checkbox-div" type="checkbox">
-                <ToggleButton className="single-checkbox" key={index} value={index} onChange={e => this.onCuisineCheckChange(e, allergen)}>{allergen}</ToggleButton>
+                <ToggleButton className="single-checkbox" key={index} value={index} onChange={e => this.onAllergenCheckChange(e, allergen)}>{allergen}</ToggleButton>
               </ToggleButtonGroup>
             )}
           </div>
@@ -103,6 +112,7 @@ export class FilterBar extends Component {
             bsSize="large"
             className="submit-button filter-button"
             type="submit"
+            onClick={this.handleSubmit}
           >
             Filter
             </Button>
