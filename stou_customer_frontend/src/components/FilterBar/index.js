@@ -46,15 +46,7 @@ export class FilterBar extends Component {
 
   handleSubmit = event => {
     const { chosenAllergens, chosenCuisines, price } = this.state;
-    const data = {
-      allergens: chosenAllergens,
-      cuisines: chosenCuisines,
-      price: price
-    }
-    axios.post(`http://192.168.43.177:3000/filter`, { data: data})
-      .then(res => {
-        console.log(res.data);
-      })
+    this.props.onFilter(chosenAllergens, chosenCuisines)
   }
 
   getSelectedPrice = () => {
