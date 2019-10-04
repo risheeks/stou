@@ -12,7 +12,7 @@ export default class Profile extends React.Component {
     this.getProfile = this.getProfile.bind(this);
     this.state = {
       name: '',
-      email: 'chef@chef.com',
+      email: 'cust@cust.com',
     //   cuisines: '',
       aboutMe: '',
       uploadedImage: uploadimage
@@ -36,12 +36,16 @@ export default class Profile extends React.Component {
     var apiCall = "http://192.168.43.177:3000";
     apiCall = apiCall + "/editProfile";
     console.log("update profile called");
-    axios.post(apiCall, {
-      params: {
-        name: this.state.name,
-        aboutMe: this.state.aboutMe
-      }
-    })
+    axios({
+        method: 'post',
+        url: apiCall,
+        data: {
+          email: this.state.email,
+          name: this.state.name,
+          aboutMe: this.state.aboutMe
+        }
+        
+      })
       .then(res => {
         console.log(res.data);
       })
