@@ -3,6 +3,7 @@ import { Row, Col, Container, Button, FormGroup, FormControl, FormLabel, Image, 
 import axios from 'axios';
 import uploadimage from '../../constants/images/wineandcode.png';
 import "../../styles/Main.css";
+import imageCompression from 'browser-image-compression';
 import firebase from "firebase";
 import FileUploader from "react-firebase-file-uploader";
 const firebaseConfig = {
@@ -25,7 +26,7 @@ export default class Profile extends React.Component {
     this.state = {
       name: '',
       email: 'chef@chef.com',
-    //   cuisines: '',
+      //   cuisines: '',
       aboutMe: '',
       uploadedImage: uploadimage,
       isUploading: false,
@@ -52,11 +53,11 @@ export default class Profile extends React.Component {
       .getDownloadURL()
       .then(url => this.setState({ avatarURL: url }));
   };
-  componentDidMount() {
-    // document.getElementById('addHyperLink').className = "";
-    // document.getElementById('homeHyperlink').className = "";
-    // document.getElementById('profileHyperlink').className = "active";
-    this.getProfile();
+  componentDidUpdate(prevProps) {
+    console.log(this.props.email);
+    if (this.props.email && this.props.email != 'undefined' && this.props.email !== prevProps.email) {
+      this.getProfile();
+    }
   }
 
   handleChange = e => {
@@ -66,7 +67,6 @@ export default class Profile extends React.Component {
   updateProfile = e => {
     // this.getProfile();
 
-    console.log(this.state.avatarURL) /* IMAGE URL RETURNED */
     var apiCall = "http://192.168.43.177:3000";
     apiCall = apiCall + "/editProfile";
     console.log("update profile called");
@@ -74,7 +74,8 @@ export default class Profile extends React.Component {
     axios.post(apiCall, {
       params: {
         name: this.state.name,
-        aboutMe: this.state.aboutMe
+        aboutMe: this.state.aboutMe,
+        profilePicture: this.state.uploadedImage
       }
     })
       .then(res => {
@@ -88,16 +89,17 @@ export default class Profile extends React.Component {
     apiCall = apiCall + "/profile";
     axios.get(apiCall, {
       params: {
-        email: this.state.email,
+        email: btoa(this.props.email),
         role: 'Customer'
       }
     })
       .then(res => {
-        // console.log(res.data);
-        this.setState({ name: res.data.name });
-        // this.setState({email: res.data });
-        // this.setState({ cuisines: res.data.cuisines });
-        this.setState({ aboutMe: res.data.aboutMe });
+        if (res.data.name.length > 0) {
+          this.setState({
+            name: res.data.name,
+            aboutMe: res.data.aboutMe
+          });
+        }
       })
   }
 
@@ -108,12 +110,18 @@ export default class Profile extends React.Component {
   onImageChange = e => {
     const reader = new FileReader();
     if (e.target.files[0]) {
-      const url = reader.readAsDataURL(e.target.files[0]);
-      reader.onloadend = function (e) {
-        this.setState({
-          uploadedImage: [reader.result]
+      const options = {
+        maxSizeMB: 0.007,          // (default: Number.POSITIVE_INFINITY)
+      }
+      imageCompression(e.target.files[0], options)
+        .then(res => {
+          const url = reader.readAsDataURL(res);
+          reader.onloadend = function (e) {
+            this.setState({
+              uploadedImage: [reader.result]
+            })
+          }.bind(this);
         })
-      }.bind(this);
     }
   }
 
@@ -127,14 +135,14 @@ export default class Profile extends React.Component {
             <br styles="clear:both" />
             <Image className="image-upload-preview" src={uploadedImage} fluid thumbnail onClick={this.onClickUpload} />
             <FileUploader
-            accept="image/*"
-            name="avatar"
-            randomizeFilename
-            storageRef={firebase.storage().ref("images")}
-            onUploadStart={this.handleUploadStart}
-            onUploadError={this.handleUploadError}
-            onUploadSuccess={this.handleUploadSuccess}
-            onProgress={this.handleProgress}
+              accept="image/*"
+              name="avatar"
+              randomizeFilename
+              storageRef={firebase.storage().ref("images")}
+              onUploadStart={this.handleUploadStart}
+              onUploadError={this.handleUploadError}
+              onUploadSuccess={this.handleUploadSuccess}
+              onProgress={this.handleProgress}
             />
             <FormControl
               type="file"
@@ -151,7 +159,7 @@ export default class Profile extends React.Component {
             <br />
             <FormGroup className="form-group">
               <Form.Label className='form-text'><h5>Email</h5></Form.Label>
-              <Form.Label value={this.state.name} className='form-value'><h5>{this.state.email}</h5></Form.Label>
+              <Form.Label value={this.state.name} className='form-value'><h5>{this.props.email}</h5></Form.Label>
             </FormGroup>
             <br />
             {/* <FormGroup className="form-group">
@@ -177,42 +185,42 @@ export default class Profile extends React.Component {
             <div className="form-group">
               <p className='form-text'><h5>Past Food:</h5></p>
               <Container className="ViewFood">
-              <ListGroup>
-                <ListGroup.Item>
-                  <Row>
-                    <Col>
-                      <img className="vfo-image rounded float-left" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" alr=""></img>
-                    </Col>
-                    <Col>
-                      <Row className="vfo-foodname">
-                        <p>Spicy Pasta</p>
-                      </Row>
-                      <Row className="vfo-description">
-                        <p>tasty italian food</p>
-                      </Row>
-                    </Col>
-                    <Col className="vfo-price">
-                    </Col>
-                  </Row>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Row>
-                    <Col>
-                      <img className="vfo-image rounded float-left" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" alr=""></img>
-                    </Col>
-                    <Col>
-                      <Row className="vfo-foodname">
-                        <p>Chicken Tikka Masala</p>
-                      </Row>
-                      <Row className="vfo-description">
-                        <p>Delicious Indian food!</p>
-                      </Row>
-                    </Col>
-                    <Col className="vfo-price">
-                    </Col>
-                  </Row>
-                </ListGroup.Item>
-              </ListGroup>
+                <ListGroup>
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>
+                        <img className="vfo-image rounded float-left" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" alr=""></img>
+                      </Col>
+                      <Col>
+                        <Row className="vfo-foodname">
+                          <p>Spicy Pasta</p>
+                        </Row>
+                        <Row className="vfo-description">
+                          <p>tasty italian food</p>
+                        </Row>
+                      </Col>
+                      <Col className="vfo-price">
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>
+                        <img className="vfo-image rounded float-left" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" alr=""></img>
+                      </Col>
+                      <Col>
+                        <Row className="vfo-foodname">
+                          <p>Chicken Tikka Masala</p>
+                        </Row>
+                        <Row className="vfo-description">
+                          <p>Delicious Indian food!</p>
+                        </Row>
+                      </Col>
+                      <Col className="vfo-price">
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                </ListGroup>
               </Container>
             </div>
           </Form>

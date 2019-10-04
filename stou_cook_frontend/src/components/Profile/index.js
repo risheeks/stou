@@ -22,9 +22,6 @@ class Profile extends React.Component {
 
   }
   componentDidMount() {
-    if(!this.props.loggedIn) {
-      this.props.history.push('/login');
-    }
     this.getProfile();
   }
 
@@ -59,16 +56,17 @@ class Profile extends React.Component {
     apiCall = apiCall + "/profile";
     axios.get(apiCall, {
       params: {
-        email: this.state.email,
+        email: btoa(this.props.email),
         role: 'Homecook'
       }
     })
       .then(res => {
         // console.log(res.data);
-        this.setState({ name: res.data.name });
-        // this.setState({email: res.data });
-        this.setState({ cuisines: res.data.cuisines });
-        this.setState({ aboutMe: res.data.aboutMe });
+        this.setState({
+          name: atob(res.data.name),
+          cuisines: res.data.cuisines,
+          aboutMe: res.data.aboutMe,
+        });
       })
   }
 
@@ -95,6 +93,7 @@ class Profile extends React.Component {
     const { uploadedImage } = this.state;
     return (
       <div className="container profile">
+        { !this.props.auth_token ? this.props.history.push('/') : null }
         <div className="form-area">
           <Form role="form">
             {this.props.show}
@@ -115,7 +114,7 @@ class Profile extends React.Component {
             <br />
             <FormGroup className="form-group">
               <Form.Label className='form-text'><h5>Email</h5></Form.Label>
-              <Form.Label value={this.state.name} className='form-value'><h5>{this.state.email}</h5></Form.Label>
+              <Form.Label value={this.state.name} className='form-value'><h5>{this.props.email}</h5></Form.Label>
             </FormGroup>
             <br />
             <FormGroup className="form-group">

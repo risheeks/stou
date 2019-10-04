@@ -14,6 +14,8 @@ export class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            allergens: [],
+            cuisines: [],
             zip: "47906",
             modalisOpen: true
         }
@@ -51,6 +53,14 @@ export class Home extends Component {
                 });
             });
     }
+    
+    onFilter = (allergens, cuisines) => {
+        this.setState({
+            allergens: allergens,
+            cuisines: cuisines
+        })
+    }
+
 
 
     render() {
@@ -85,15 +95,16 @@ export class Home extends Component {
                 </Modal>
                 <div className="homec">
 
-                    <FilterBar />
+                    <FilterBar onFilter={this.onFilter} />
                     <div className="homec">
                         <div className="home">
                             <h5>Food Available</h5>
-                            <ViewFoodOptions />
+                            <ViewFoodOptions allergens={this.state.allergens} cuisines={this.state.cuisines} />
                         </div>
                         <div className="home">
                             <h5>Home Cooks</h5>
                             <ListOfHomeCooks />
+
                         </div>
                     </div>
                 </div>
