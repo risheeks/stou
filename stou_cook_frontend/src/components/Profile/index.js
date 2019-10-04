@@ -5,6 +5,7 @@ import uploadimage from '../../constants/images/wineandcode.png';
 import "../../styles/Main.css";
 
 
+
 export default class Profile extends React.Component {
   constructor(props) {
     super(props);
@@ -36,13 +37,27 @@ export default class Profile extends React.Component {
     var apiCall = "http://192.168.43.177:3000";
     apiCall = apiCall + "/editProfile";
     console.log(this.state.aboutMe);
+    const image2base64 = require('image-to-base64');
+    image2base64(this.state.uploadedImage) // you can also to use url
+    .then(
+        (response) => {
+            console.log(response); 
+            this.state.uploadedImage = response;
+        }
+    )
+    .catch(
+        (error) => {
+            console.log(error); //Exepection error....
+        }
+    )
     axios({
       method: 'post',
       url: apiCall,
       data: {
         email: this.state.email,
         name: this.state.name,
-        aboutMe: this.state.aboutMe
+        aboutMe: this.state.aboutMe,
+        uploadimage: this.state.uploadedImage
       }
       
     })
@@ -73,9 +88,21 @@ export default class Profile extends React.Component {
   onClickUpload = e => {
     this.inputElement.click();
   }
+  getBase64Image =img =>{
+    var canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+    var ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    var dataURL = canvas.toDataURL("image/png");
+    return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+  }
 
   onImageChange = e => {
     const reader = new FileReader();
+    //var base64 = this.getBase64Image(document.getElementById("ppimage"));
+
+  
     if (e.target.files[0]) {
       const url = reader.readAsDataURL(e.target.files[0]);
       reader.onloadend = function (e) {
@@ -94,7 +121,7 @@ export default class Profile extends React.Component {
           <Form role="form">
             {this.props.show}
             <br styles="clear:both" />
-            <Image className="image-upload-preview" src={uploadedImage} fluid thumbnail onClick={this.onClickUpload} />
+            <Image className="image-upload-preview" id="ppimage"src={uploadedImage} fluid thumbnail onClick={this.onClickUpload} />
             <FormControl
               type="file"
               className="image-upload-input"
