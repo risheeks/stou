@@ -37,19 +37,6 @@ export default class Profile extends React.Component {
     var apiCall = "http://192.168.43.177:3000";
     apiCall = apiCall + "/editProfile";
     console.log(this.state.aboutMe);
-    const image2base64 = require('image-to-base64');
-    image2base64(this.state.uploadedImage) // you can also to use url
-    .then(
-        (response) => {
-            console.log(response); 
-            this.state.uploadedImage = response;
-        }
-    )
-    .catch(
-        (error) => {
-            console.log(error); //Exepection error....
-        }
-    )
     axios({
       method: 'post',
       url: apiCall,
@@ -87,15 +74,6 @@ export default class Profile extends React.Component {
 
   onClickUpload = e => {
     this.inputElement.click();
-  }
-  getBase64Image =img =>{
-    var canvas = document.createElement("canvas");
-    canvas.width = img.width;
-    canvas.height = img.height;
-    var ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0);
-    var dataURL = canvas.toDataURL("image/png");
-    return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
   }
 
   onImageChange = e => {
