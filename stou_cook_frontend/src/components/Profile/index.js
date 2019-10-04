@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Row, Col, Container, Button, FormGroup, FormControl, FormLabel, Image, ListGroup } from "react-bootstrap";
+import { Row, Col, Container, Button, FormGroup, FormControl, FormLabel, Image, ListGroup, Form } from "react-bootstrap";
 import axios from 'axios';
 import uploadimage from '../../constants/images/wineandcode.png';
 import "../../styles/Main.css";
@@ -104,7 +104,8 @@ export default class Profile extends React.Component {
             <br />
             <div className="form-group">
               <p className='form-text'><h5>About Me:</h5></p>
-              <textarea value={this.state.aboutMe} type="text" onChange={this.handleAboutMeChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3"></textarea>
+              <Form.Control value={this.state.aboutMe} type="text" onChange={this.handleAboutMeChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3" as="textarea" rows="3" />
+              {/* <Textarea value={this.state.aboutMe} type="text" onChange={this.handleAboutMeChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3"></Textarea> */}
             </div>
             <br/>
             <Button
@@ -118,6 +119,7 @@ export default class Profile extends React.Component {
             </Button>
             <br/>
             <div className="form-group">
+              <p className='form-text'><h5>Past Food:</h5></p>
               <ListGroup>
                 <ListGroup.Item><Container className="ViewFood">
                   <Row>
