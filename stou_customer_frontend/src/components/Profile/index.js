@@ -3,23 +3,55 @@ import { Row, Col, Container, Button, FormGroup, FormControl, FormLabel, Image, 
 import axios from 'axios';
 import uploadimage from '../../constants/images/wineandcode.png';
 import "../../styles/Main.css";
-
-
+import firebase from "firebase";
+import FileUploader from "react-firebase-file-uploader";
+const firebaseConfig = {
+  apiKey: "AIzaSyCKRmXkIQqNtPTM-_MMvsQYMH1tSm7IlNM",
+  authDomain: "stou-79b9a.firebaseapp.com",
+  databaseURL: "https://stou-79b9a.firebaseio.com",
+  projectId: "stou-79b9a",
+  storageBucket: "stou-79b9a.appspot.com",
+  messagingSenderId: "135234417719",
+  appId: "1:135234417719:web:a6233dfcab2935a2e67bb2",
+  measurementId: "G-EWZ35B7N17"
+};
 export default class Profile extends React.Component {
   constructor(props) {
     super(props);
     this.updateProfile = this.updateProfile.bind(this);
     this.getProfile = this.getProfile.bind(this);
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
     this.state = {
       name: '',
       email: 'chef@chef.com',
     //   cuisines: '',
       aboutMe: '',
-      uploadedImage: uploadimage
+      uploadedImage: uploadimage,
+      isUploading: false,
+      progress: 0,
+      avatarURL: uploadimage
     };
     // this.getProfile();
 
   }
+  handleChangeUsername = event =>
+    this.setState({ username: event.target.value });
+  handleUploadStart = () => this.setState({ isUploading: true, progress: 0 });
+  handleProgress = progress => this.setState({ progress });
+  handleUploadError = error => {
+    this.setState({ isUploading: false });
+    console.error(error);
+  };
+  handleUploadSuccess = filename => {
+    this.setState({ avatar: filename, progress: 100, isUploading: false });
+    firebase
+      .storage()
+      .ref("images")
+      .child(filename)
+      .getDownloadURL()
+      .then(url => this.setState({ avatarURL: url }));
+  };
   componentDidMount() {
     // document.getElementById('addHyperLink').className = "";
     // document.getElementById('homeHyperlink').className = "";
@@ -33,22 +65,12 @@ export default class Profile extends React.Component {
 
   updateProfile = e => {
     // this.getProfile();
+
+    console.log(this.state.avatarURL) /* IMAGE URL RETURNED */
     var apiCall = "http://192.168.43.177:3000";
     apiCall = apiCall + "/editProfile";
     console.log("update profile called");
-    const image2base64 = require('image-to-base64');
-    image2base64(this.state.uploadedImage) // you can also to use url
-    .then(
-        (response) => {
-            console.log(response); 
-            this.state.uploadedImage = response;
-        }
-    )
-    .catch(
-        (error) => {
-            console.log(error); //Exepection error....
-        }
-    )
+
     axios.post(apiCall, {
       params: {
         name: this.state.name,
@@ -104,6 +126,16 @@ export default class Profile extends React.Component {
             {this.props.show}
             <br styles="clear:both" />
             <Image className="image-upload-preview" src={uploadedImage} fluid thumbnail onClick={this.onClickUpload} />
+            <FileUploader
+            accept="image/*"
+            name="avatar"
+            randomizeFilename
+            storageRef={firebase.storage().ref("images")}
+            onUploadStart={this.handleUploadStart}
+            onUploadError={this.handleUploadError}
+            onUploadSuccess={this.handleUploadSuccess}
+            onProgress={this.handleProgress}
+            />
             <FormControl
               type="file"
               className="image-upload-input"
