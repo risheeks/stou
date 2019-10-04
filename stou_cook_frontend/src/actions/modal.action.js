@@ -1,7 +1,6 @@
 export function openModal(item) {
     return {
-        type: 'OPEN_MODAL',
-        item
+        type: 'OPEN_MODAL'
     }
 }
 

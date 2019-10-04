@@ -2,8 +2,20 @@ import React, { Component } from "react";
 import { Button, FormGroup, FormControl, FormLabel, FormCheck, Form, Image, Card, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 import uploadimage from '../../constants/images/uploadimage.png';
 import { withRouter } from 'react-router-dom';
-// import axios from 'axios';
+import axios from 'axios';
 import "../../styles/Main.css";
+import { serverURL } from '../../config';
+import FileUploader from "react-firebase-file-uploader";
+const firebaseConfig = {
+  apiKey: "AIzaSyCKRmXkIQqNtPTM-_MMvsQYMH1tSm7IlNM",
+  authDomain: "stou-79b9a.firebaseapp.com",
+  databaseURL: "https://stou-79b9a.firebaseio.com",
+  projectId: "stou-79b9a",
+  storageBucket: "stou-79b9a.appspot.com",
+  messagingSenderId: "135234417719",
+  appId: "1:135234417719:web:a6233dfcab2935a2e67bb2",
+  measurementId: "G-EWZ35B7N17"
+};
 
 export class AddFoodItem extends Component {
   constructor(props) {
@@ -23,7 +35,8 @@ export class AddFoodItem extends Component {
   }
 
   componentDidMount() {
-    if(!this.props.loggedIn) {
+    console.log(this.props.auth_token);
+    if(!this.props.auth_token) {
       this.props.history.push('/login');
     }
   }
@@ -39,7 +52,24 @@ export class AddFoodItem extends Component {
   }
 
   handleSubmit = event => {
+    const { foodname, price, calories, description, chosenAllergens, chosenCuisines, uploadedImage } = this.state;
     event.preventDefault();
+    axios.post(`${serverURL}/addfooditem`, {
+      data: {
+        itemName: foodname,
+        price: price,
+        calories: calories,
+        description: description,
+        allergens: chosenAllergens,
+        cuisine: chosenCuisines[0],
+        picture: uploadedImage,
+        location: '47906',
+        token: this.props.auth_token
+      }
+    })
+      .then(res => {
+        console.log(res.data);
+      })
   }
 
   onAllergenCheckChange = (e, allergen) => {
@@ -154,7 +184,7 @@ export class AddFoodItem extends Component {
                 bsSize="large"
                 className="submit-button"
                 disabled={!this.validateForm()}
-                type="submit"
+                onClick={this.handleSubmit}
               >
                 Add Item to Menu
               </Button>
