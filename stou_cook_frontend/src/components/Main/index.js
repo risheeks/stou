@@ -13,17 +13,18 @@ import Profile from '../Profile';
 import '../../styles/Main.css';
 
 import { getToken, signOut } from '../../actions/login.action';
+import { openModal, closeModal } from '../../actions/modal.action';
 
 function mapStateToProps(state) {
-    state = state.loginReducer;
     return {
-        auth_token: state.auth_token,
-        email: state.email
+        auth_token: state.loginReducer.auth_token,
+        email: state.loginReducer.email,
+        showModal: state.modalReducer.showModal,
     }
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ getToken, signOut }, dispatch);
+    return bindActionCreators({ getToken, signOut, openModal, closeModal }, dispatch);
 }
 
 const ProtectedRoute
@@ -42,14 +43,14 @@ class Main extends Component {
     }
 
     render() {
-        const { signOut, auth_token, email, getToken } = this.props;
+        const { signOut, auth_token, email, getToken, openModal, closeModal, showModal } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
         console.log(auth_token);
         return (
             <Router>
                 <Header signOut={signOut} loggedIn={loggedIn} />
                 <Route exact path="/" render={() => <Home auth_token={auth_token} email={email} />} />
-                <Route path="/login" render={() => <Login auth_token={auth_token} email={email} getToken={getToken} />} />
+                <Route path="/login" render={() => <Login auth_token={auth_token} email={email} getToken={getToken} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
                 <Route path="/register" render={() => <Register auth_token={auth_token} email={email} getToken={getToken} />} />
                 <Route path="/addfood" render={() => <AddFoodItem auth_token={auth_token} email={email} />} />
                 <Route path="/profile" render={() => <Profile auth_token={auth_token} email={email} />} />
