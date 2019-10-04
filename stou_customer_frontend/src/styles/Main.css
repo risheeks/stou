@@ -206,8 +206,14 @@
 
   .home {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     margin: 2% 2%;
+}
+
+.homec {
+  display: flex;
+  flex-direction: row;
+  margin: 2% 2%;
 }
 
 @media all and (min-width: 480px) {

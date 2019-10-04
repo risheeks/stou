@@ -15,7 +15,7 @@ class ViewFoodOptions extends Component {
 	}
 	render() {
 	return(
-	<Container className="ViewFoodOptions">
+	<Container>
 	<ListGroup>
 	{this.state.foodoptions.map(item => (
 	<ListGroup.Item className="food-option">
