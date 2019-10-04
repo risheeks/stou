@@ -11,7 +11,6 @@ import Home from './components/Home';
 import Header from './components/Common/Header';
 import AddFoodItem from './components/AddFoodItem';
 import Profile from './components/Profile';
-import ViewFoodOptions from '../../stou_customer_frontend/src/components/ViewFoodOptions';
 
 
 function App() {

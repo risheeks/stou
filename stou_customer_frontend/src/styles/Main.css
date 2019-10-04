@@ -101,13 +101,17 @@
 }
 
 .filterbar-container {
-    width: 25%;
+    width: 30%;
     padding: 2% 2%;
 }
 
 .basic-horizontal-div {
     display: flex;
     flex-direction: row;
+}
+
+.price-slider {
+  width: 100%;
 }
 
 .price-range-text {
@@ -146,7 +150,7 @@
 .ViewFoodOptions {
     border-radius: 3px;
     max-width: 65%;
-    margin-right: 20%;
+    
   }
 
 .food-option {

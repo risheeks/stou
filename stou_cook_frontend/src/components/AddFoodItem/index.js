@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, FormGroup, FormControl, FormLabel, FormCheck, Form, Image } from "react-bootstrap";
+import { Button, FormGroup, FormControl, FormLabel, FormCheck, Form, Image, Card, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 import uploadimage from '../../constants/images/uploadimage.png';
 // import axios from 'axios';
 import "../../styles/Main.css";
@@ -10,11 +10,13 @@ export class AddFoodItem extends Component {
     this.state = {
       foodname: '',
       price: 0,
-      allergens: ['Dairy', 'Shellfish', 'Nuts', 'Eggs', 'Others'],
       calories: 0,
       description: '',
-      chosenAllergens: [],
       uploadedImage: uploadimage,
+      cuisines: ['Chinese', 'Indian', 'Asian', 'Mexican', 'Japanese', 'Italian', 'Thai', 'French', 'Mediterranean'],
+      allergens: ['Dairy', 'Shellfish', 'Nuts', 'Eggs', 'Others'],
+      chosenAllergens: [],
+      chosenCuisines: [],
     };
     this.inputElement = React.createRef();
   }
@@ -33,11 +35,10 @@ export class AddFoodItem extends Component {
     event.preventDefault();
   }
 
-  onCheckChange = (e, allergen) => {
+  onAllergenCheckChange = (e, allergen) => {
     const { chosenAllergens } = this.state;
     if (e.target.checked) {
-      console.log(allergen)
-      chosenAllergens.push(allergen)
+      chosenAllergens.push(allergen);
     } else {
       let index = chosenAllergens.indexOf(allergen);
       chosenAllergens.splice(index, 1);
@@ -45,24 +46,35 @@ export class AddFoodItem extends Component {
     this.setState({ chosenAllergens });
   }
 
+  onCuisineCheckChange = (e, cuisine) => {
+    const { chosenCuisines } = this.state;
+    if (e.target.checked) {
+      chosenCuisines.push(cuisine);
+    } else {
+      let index = chosenCuisines.indexOf(cuisine);
+      chosenCuisines.splice(index, 1);
+    }
+    this.setState({ chosenCuisines });
+  }
+
   onClickUpload = e => {
     this.inputElement.click();
   }
 
   onImageChange = e => {
-    const reader  = new FileReader();
-    if(e.target.files[0]) {
+    const reader = new FileReader();
+    if (e.target.files[0]) {
       const url = reader.readAsDataURL(e.target.files[0]);
       reader.onloadend = function (e) {
         this.setState({
-            uploadedImage: [reader.result]
+          uploadedImage: [reader.result]
         })
       }.bind(this);
     }
   }
 
   render() {
-    const { uploadedImage, allergens } = this.state;
+    const { uploadedImage, allergens, cuisines } = this.state;
 
     return (
       <div className="outer-container">
@@ -108,12 +120,26 @@ export class AddFoodItem extends Component {
                 onChange={this.handleChange}
               />
             </FormGroup>
-            <div className="checkbox-div">
-              <FormGroup controlId="formBasicCheckbox">
+            <div>
+              <Card.Title>Allergens</Card.Title>
+              <div className="checkbox-div">
                 {allergens.map((allergen, index) =>
-                  <FormCheck type="checkbox" key={index} onChange={e => this.onCheckChange(e, allergen)} label={allergen} />
+                  <ToggleButtonGroup className="single-checkbox-div" type="checkbox">
+                    <ToggleButton className="single-checkbox" key={index} value={index} onChange={e => this.onAllergenCheckChange(e, allergen)}>{allergen}</ToggleButton>
+                  </ToggleButtonGroup>
                 )}
-              </FormGroup>
+              </div>
+            </div>
+            <hr></hr>
+            <div>
+              <Card.Title>Cuisines</Card.Title>
+              <div className="checkbox-div">
+                {cuisines.map((cuisine, index) =>
+                  <ToggleButtonGroup className="single-checkbox-div" type="checkbox">
+                    <ToggleButton className="single-checkbox" key={index} value={index} onChange={e => this.onCuisineCheckChange(e, cuisine)}>{cuisine}</ToggleButton>
+                  </ToggleButtonGroup>
+                )}
+              </div>
             </div>
             <div>
               <Button

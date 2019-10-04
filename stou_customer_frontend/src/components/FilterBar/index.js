@@ -94,7 +94,7 @@ export class FilterBar extends Component {
         <Card.Title>Price</Card.Title>
         <div className="basic-horizontal-div">
           <p className="price-range-text">$1 </p>
-          <FormGroup controlId="price">
+          <FormGroup className="price-slider" controlId="price">
             <FormControl
               type="range"
               onChange={this.handleChange}
