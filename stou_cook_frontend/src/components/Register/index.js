@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { Button, FormGroup, FormControl, FormLabel, Alert } from "react-bootstrap";
-import 'bootstrap/dist/css/bootstrap.min.css'
-import './index.css';
 import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
 

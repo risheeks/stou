@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
 import { Link } from 'react-router-dom';
-// import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import "../../styles/Main.css";
+import axios from 'axios';
+import { serverURL } from '../../config';
+import { withRouter } from 'react-router-dom';
 
-export default class Login extends Component {
+export class Login extends Component {
   constructor(props) {
     super(props);
 
@@ -14,8 +14,6 @@ export default class Login extends Component {
       password: ""
     };
   }
-
-  
 
   validateForm() {
     return this.state.email.length > 0 && this.state.password.length > 0;
@@ -28,7 +26,18 @@ export default class Login extends Component {
   }
 
   handleSubmit = event => {
-    event.preventDefault();
+    const { email, password } = this.state;
+    axios.post(`${serverURL}/login`, {
+      data: {
+        role: "Homecook",
+        email,
+        password
+      }
+    })
+      .then(res => {
+        this.props.getToken(res.data['token'], email);
+        this.props.history.push('/');
+      })
   }
 
   render() {
@@ -58,7 +67,7 @@ export default class Login extends Component {
               bsSize="large"
               className="submit-button"
               disabled={!this.validateForm()}
-              type="submit"
+              onClick={this.handleSubmit}
             >
               Login
             </Button>
@@ -69,3 +78,5 @@ export default class Login extends Component {
     );
   }
 }
+
+export default withRouter(Login);
