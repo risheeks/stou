@@ -33,7 +33,7 @@ const ViewFoodOptions = () => {
 					<p>Chilli Tacos</p>
 					</div>
 					<div className="vfo-description">
-					<p>Tasty texmex spicy low calorie taco</p>
+					<p>Tasty texmex spicy low calorie tacosdfsdfsdfsdfsdf</p>
 					</div>
 					<div className="vfo-chefname">
 					<p>Siddhant Patel</p>
