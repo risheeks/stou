@@ -106,30 +106,20 @@ class Register extends Component {
     else {
       this.state.registerCheck = true;
     }
-    //AES ENCRYPTION
-    var CryptoJS = require("crypto-js");
     // Encrypt
-    var encryptedFirstName = CryptoJS.AES.encrypt(firstName, 'weab66c4xyz09AZMLo').toString();
-    var encryptedLastName = CryptoJS.AES.encrypt(lastName, 'weab66c4xyz09AZMLo').toString();
-    var encryptedEmail = CryptoJS.AES.encrypt(email, 'weab66c4xyz09AZMLo').toString();    // Decrypt
-    var bytesFirstName  = CryptoJS.AES.decrypt(encryptedFirstName, 'weab66c4xyz09AZMLo');
-    var originalText = bytesFirstName.toString(CryptoJS.enc.Utf8);
-    console.log(originalText);
-    //SHA256
     var SHA256 = require("crypto-js/sha256");
-    var encryptedPassword = SHA256(password)
-    console.log(encryptedPassword);
+    var encryptedPassword = SHA256(password);
     
     if (!formHasErrors) {
-        //this.toggleModal();
         var apiCall = "http://192.168.43.177:3000";
-        apiCall = apiCall + "/register?firstName=${encryptedFirstName}&lastName=${encryptedLastName}&Email=${encryptedEmail}&Password=${encryptedPassword}&Role=Customer";
+        apiCall = apiCall + "/register?firstName="+ btoa(firstName)+"&lastName="+btoa(lastName)+"&email="+btoa(email)+"&password="+encryptedPassword+"&role=Customer&cuisines=none";
+        //console.log("CHECK")
+        //g(apiCall)
         axios.post(apiCall)
         .then(res => {
           console.log(res.data);
           this.setState({ name: res.data });
         })
-        console.log(firstName + " " + lastName + " " + password + " " + confirmpassword + " " + email)
     }
     this.setState({
       touched: {
@@ -144,22 +134,22 @@ class Register extends Component {
 
   }
 
-  getProfile() {
-    // console.log("CHECK")
-    var apiCall = "http://192.168.43.177:3000";
-    apiCall = apiCall + "/register?firstName=Adrian&lastName=Raj&Email=raj5@purdue.edu&Password=pass&Role=Customer";
-    axios.post(apiCall)
-      .then(res => {
-        console.log(res.data);
-        this.setState({ name: res.data });
-    })
-    // this.state.name = this.state.persons;
-    // this.state.name = 'Risheek Narayanadevarakere';
-    this.state.email = 'naraya15@purdue.edu';
-    this.state.phoneNumber = '3463427632';
-    this.state.cuisines = 'Indian';
-    this.state.aboutMe = 'Chill Guy!';
-  }
+  // getProfile() {
+  //   // console.log("CHECK")
+  //   var apiCall = "http://192.168.43.177:3000";
+  //   apiCall = apiCall + "/register?firstName=Adrian&lastName=Raj&Email=raj5@purdue.edu&Password=pass&Role=Customer";
+  //   axios.post(apiCall)
+  //     .then(res => {
+  //       console.log(res.data);
+  //       this.setState({ name: res.data });
+  //   })
+  //   // this.state.name = this.state.persons;
+  //   // this.state.name = 'Risheek Narayanadevarakere';
+  //   this.state.email = 'naraya15@purdue.edu';
+  //   this.state.phoneNumber = '3463427632';
+  //   this.state.cuisines = 'Indian';
+  //   this.state.aboutMe = 'Chill Guy!';
+  // }
   
   render() {
     const errors = this.validate(this.state.firstName, this.state.lastName, this.state.password, this.state.confirmpassword, this.state.email);
