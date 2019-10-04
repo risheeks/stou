@@ -78,3 +78,40 @@
       max-width: 320px;
     }
 }
+
+.ViewFood {
+    border: 1px solid rgb(202, 202, 202);
+    /* width: 100% !important; */
+    margin-right: auto;
+    height: 100px;
+  }
+  .vfo-image {
+    max-width:100%;
+    max-height:100px;  
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 0px;
+  }
+  .vfo-description {
+    /* display: block; */
+    color: rgba(111, 95, 95, 0.67);
+    font-size: 0.75em;
+    text-align: left;
+  
+  }
+  
+  .vfo-chefname {
+    padding-top: 5px;
+    align-items: flex-end;
+  }
+
+  .vfo-foodname {
+    padding-top: 5px;
+    align-items: flex-end;
+  }
+
+  .vfo-price {
+    text-align: right;
+    font-weight: bold;
+    font-size: 0.90em;
+  }

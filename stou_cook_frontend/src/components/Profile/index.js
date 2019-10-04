@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { Button, FormGroup, FormControl, FormLabel, Image } from "react-bootstrap";
+import { Row, Col, Container, Button, FormGroup, FormControl, FormLabel, Image, ListGroup } from "react-bootstrap";
+import axios from 'axios';
 import uploadimage from '../../constants/images/wineandcode.png';
 import "../../styles/Main.css";
 
@@ -12,8 +13,7 @@ export default class Profile extends React.Component {
     this.getProfile = this.getProfile.bind(this);
     this.state = {
       name: '',
-      email: '',
-      phoneNumber: '',
+      email: 'naraya15@purdue.edu',
       cuisines: '',
       aboutMe: '',
       uploadedImage: uploadimage
@@ -33,15 +33,26 @@ export default class Profile extends React.Component {
   }
 
   updateProfile() {
-
+    this.getProfile();
   }
 
   getProfile() {
-    this.state.name = 'Risheek Narayanadevarakere';
-    this.state.email = 'naraya15@purdue.edu';
-    this.state.phoneNumber = '3463427632';
-    this.state.cuisines = 'Indian';
-    this.state.aboutMe = 'Chill Guy!';
+    // console.log("CHECK")
+    var apiCall = "http://192.168.43.177:3000";
+    apiCall = apiCall + "/profile";
+    axios.get(apiCall, {
+      params:{
+        email: this.state.email,
+        role: 'Homecook'
+      }
+    })
+      .then(res => {
+        console.log(res);
+        this.setState({ name: res.data });
+        // this.setState({email: res.data });
+        this.setState({cuisines: res.data });
+        this.setState({aboutMe: res.data });
+    })
   }
 
   onClickUpload = e => {
@@ -62,7 +73,6 @@ export default class Profile extends React.Component {
 
   render() {
     const { uploadedImage } = this.state;
-
     return (
       <div className="container profile">
         <div className="form-area">
@@ -78,29 +88,25 @@ export default class Profile extends React.Component {
             />
             <br />
             <div className="form-group">
-              <text className='form-text'><h5>Name:</h5></text>
-              <text value={this.state.name} className='form-value'><h5>{this.state.name}</h5></text>
+              <p className='form-text'><h5>Name:</h5></p>
+              <p value={this.state.name} className='form-value'><h5>{this.state.name}</h5></p>
             </div>
             <br />
             <div className="form-group">
-              <text className='form-text'><h5>Email:</h5></text>
-              <text value={this.state.name} className='form-value'><h5>{this.state.email}</h5></text>
+              <p className='form-text'><h5>Email:</h5></p>
+              <p value={this.state.name} className='form-value'><h5>{this.state.email}</h5></p>
             </div>
             <br />
             <div className="form-group">
-              <text className='form-text'><h5>Phone Number:</h5></text>
-              <text value={this.state.name} className='form-value'><h5>{this.state.phoneNumber}</h5></text>
+              <p className='form-text'><h5>Cuisines:</h5></p>
+              <p value={this.state.name} className='form-value'><h5>{this.state.cuisines}</h5></p>
             </div>
             <br />
             <div className="form-group">
-              <text className='form-text'><h5>Cuisines:</h5></text>
-              <text value={this.state.name} className='form-value'><h5>{this.state.cuisines}</h5></text>
-            </div>
-            <br />
-            <div className="form-group">
-              <text className='form-text'><h5>About Me:</h5></text>
+              <p className='form-text'><h5>About Me:</h5></p>
               <textarea value={this.state.aboutMe} type="text" onChange={this.handleAboutMeChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3"></textarea>
             </div>
+            <br/>
             <Button
               block
               bsSize="large"
@@ -109,7 +115,46 @@ export default class Profile extends React.Component {
               type="submit"
             >
               Update
-              </Button>
+            </Button>
+            <br/>
+            <div className="form-group">
+              <ListGroup>
+                <ListGroup.Item><Container className="ViewFood">
+                  <Row>
+                      <Col>   
+                      <img className="vfo-image rounded float-left" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" alr=""></img>
+                      </Col>
+                      <Col>  
+                          <Row className="vfo-foodname">
+                          <p>Spicy Pasta</p>
+                          </Row>
+                          <Row className="vfo-description">
+                          <p>tasty italian food lolololololololol</p>
+                          </Row>
+                      </Col>
+                      <Col className="vfo-price">  
+                      </Col>
+                  </Row>
+                </Container></ListGroup.Item>
+                <ListGroup.Item><Container className="ViewFood">
+                  <Row>
+                      <Col>   
+                      <img className="vfo-image rounded float-left" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" alr=""></img>
+                      </Col>
+                      <Col>  
+                          <Row className="vfo-foodname">
+                          <p>Chicken Tikka Masala</p>
+                          </Row>
+                          <Row className="vfo-description">
+                          <p>Delicious Indian food!</p>
+                          </Row>
+                      </Col>
+                      <Col className="vfo-price">  
+                      </Col>
+                  </Row>
+                </Container></ListGroup.Item>
+              </ListGroup>
+            </div>
           </form>
         </div>
       </div>
