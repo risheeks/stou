@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Button, FormGroup, FormControl, FormLabel, Alert } from "react-bootstrap";
+import { Button, FormGroup, FormControl, FormLabel, Modal, Alert } from "react-bootstrap";
 import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
 import { serverURL } from '../../config';
 import { withRouter } from 'react-router-dom';
+import PrivacyPolicy from '../PrivacyPolicy';
 
 class Register extends Component {
   constructor(props){
@@ -128,7 +129,8 @@ class Register extends Component {
           .then(res => {
             console.log(res.data);
             this.props.getToken(res.data['token'], email);
-            this.props.history.push('/');
+            this.props.history.push('/privacyPolicy');
+            this.state.modalisOpen=true;
           })
           .catch(err => {
             console.log(err);
@@ -158,8 +160,19 @@ class Register extends Component {
       return {display: shouldMarkError(name) ? 'none' : 'block'}
     }
     
+    const handleClose = e => {
+      this.setState({modalisOpen: false})
+    }
+    const handleOpen = e => {
+      this.setState({modalisOpen: true})
+    }
+
     return (
+    
     <div className="Register container">
+      <Modal show={this.state.modalisOpen} onHide={handleClose}>
+        <PrivacyPolicy/>
+      </Modal>
       { this.props.auth_token ? this.props.history.push('/') : null}
       <Alert hidden={this.state.registerCheck} variant="danger">{this.state.registerErrorMessage}</Alert>
         {/* <div className="title">Create Your Stou Account</div> */}

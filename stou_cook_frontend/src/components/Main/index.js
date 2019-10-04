@@ -13,6 +13,7 @@ import Profile from '../Profile';
 import '../../styles/Main.css';
 
 import { getToken, signOut } from '../../actions/login.action';
+import PrivacyPolicy from '../PrivacyPolicy';
 
 function mapStateToProps(state) {
     state = state.loginReducer;
@@ -53,6 +54,7 @@ class Main extends Component {
                 <Route path="/register" render={() => <Register auth_token={auth_token} email={email} getToken={getToken} />} />
                 <Route path="/addfood" render={() => <AddFoodItem auth_token={auth_token} email={email} />} />
                 <Route path="/profile" render={() => <Profile auth_token={auth_token} email={email} />} />
+                <Route path="/privacyPolicy" render={() => <PrivacyPolicy auth_token={auth_token} email={email} />} />
             </Router>
         );
     }
