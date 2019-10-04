@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
-import './index.css';
+import "../../styles/Main.css";
 import sha256 from 'crypto-js/sha256';
 
 class Register extends Component {
