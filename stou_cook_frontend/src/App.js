@@ -11,7 +11,7 @@ import Home from './components/Home';
 import Header from './components/Common/Header';
 import AddFoodItem from './components/AddFoodItem';
 import Profile from './components/Profile';
-import ViewFoodOptions from './components/ViewFoodOptions';
+import ViewFoodOptions from '../../stou_customer_frontend/src/components/ViewFoodOptions';
 
 
 function App() {
@@ -19,7 +19,6 @@ function App() {
     <div className="App">
       <Router>
         <Header />
-        <ViewFoodOptions/>
         <Route exact={true} path="/" component={Home} />
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
