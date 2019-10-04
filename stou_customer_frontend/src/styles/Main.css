@@ -160,15 +160,19 @@
   .vfo-image {
     max-width: 100%;
     max-height: 100px;  
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-right: 0px;
+    min-width: 100px;
+    /* padding-top: 5px; */
+    /* padding-bottom: 5px; */
+    /* padding-right: 0px; */
+
   }
   .vfo-description {
     /* display: block; */
     color: rgba(111, 95, 95, 0.67);
     font-size: 0.75em;
-    margin-top: -9%;
+    margin-top: -1rem;
+    /* margin-top: -9%; */
+    
   }
   
   .vfo-foodname {
@@ -181,11 +185,12 @@
   }
   
   .vfo-price {
-    float: right;
+    float: right !important;
     font-weight: bold;
     font-size: 0.90em;
     margin-left: 50%;
     padding-top: 5px;
+    margin-left: auto;
   }
 
 .food-option-inner {
@@ -196,6 +201,7 @@
 .vfo-info {
     text-align: left;
     margin-left: 4%;
+    width: 80%;
 }
 
   .home {
