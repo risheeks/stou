@@ -1,28 +1,43 @@
-import React from 'react'
+import React, { Component } from 'react';
 import { Row, Col, Container, Button, ListGroup, FormControl, FormLabel, Image } from "react-bootstrap";
-const ViewFoodOptions = () => {
+class ViewFoodOptions extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+		  foodoptions: [ {
+			chefName:'Siddhant Patel',
+			description: 'yummy yummy tummy tummy',
+			price: '100',
+			foodName: 'Pizza taco',
+			image: 'https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg'
+		  }],
+		};
+	}
+	render() {
 	return(
 	<Container className="ViewFoodOptions">
 	<ListGroup>
+	{this.state.foodoptions.map(item => (
 	<ListGroup.Item className="food-option">
 			<div className="food-option-inner">   
 				<div>
-				<Image rounded className="vfo-image" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" />
+				<Image rounded className="vfo-image" src={item.image}/>
 				</div>
 				<div className="vfo-info">
 					<div className="vfo-foodname">
-					<p>Chilli Tacos</p>
+					<p>{item.foodName}</p>
 					</div>
 					<div className="vfo-description">
-					<p>Tasty texmex spicy low calorie taco</p>
+					<p>{item.description}</p>
 					</div>
 					<div className="vfo-chefname">
-					<p>Siddhant Patel</p>
+					<p>{item.chefName}</p>
 					</div>
 				</div>
-				<p className="vfo-price">$10</p> 
+				<p className="vfo-price">${item.price}</p> 
 			</div>
 		</ListGroup.Item>
+		))}
 		<ListGroup.Item className="food-option">
 		<div className="food-option-inner">   
 				<div>
@@ -33,7 +48,7 @@ const ViewFoodOptions = () => {
 					<p>Chilli Tacos</p>
 					</div>
 					<div className="vfo-description">
-					<p>Tasty texmex spicy low calorie taco</p>
+					<p>Tasty texmex spicy low calorie tacosdfsdfsdfsdfsdf</p>
 					</div>
 					<div className="vfo-chefname">
 					<p>Siddhant Patel</p>
@@ -45,6 +60,7 @@ const ViewFoodOptions = () => {
 	</ListGroup>
 	</Container>
 	)
+	}
 	
 }
 export default ViewFoodOptions

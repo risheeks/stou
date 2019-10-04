@@ -9,17 +9,16 @@ import { withRouter } from 'react-router-dom';
 class Profile extends React.Component {
   constructor(props) {
     super(props);
-    this.handleAboutMeChange = this.handleAboutMeChange.bind(this);
-    this.updateProfile = this.updateProfile.bind(this);
-    this.getProfile = this.getProfile.bind(this);
+    // this.updateProfile = this.updateProfile.bind(this);
+    // this.getProfile = this.getProfile.bind(this);
     this.state = {
       name: '',
-      email: 'naraya15@purdue.edu',
+      email: 'chef@chef.com',
       cuisines: '',
       aboutMe: '',
       uploadedImage: uploadimage
     };
-    this.getProfile();
+    // this.getProfile();
 
   }
   componentDidMount() {
@@ -29,31 +28,48 @@ class Profile extends React.Component {
     this.getProfile();
   }
 
-  handleAboutMeChange(e) {
-    this.setState({ aboutMe: e.target.value })
+  handleChange = e => {
+    this.setState({ [e.target.id]: e.target.value })
   }
 
-  updateProfile() {
-    this.getProfile();
+  updateProfile = e => {
+    // this.getProfile();
+    var apiCall = "http://192.168.43.177:3000";
+    apiCall = apiCall + "/editProfile";
+    console.log(this.state.aboutMe);
+    axios({
+      method: 'post',
+      url: apiCall,
+      data: {
+        email: this.state.email,
+        name: this.state.name,
+        aboutMe: this.state.aboutMe,
+        uploadimage: this.state.uploadedImage
+      }
+      
+    })
+      .then(res => {
+        console.log(res.data);
+      })
   }
 
-  getProfile() {
+  getProfile = e => {
     // console.log("CHECK")
     var apiCall = serverURL;
     apiCall = apiCall + "/profile";
     axios.get(apiCall, {
-      params:{
+      params: {
         email: this.state.email,
         role: 'Homecook'
       }
     })
       .then(res => {
-        console.log(res);
-        this.setState({ name: res.data });
+        // console.log(res.data);
+        this.setState({ name: res.data.name });
         // this.setState({email: res.data });
-        this.setState({cuisines: res.data });
-        this.setState({aboutMe: res.data });
-    })
+        this.setState({ cuisines: res.data.cuisines });
+        this.setState({ aboutMe: res.data.aboutMe });
+      })
   }
 
   onClickUpload = e => {
@@ -61,12 +77,15 @@ class Profile extends React.Component {
   }
 
   onImageChange = e => {
-    const reader  = new FileReader();
-    if(e.target.files[0]) {
+    const reader = new FileReader();
+    //var base64 = this.getBase64Image(document.getElementById("ppimage"));
+
+  
+    if (e.target.files[0]) {
       const url = reader.readAsDataURL(e.target.files[0]);
       reader.onloadend = function (e) {
         this.setState({
-            uploadedImage: [reader.result]
+          uploadedImage: [reader.result]
         })
       }.bind(this);
     }
@@ -77,10 +96,10 @@ class Profile extends React.Component {
     return (
       <div className="container profile">
         <div className="form-area">
-          <form role="form">
+          <Form role="form">
             {this.props.show}
             <br styles="clear:both" />
-            <Image className="image-upload-preview" src={uploadedImage} fluid thumbnail onClick={this.onClickUpload} />
+            <Image className="image-upload-preview" id="ppimage"src={uploadedImage} fluid thumbnail onClick={this.onClickUpload} />
             <FormControl
               type="file"
               className="image-upload-input"
@@ -88,77 +107,79 @@ class Profile extends React.Component {
               ref={input => this.inputElement = input}
             />
             <br />
-            <div className="form-group">
-              <p className='form-text'><h5>Name:</h5></p>
-              <p value={this.state.name} className='form-value'><h5>{this.state.name}</h5></p>
-            </div>
+            <FormGroup controlId="name" className="form-group">
+              <Form.Label className='form-text'><h5>Name</h5></Form.Label>
+              <Form.Control value={this.state.name} type="text" onChange={this.handleChange} className="text-about-me" placeholder={this.state.name} as="textarea" rows="1" />
+              {/* <p value={this.state.name} className='form-value'><h5>{this.state.name}</h5></p> */}
+            </FormGroup>
             <br />
-            <div className="form-group">
-              <p className='form-text'><h5>Email:</h5></p>
-              <p value={this.state.name} className='form-value'><h5>{this.state.email}</h5></p>
-            </div>
+            <FormGroup className="form-group">
+              <Form.Label className='form-text'><h5>Email</h5></Form.Label>
+              <Form.Label value={this.state.name} className='form-value'><h5>{this.state.email}</h5></Form.Label>
+            </FormGroup>
             <br />
-            <div className="form-group">
-              <p className='form-text'><h5>Cuisines:</h5></p>
-              <p value={this.state.name} className='form-value'><h5>{this.state.cuisines}</h5></p>
-            </div>
+            <FormGroup className="form-group">
+              <Form.Label className='form-text'><h5>Cuisines</h5></Form.Label>
+              <Form.Label value={this.state.name} className='form-value'><h5>{this.state.cuisines}</h5></Form.Label>
+            </FormGroup>
             <br />
-            <div className="form-group">
-              <p className='form-text'><h5>About Me:</h5></p>
-              <Form.Control value={this.state.aboutMe} type="text" onChange={this.handleAboutMeChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3" as="textarea" rows="3" />
+            <FormGroup controlId="aboutMe" className="form-group">
+              <Form.Label className='form-text'><h5>About Me</h5></Form.Label>
+              <Form.Control value={this.state.aboutMe} type="text" onChange={this.handleChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3" as="textarea" />
               {/* <Textarea value={this.state.aboutMe} type="text" onChange={this.handleAboutMeChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3"></Textarea> */}
-            </div>
-            <br/>
+            </FormGroup>
+            <br />
             <Button
               block
               bsSize="large"
               className="submit-button"
               onClick={this.updateProfile}
-              type="submit"
             >
               Update
             </Button>
-            <br/>
+            <br />
             <div className="form-group">
               <p className='form-text'><h5>Past Food:</h5></p>
+              <Container className="ViewFood">
               <ListGroup>
-                <ListGroup.Item><Container className="ViewFood">
+                <ListGroup.Item>
                   <Row>
-                      <Col>   
+                    <Col>
                       <img className="vfo-image rounded float-left" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" alr=""></img>
-                      </Col>
-                      <Col>  
-                          <Row className="vfo-foodname">
-                          <p>Spicy Pasta</p>
-                          </Row>
-                          <Row className="vfo-description">
-                          <p>tasty italian food lolololololololol</p>
-                          </Row>
-                      </Col>
-                      <Col className="vfo-price">  
-                      </Col>
+                    </Col>
+                    <Col>
+                      <Row className="vfo-foodname">
+                        <p>Spicy Pasta</p>
+                      </Row>
+                      <Row className="vfo-description">
+                        <p>tasty italian food</p>
+                      </Row>
+                    </Col>
+                    <Col className="vfo-price">
+                    </Col>
                   </Row>
-                </Container></ListGroup.Item>
-                <ListGroup.Item><Container className="ViewFood">
+                </ListGroup.Item>
+                <ListGroup.Item>
                   <Row>
-                      <Col>   
+                    <Col>
                       <img className="vfo-image rounded float-left" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" alr=""></img>
-                      </Col>
-                      <Col>  
-                          <Row className="vfo-foodname">
-                          <p>Chicken Tikka Masala</p>
-                          </Row>
-                          <Row className="vfo-description">
-                          <p>Delicious Indian food!</p>
-                          </Row>
-                      </Col>
-                      <Col className="vfo-price">  
-                      </Col>
+                    </Col>
+                    <Col>
+                      <Row className="vfo-foodname">
+                        <p>Chicken Tikka Masala</p>
+                      </Row>
+                      <Row className="vfo-description">
+                        <p>Delicious Indian food!</p>
+                      </Row>
+                    </Col>
+                    <Col className="vfo-price">
+                    </Col>
                   </Row>
-                </Container></ListGroup.Item>
+                </ListGroup.Item>
               </ListGroup>
+              </Container>
             </div>
-          </form>
+          </Form>
         </div>
       </div>
     )
