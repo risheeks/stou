@@ -12,6 +12,11 @@
     padding-right: 2rem;
 }
 
+.location-zipcode {
+    width: 150px;
+    display: inline-block;
+}
+
 .navbar-content {
     align-self: right;
 }
@@ -149,7 +154,7 @@
 
 .ViewFoodOptions {
     border-radius: 3px;
-    max-width: 65%;
+    max-width: 100%;
     
   }
 
