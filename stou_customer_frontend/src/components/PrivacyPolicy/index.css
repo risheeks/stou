@@ -1,0 +1,7 @@
+.about p{
+	text-align: left;
+}
+
+.subBody p, ul, h2 {
+	text-align: left;	
+}

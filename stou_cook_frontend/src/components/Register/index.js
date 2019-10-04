@@ -170,7 +170,7 @@ class Register extends Component {
     return (
     
     <div className="Register container">
-      <Modal show={this.state.modalisOpen} onHide={handleClose}>
+      <Modal show={this.state.modalisOpen} onHide={this.handleClose}>
         <PrivacyPolicy/>
       </Modal>
       { this.props.auth_token ? this.props.history.push('/') : null}

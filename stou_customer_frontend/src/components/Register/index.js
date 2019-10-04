@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 
-import { Button, FormGroup, FormControl, FormLabel, Alert } from "react-bootstrap";
+import { Button, FormGroup, FormControl, FormLabel, Alert, Modal } from "react-bootstrap";
 import axios from 'axios';
 import "../../styles/Main.css";
 import sha256 from 'crypto-js/sha256';
 import { serverURL } from '../../config';
 import { withRouter } from 'react-router-dom';
+import PrivacyPolicy from '../PrivacyPolicy';
 
 class Register extends Component {
   constructor(props){
@@ -52,6 +53,10 @@ class Register extends Component {
     if(this.props.auth_token && this.props.auth_token.length > 0) {
       this.props.history.push('/');
     }
+  }
+
+  handleClose = e => {
+    this.setState({modalisOpen: false})
   }
 
   handleChange = (e, name) => {
@@ -130,6 +135,7 @@ class Register extends Component {
           .then(res => {
             console.log(res.data);
             this.props.getToken(res.data['token'], email);
+            this.state.modalisOpen = true;
             this.props.history.push('/');
           })
           .catch(err => {
@@ -162,6 +168,9 @@ class Register extends Component {
     
     return (
     <div className="Register container">
+      <Modal show={this.state.modalisOpen} onHide={this.handleClose}>
+        <PrivacyPolicy/>
+      </Modal>
       { this.props.auth_token ? this.props.history.push('/') : null}
       <Alert hidden={this.state.registerCheck} variant="danger">{this.state.registerErrorMessage}</Alert>
         {/* <div className="title">Create Your Stou Account</div> */}
