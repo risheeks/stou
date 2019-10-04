@@ -23,6 +23,7 @@ class ViewFoodOptions extends Component {
   }
 
 	render() {
+
     console.log(this.state.foodoptions)
 
 		return (
