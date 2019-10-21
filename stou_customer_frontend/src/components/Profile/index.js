@@ -7,6 +7,7 @@ import imageCompression from 'browser-image-compression';
 import firebase from "firebase";
 import FileUploader from "react-firebase-file-uploader";
 import { serverURL } from "../../config/index.js"
+import PaypalExpressBtn from 'react-paypal-express-checkout';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCKRmXkIQqNtPTM-_MMvsQYMH1tSm7IlNM",
@@ -18,6 +19,15 @@ const firebaseConfig = {
   appId: "1:135234417719:web:a6233dfcab2935a2e67bb2",
   measurementId: "G-EWZ35B7N17"
 };
+
+const CLIENT = {
+  sandbox: 'AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC',
+  production: 'xxxXXX',
+};
+const ENV = process.env.NODE_ENV === 'production'
+  ? 'production'
+  : 'sandbox';
+
 export default class Profile extends React.Component {
   constructor(props) {
     super(props);
@@ -27,7 +37,7 @@ export default class Profile extends React.Component {
     firebase.analytics();
     this.state = {
       name: '',
-      email: 'chef@chef.com',
+      email: '',
       //   cuisines: '',
       aboutMe: '',
       uploadedImage: uploadimage,
@@ -76,7 +86,8 @@ export default class Profile extends React.Component {
     axios.post(apiCall, {
         name: this.state.name,
         aboutMe: this.state.aboutMe,
-        profilePicture: this.state.avatarURL
+        profilePicture: this.state.avatarURL,
+        email:this.props.email
     })
       .then(res => {
         console.log(res.data);
@@ -98,11 +109,11 @@ export default class Profile extends React.Component {
           this.setState({
             name: btoa(res.data.name),
             aboutMe: res.data.aboutMe,
-            uploadedImage: res.data.profilePicture
+            uploadedImage: res.data.profilePicture,
+            email: res.data.email
           });
         }
       })
-      console.log("PIC="+this.props.uploadedImage);
   }
 
   onClickUpload = e => {
@@ -128,6 +139,34 @@ export default class Profile extends React.Component {
   }
 
   render() {
+    const onSuccess = (payment) => {
+      // Congratulation, it came here means everything's fine!
+          console.log("The payment was succeeded!", payment);
+          // You can bind the "payment" object's value to your state or props or whatever here, please see below for sample returned data
+  }
+
+  const onCancel = (data) => {
+      // User pressed "cancel" or close Paypal's popup!
+      console.log('The payment was cancelled!', data);
+      // You can bind the "data" object's value to your state or props or whatever here, please see below for sample returned data
+  }
+
+  const onError = (err) => {
+      // The main Paypal's script cannot be loaded or somethings block the loading of that script!
+      console.log("Error!", err);
+      // Because the Paypal's main script is loaded asynchronously from "https://www.paypalobjects.com/api/checkout.js"
+      // => sometimes it may take about 0.5 second for everything to get set, or for the button to appear
+  }
+
+  let env = 'sandbox'; // you can set here to 'production' for production
+  let currency = 'USD'; // or you can set this value from your props or state
+  let total = 1; // same as above, this is the total amount (based on currency) to be paid by using Paypal express checkout
+  // Document on Paypal's currency code: https://developer.paypal.com/docs/classic/api/currency_codes/
+
+  const client = {
+      sandbox:    'AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC',
+      production: 'YOUR-PRODUCTION-APP-ID',
+  }
     const { uploadedImage } = this.state;
     return (
       <div className="container profile">
@@ -226,8 +265,11 @@ export default class Profile extends React.Component {
               </Container>
             </div>
           </Form>
+            
         </div>
+        <PaypalExpressBtn env={env} client={client} currency={currency} total={total} onError={onError} onSuccess={onSuccess} onCancel={onCancel} />
       </div>
+      
     )
   }
 }
