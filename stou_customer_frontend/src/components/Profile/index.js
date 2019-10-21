@@ -6,6 +6,8 @@ import "../../styles/Main.css";
 import imageCompression from 'browser-image-compression';
 import firebase from "firebase";
 import FileUploader from "react-firebase-file-uploader";
+import { serverURL } from "../../config/index.js"
+
 const firebaseConfig = {
   apiKey: "AIzaSyCKRmXkIQqNtPTM-_MMvsQYMH1tSm7IlNM",
   authDomain: "stou-79b9a.firebaseapp.com",
@@ -67,15 +69,15 @@ export default class Profile extends React.Component {
   updateProfile = e => {
     // this.getProfile();
 
-    var apiCall = "http://192.168.43.177:3000";
+    var apiCall = serverURL;
     apiCall = apiCall + "/editProfile";
     console.log("update profile called");
-
+    console.log("photo URL=" + this.state.avatarURL);
     axios.post(apiCall, {
       params: {
         name: this.state.name,
         aboutMe: this.state.aboutMe,
-        profilePicture: this.state.uploadedImage
+        profilePicture: this.state.avatarURL
       }
     })
       .then(res => {
@@ -85,7 +87,7 @@ export default class Profile extends React.Component {
 
   getProfile = e => {
     // console.log("CHECK")
-    var apiCall = "http://192.168.43.177:3000";
+    var apiCall = serverURL;
     apiCall = apiCall + "/profile";
     axios.get(apiCall, {
       params: {
