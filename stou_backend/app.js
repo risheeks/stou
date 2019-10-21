@@ -74,6 +74,7 @@ userConnection.on('connect', function(err) {
   console.log("Connected");
 });
 
+app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port))
 
 app.use('/setlocation', function(req, res, next){
   const email = req.param('email');
