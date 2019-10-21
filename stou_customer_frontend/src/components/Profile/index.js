@@ -74,11 +74,9 @@ export default class Profile extends React.Component {
     console.log("update profile called");
     console.log("photo URL=" + this.state.avatarURL);
     axios.post(apiCall, {
-      params: {
         name: this.state.name,
         aboutMe: this.state.aboutMe,
         profilePicture: this.state.avatarURL
-      }
     })
       .then(res => {
         console.log(res.data);
@@ -98,11 +96,13 @@ export default class Profile extends React.Component {
       .then(res => {
         if (res.data.name.length > 0) {
           this.setState({
-            name: res.data.name,
-            aboutMe: res.data.aboutMe
+            name: btoa(res.data.name),
+            aboutMe: res.data.aboutMe,
+            uploadedImage: res.data.profilePicture
           });
         }
       })
+      console.log("PIC="+this.props.uploadedImage);
   }
 
   onClickUpload = e => {
