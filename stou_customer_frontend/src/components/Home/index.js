@@ -7,7 +7,7 @@ import ViewFoodOptions from '../ViewFoodOptions';
 import ListOfHomeCooks from '../ListOfHomeCooks';
 import axios from 'axios';
 import { serverURL } from '../../config';
-import { Container, ListGroup, Form, Button, Modal } from 'react-bootstrap';
+import { Container, ListGroup, Form, Button, Modal, Tabs, Tab } from 'react-bootstrap';
 
 export class Home extends Component {
 
@@ -35,7 +35,7 @@ export class Home extends Component {
     }
 
     cancel = e => {
-        this.setState({modalisOpen: false});
+        this.setState({ modalisOpen: false });
     }
 
     getLocation = e => {
@@ -53,7 +53,7 @@ export class Home extends Component {
                 });
             });
     }
-    
+
     onFilter = (allergens, cuisines) => {
         this.setState({
             allergens: allergens,
@@ -75,39 +75,37 @@ export class Home extends Component {
                             </Form.Group>
                         </Form>
                         <div className='homec'>
-                        <Button
-                            block
-                            bsSize="large"
-                            type='submit'
-                            className="submit-button"
-                            onClick={this.sendLocation}>
-                            Submit
+                            <Button
+                                block
+                                bsSize="large"
+                                type='submit'
+                                className="submit-button"
+                                onClick={this.sendLocation}>
+                                Submit
                         </Button>
-                        <Button
-                            block
-                            bsSize="large"
-                            className="cancel-button"
-                            onClick={this.cancel}>
-                            Cancel
+                            <Button
+                                block
+                                bsSize="large"
+                                className="cancel-button"
+                                onClick={this.cancel}>
+                                Cancel
                         </Button>
                         </div>
                     </div>
                 </Modal>
-                <div className="homec">
-
-                    <FilterBar onFilter={this.onFilter} />
-                    <div className="homec">
-                        <div className="home">
-                            <h5>Food Available</h5>
+                <Tabs defaultActiveKey="food" id="uncontrolled-tab-example">
+                    <Tab eventKey="food" title="Food">
+                        <div className="homec">
+                            <FilterBar onFilter={this.onFilter} />
                             <ViewFoodOptions allergens={this.state.allergens} cuisines={this.state.cuisines} />
                         </div>
-                        <div className="home">
-                            <h5>Home Cooks</h5>
+                    </Tab>
+                    <Tab eventKey="cooks" title="Homecooks">
+                        <div className="homec">
                             <ListOfHomeCooks />
-
                         </div>
-                    </div>
-                </div>
+                    </Tab>
+                </Tabs>
             </div>
         );
     }
