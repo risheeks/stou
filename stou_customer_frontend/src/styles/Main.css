@@ -234,6 +234,53 @@
   margin: 10px auto;
 }
 
+.bag-link {
+  width: 25px;
+  margin-left: 5px;
+}
+
+.bag-number {
+  font-size: 15px !important;
+  color: white;
+}
+
+.bag-popover {
+  max-width: 300px;
+  width: 60rem;
+  min-height: 100px;
+}
+
+.bag-item-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.bag-item-price {
+  width: 40px;
+  margin-left: auto;
+  font-size: 15px;
+}
+
+.bag-item-quantity {
+  margin-right: 15px;
+}
+
+.bag-item-name {
+  width: 100%;
+}
+
+.delete-item-button {
+  margin-right: 5px;
+  margin-left: auto;
+  margin-top: -6%;
+  width: auto;
+  height: auto;
+}
+
+.delete-item-image {
+  width: 20px;
+}
+
 @media all and (min-width: 480px) {
     .Register {
       border: 1px solid rgb(202, 202, 202);

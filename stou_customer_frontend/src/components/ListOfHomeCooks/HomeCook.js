@@ -19,7 +19,7 @@ class HomeCook extends Component {
                         {description}
                     </Card.Text>
                     <CustomRating rating={rating} readonly={true} />
-                    <Button variant="primary">View Menu</Button>
+                    <Button  variant="link">View Menu</Button>
                 </Card.Body>
             </Card>
         );

@@ -31,7 +31,7 @@ class ViewFoodOptions extends Component {
         cuisines: this.props.cuisines.toString(),
         location: '47906'
       }
-      axios.post(`http://192.168.43.177:3000/filter`, { data: data })
+      axios.post(`${serverURL}/filter`, { data: data })
         .then(res => {
           console.log(Array.from(res.data.data))
           this.setState({
