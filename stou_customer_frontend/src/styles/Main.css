@@ -84,7 +84,9 @@
 
 .image-upload-preview {
     cursor: pointer;
-    max-width: 15rem;
+    height: 20rem;
+    width: 20rem;
+    object-fit: cover;
 }
 
 .form-text {
