@@ -23,7 +23,7 @@ export class Home extends Component {
     }
     sendLocation = e => {
         e.preventDefault();
-        axios.post("/setlochttp://192.168.43.177:3000/location", {
+        axios.post(`${serverURL}/location`, {
             params: {
                 location: this.state.zip
             }
@@ -36,22 +36,6 @@ export class Home extends Component {
 
     cancel = e => {
         this.setState({ modalisOpen: false });
-    }
-
-    getLocation = e => {
-        // console.log(${serverURL});
-        axios.get("/setlochttp://192.168.43.177:3000/gethomecooks", {
-            params: {
-                location: this.state.zip
-            }
-        })
-            .then(res => {
-                console.log(res.data)
-                console.log(Array.from(res.data.data))
-                this.setState({
-                    homecooks: Array.from(res.data.data)
-                });
-            });
     }
 
     onFilter = (allergens, cuisines) => {

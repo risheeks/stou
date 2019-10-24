@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import ImageOfCook from '../../constants/images/full_red_logo.png';
+import ImageOfCook from '../../constants/images/full_white_logo.png';
 import './index.css';
 import { Row, Col, Container, Button, ListGroup, FormControl, FormLabel, Image } from "react-bootstrap";
 import HomeCook from './HomeCook';
+import axios from 'axios';
+import { serverURL } from '../../config';
 
 class ListOfHomeCooks extends Component {
 	constructor(props) {
@@ -68,6 +70,23 @@ class ListOfHomeCooks extends Component {
 			]
 		};
 	}
+
+	componentDidMount() {
+		//this.getHomecooks();
+		return;
+	}
+
+	getHomecooks = () => {
+        axios.get(`${serverURL}/gethomecooks?location=47906`)
+            .then(res => {
+                console.log(res.data)
+                console.log(Array.from(res.data.data))
+                this.setState({
+                    homecooks: Array.from(res.data.data)
+                });
+            });
+    }
+
 	render() {
 		return (
 			<Container className="homecook-container">
@@ -76,6 +95,7 @@ class ListOfHomeCooks extends Component {
 							name={item.name}
 							picture={item.picture}
 							description={item.description}
+							rating={3.5}
 						/>
 					))}
 			</Container>
@@ -83,4 +103,4 @@ class ListOfHomeCooks extends Component {
 	}
 
 }
-export default ListOfHomeCooks
+export default ListOfHomeCooks;

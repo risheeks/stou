@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Card, Button } from 'react-bootstrap';
+import { Card, Button, Image } from 'react-bootstrap';
+import CustomRating from '../Common/CustomRating';
 
 class HomeCook extends Component {
     constructor(props) {
@@ -7,7 +8,7 @@ class HomeCook extends Component {
     }
 
     render() {
-        const { name, description, picture } = this.props;
+        const { name, description, picture, rating } = this.props;
 
         return (
             <Card className="homecook-card" style={{ width: '18rem' }}>
@@ -17,6 +18,7 @@ class HomeCook extends Component {
                     <Card.Text>
                         {description}
                     </Card.Text>
+                    <CustomRating rating={rating} readonly={true} />
                     <Button variant="primary">View Menu</Button>
                 </Card.Body>
             </Card>
