@@ -1,6 +1,6 @@
 const initialState = {
     showModal: false,
-    item: {}
+    modalKey: null,
 }
 
 const modalReducer = function modal(state = initialState, action) {
@@ -8,13 +8,14 @@ const modalReducer = function modal(state = initialState, action) {
         case 'OPEN_MODAL': {
             return state = {
                 showModal: true,
-                item: action.item
+                modalKey: action.modalKey,
+                ...action.props
             };
         }
         case 'CLOSE_MODAL': {
             return state = {
                 showModal: false,
-                item: {}
+                modalKey: null,
             };
         }
         default:

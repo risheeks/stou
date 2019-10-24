@@ -44,7 +44,7 @@ class Main extends Component {
     }
 
     render() {
-        const { signOut, auth_token, email, getToken, openModal, closeModal, showModal } = this.props;
+        const { signOut, auth_token, email, getToken, openModal, closeModal, showModal, modalKey } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
         console.log(auth_token);
         return (
