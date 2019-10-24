@@ -1,6 +1,7 @@
-export function openModal(item) {
+export function openModal(modalKey) {
     return {
-        type: 'OPEN_MODAL'
+        type: 'OPEN_MODAL',
+        modalKey: modalKey,
     }
 }
 

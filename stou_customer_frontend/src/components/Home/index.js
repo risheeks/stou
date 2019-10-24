@@ -8,6 +8,7 @@ import ListOfHomeCooks from '../ListOfHomeCooks';
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { Container, ListGroup, Form, Button, Modal, Tabs, Tab } from 'react-bootstrap';
+import { ModalKey } from '../../constants/ModalKeys';
 
 export class Home extends Component {
 
@@ -21,6 +22,11 @@ export class Home extends Component {
         }
 
     }
+
+    /*componentDidMount() {
+        this.props.openModal(ModalKey.ZIPCODE);
+    }*/
+
     sendLocation = e => {
         e.preventDefault();
         axios.post(`${serverURL}/location`, {
@@ -34,10 +40,6 @@ export class Home extends Component {
             })
     }
 
-    cancel = e => {
-        this.setState({ modalisOpen: false });
-    }
-
     onFilter = (allergens, cuisines) => {
         this.setState({
             allergens: allergens,
@@ -45,43 +47,20 @@ export class Home extends Component {
         })
     }
 
-
-
     render() {
+        const { openModal, addToOrder} = this.props;
         return (
             <div className="home">
-                <Modal show={this.state.modalisOpen} onHide={this.handleClose}>
-                    <div className="location-zipcode">
-                        <Form>
-                            <Form.Group controlId="formGroupEmail">
-                                <Form.Label>Location</Form.Label>
-                                <Form.Control type="email" placeholder="Enter zipcode" />
-                            </Form.Group>
-                        </Form>
-                        <div className='homec'>
-                            <Button
-                                block
-                                bsSize="large"
-                                type='submit'
-                                className="submit-button"
-                                onClick={this.sendLocation}>
-                                Submit
-                        </Button>
-                            <Button
-                                block
-                                bsSize="large"
-                                className="cancel-button"
-                                onClick={this.cancel}>
-                                Cancel
-                        </Button>
-                        </div>
-                    </div>
-                </Modal>
                 <Tabs defaultActiveKey="food" id="uncontrolled-tab-example">
                     <Tab eventKey="food" title="Food">
                         <div className="homec">
                             <FilterBar onFilter={this.onFilter} />
-                            <ViewFoodOptions allergens={this.state.allergens} cuisines={this.state.cuisines} />
+                            <ViewFoodOptions
+                                allergens={this.state.allergens}
+                                cuisines={this.state.cuisines}
+                                openModal={openModal}
+                                addToOrder={addToOrder}
+                            />
                         </div>
                     </Tab>
                     <Tab eventKey="cooks" title="Homecooks">

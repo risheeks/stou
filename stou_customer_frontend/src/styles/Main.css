@@ -84,7 +84,9 @@
 
 .image-upload-preview {
     cursor: pointer;
-    max-width: 15rem;
+    height: 20rem;
+    width: 20rem;
+    object-fit: cover;
 }
 
 .form-text {
@@ -187,6 +189,8 @@
 
   .vfo-chefname {
     line-height: 100%;
+    display: flex;
+    flex-direction: row;
   }
   
   .vfo-price {
@@ -232,6 +236,62 @@
 .homecook-card {
   width: 15rem !important;
   margin: 10px auto;
+}
+
+.bag-link {
+  width: 25px;
+  margin-left: 5px;
+}
+
+.bag-number {
+  font-size: 15px !important;
+  color: white;
+}
+
+.bag-popover {
+  max-width: 300px;
+  width: 60rem;
+  min-height: 100px;
+}
+
+.bag-item-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.bag-item-price {
+  width: 40px;
+  margin-left: auto;
+  font-size: 15px;
+}
+
+.bag-item-quantity {
+  margin-right: 15px;
+}
+
+.bag-item-name {
+  width: 100%;
+}
+
+.delete-item-button {
+  margin-right: 5px;
+  margin-left: auto;
+  margin-top: -6%;
+  width: auto;
+  height: auto;
+}
+
+.delete-item-image {
+  width: 20px;
+}
+
+.food-link-chef {
+  margin-left: 3px;
+  padding: 0;
+}
+
+.food-link-name {
+  padding: 0;
 }
 
 @media all and (min-width: 480px) {

@@ -1,17 +1,20 @@
 const initialState = {
-    showModal: false
+    showModal: false,
+    modalKey: null,
 }
 
 const modalReducer = function modal(state = initialState, action) {
     switch (action.type) {
         case 'OPEN_MODAL': {
             return state = {
-                showModal: true
+                showModal: true,
+                modalKey: action.modalKey,
             };
         }
         case 'CLOSE_MODAL': {
             return state = {
-                showModal: false
+                showModal: false,
+                modalKey: null,
             };
         }
         default:
