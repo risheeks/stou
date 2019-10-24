@@ -8,7 +8,57 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var cors =  require('cors');
 var app = express();
+var http = require('http');
+var querystring = require('querystring');
+const concat = require('concat-stream');
+
+// // const dotenv = require('dotenv')
+const bodyParser = require('body-parser')
+// const webpush = require('web-push')
+var mysql = require('mysql');
+// var con = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: "mysqlroot",
+//   database: "stou"
+// });
+
+var connString = 'mysql://root:mysqlroot@localhost/stou?charset=utf8_general_ci&timezone=-0700';
+ 
+var con = mysql.createPool(connString);
+
+
+// con.connect(function(err) {
+//   if (err) throw err;
+//   con.query('SELECT * FROM USER', function (err, rows, fields) {
+//     if (err) throw err;
+//     console.log(rows[0]);
+//   });
+// });
+
+// // dotenv.config()
+// app.use(bodyParser.json())
 app.use(cors());
+
+// webpush.setVapidDetails(process.env.WEB_PUSH_CONTACT, process.env.PUBLIC_VAPID_KEY, process.env.PRIVATE_VAPID_KEY)
+
+// app.post('/notifications/subscribe', (req, res) => {
+//   const subscription = req.body
+
+//   console.log(subscription)
+
+//   const payload = JSON.stringify({
+//     title: 'Hello!',
+//     body: 'It works.',
+//   })
+
+//   webpush.sendNotification(subscription, payload)
+//     .then(result => console.log(result))
+//     .catch(e => console.log(e.stack))
+
+//   res.status(200).json({'success': true})
+// });
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -31,69 +81,32 @@ let revLoginTokens = {};
 
 const uuidv4 = require('uuid/v4');
 
-
-const Connection = require('tedious').Connection;
-const Request = require('tedious').Request;
-const userConfig = {
-  server: 'stoudb.database.windows.net',  //update me
-  authentication: {
-    type: 'default',
-    options: {
-      userName: 'stou-admin', //update me
-      password: 'Purduepete1!'  //update me
-    }
-  },
-  options: {
-    // If you are on Microsoft Azure, you need encryption:
-    encrypt: true,
-    database: 'user-info'  //update me
-  }
-};
-
-const foodConfig = {
-  server: 'stoudb.database.windows.net',  //update me
-  authentication: {
-    type: 'default',
-    options: {
-      userName: 'stou-admin', //update me
-      password: 'Purduepete1!'  //update me
-    }
-  },
-  options: {
-    // If you are on Microsoft Azure, you need encryption:
-    encrypt: true,
-    database: 'food-info'  //update me
-  }
-};
-
-const userConnection = new Connection(userConfig);
-const foodConnection = new Connection(foodConfig);
-
-userConnection.on('connect', function(err) {
-  // If no error, then good to proceed.
-  console.log("Connected");
-});
-
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port))
 
-app.use('/setlocation', function(req, res, next){
+app.use('/location', function(req, res, next){
   const email = req.param('email');
   const location = req.param('location');
   var o = {};
-  const request = new Request('update Location=\'' + location + '\' where Email=\''+email+'\'', function (err, rowCount, rows) {
-    if(parseInt(rowCount.toString()) === 0) {
-      o['code'] = 400;
-      res.status(400)
-      o['message'] = 'Invalid customer';
-      res.send(o);
-    } else {
-      o['code'] = 200;
-      res.status(200);
-      o['message'] = 'Location updated';
-      res.send(o);
-    }
+  con.getConnection(function(err) {
+    if (err) throw err;
+    var q = 'UPDATE USER SET LOCATION = ' + location + ' WHERE EMAIL = "' + email + '";';
+    con.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'Invalid customer';
+        res.send(o);
+      }
+      else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Location updated';
+        res.send(o);
+      }
+      console.log(rows[0]);
+    });
   });
-  userConnection.execSql(request);
 });
 
 app.use('/logout', function(req, res, next){
@@ -107,134 +120,116 @@ app.use('/logout', function(req, res, next){
 
 app.use('/getallfood', function(req, res, next){
   let o = {};
-  const request = new Request('select * from FoodItems', function (err, rowCount, rows) {
-    if(parseInt(rowCount.toString()) === 0) {
-      o['code'] = 400;
-      res.status(400)
-      o['message'] = 'No food offered right now';
-      res.send(o);
-    }
-  });
-  let obj = [];
-  let ob = {};
-  request.on('row', function(columns){
-    columns.forEach(function(column){
-      if (column.metadata.colName === 'ItemName'){
-        ob['name'] = column.value;
-      } else if(column.metadata.colName === 'Homecook') {
-        ob['homecook'] = column.value;
-      } else if(column.metadata.colName === 'Price') {
-        ob['price'] = column.value;
-      } else if(column.metadata.colName === 'Allergens') {
-        ob['allergens'] = column.value;
-      } else if(column.metadata.colName === 'Cuisine') {
-        ob['cuisine'] = column.value;
-      } else if(column.metadata.colName === 'Calories') {
-        ob['calories'] = column.value;
-      } else if(column.metadata.colName === 'Picture') {
-        ob['picture'] = column.value;
+  con.getConnection(function(err) {
+    if (err) throw err;
+    var q = 'SELECT FOOD.PICTURE, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL;';
+    con.query(q, function (err, result) {
+      if (err) throw err;
+      if (result.length === 0) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'No food offered now';
+        res.send(o);
+      }
+      else {
+        let obj = [];
+        let ob = {};
+        for(var i = 0; i < result.length; i++){
+          var row = result[i];
+          ob['name'] = row.TITLE;
+          ob['homecook'] = row.FIRST_NAME + " " + row.LAST_NAME;
+          ob['price'] = row.PRICE;
+          ob['cuisine'] = row.CUISINE;
+          ob['calories'] = row.CALORIES;
+          ob['picture'] = row.PICTURE;
+          obj.push(JSON.parse(JSON.stringify(ob)));
+        }
+        o['data'] = obj;
+        console.log(o);
+        if(obj.length !== 0)
+          res.send(o);
+
       }
     });
-    obj.push(JSON.parse(JSON.stringify(ob)));
   });
-
-  request.on('doneInProc', function (err) {
-    o['data'] = obj;
-    console.log(o);
-    if(obj.length !== 0)
-      res.send(o);
-  });
-  foodConnection.execSql(request);
 });
 
 app.use('/getfooditems', function(req,res,next){
   const email = req.param('email');
   let o = {};
-  console.log('select * from FoodItems where Homecook=\''+email+'\'')
-  const request = new Request('select * from FoodItems where Homecook=\'' + email + '\'', function (err, rowCount, rows) {
-    if(parseInt(rowCount.toString()) === 0) {
-      o['code'] = 400;
-      res.status(400)
-      o['message'] = 'No food offered by the homecook';
-      res.send(o);
-    }
-  });
-  let obj = [];
-  let ob = {};
-  request.on('row', function(columns){
-    columns.forEach(function(column){
-      if (column.metadata.colName === 'ItemName'){
-        ob['name'] = column.value;
-      } else if(column.metadata.colName === 'Homecook') {
-        ob['homecook'] = column.value;
-      } else if(column.metadata.colName === 'Price') {
-        ob['price'] = column.value;
-      } else if(column.metadata.colName === 'Allergens') {
-        ob['allergens'] = column.value;
-      } else if(column.metadata.colName === 'Cuisine') {
-        ob['cuisine'] = column.value;
-      } else if(column.metadata.colName === 'Calories') {
-        ob['calories'] = column.value;
-      } else if(column.metadata.colName === 'Picture') {
-        ob['picture'] = column.value;
+  con.getConnection(function(err) {
+    if (err) throw err;
+    var q = 'SELECT * FROM FOOD WHERE COOK_EMAIL= "' + email + '";';
+    con.query(q, function (err, result) {
+      if (err) throw err;
+      if (result.length === 0) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'No food offered now';
+        res.send(o);
+      }
+      else {
+        let obj = [];
+        let ob = {};
+        for(var i = 0; i < result.length; i++){
+          var row = result[i];
+          ob['name'] = row.TITLE;
+          ob['price'] = row.PRICE;
+          ob['cuisine'] = row.CUISINE;
+          ob['calories'] = row.CALORIES;
+          ob['picture'] = row.PICTURE;
+          obj.push(JSON.parse(JSON.stringify(ob)));
+        }
+        o['data'] = obj;
+        console.log(o);
+        if(obj.length !== 0)
+          res.send(o);
+
       }
     });
-    obj.push(JSON.parse(JSON.stringify(ob)));
   });
-
-  request.on('doneInProc', function (err) {
-    o['data'] = obj;
-    console.log(o);
-    if(obj.length !== 0)
-    res.send(o);
-  });
-  foodConnection.execSql(request);
 });
 
 
 app.use('/gethomecooks', function(req,res,next){
   const location = req.param('location');
   let o = {};
-  const request = new Request('select * from Users where Location BETWEEN ' + (parseInt(location.toString()) - 2) + ' AND ' + (parseInt(location.toString()) +2) +'', function (err, rowCount, rows) {
-  if(parseInt(rowCount.toString()) === 0) {
-    o['code'] = 400;
-    res.status(400)
-    o['message'] = 'No homecooks in the area';
-    res.send(o);
-  }
-  });
-  let obj = [];
-  let ob = {};
-  request.on('row', function(columns){
-    columns.forEach(function(column){
-      if (column.metadata.colName === 'FirstName'){
-        ob['name'] = column.value;
-      } else if(column.metadata.colName === 'LastName') {
-        ob['name'] = ob['name'] + ' ' + column.value;
-      } else if(column.metadata.colName === 'Cuisines') {
-        ob['cuisines'] = column.value;
-      } else if(column.metadata.colName === 'Email') {
-        ob['email'] = column.value;
-      } else if(column.metadata.colName === 'ProfilePicture') {
-        ob['profilePicture'] = column.value;
+  con.getConnection(function(err) {
+    if (err) throw err;
+    var q = 'SELECT * FROM USER, ROLES WHERE USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location - 2)) + ' AND ' + (parseInt(location) +2) + ');';
+    con.query(q, function (err, result) {
+      if (err) throw err;
+      if (result.length === 0) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'No Homecooks in this region.. yet!';
+        res.send(o);
+      }
+      else {
+        let obj = [];
+        let ob = {};
+        for(var i = 0; i < result.length; i++){
+          var row = result[i];
+          ob['name'] = row.FIRST_NAME + " " + row.LAST_NAME;
+          ob['email'] = row.EMAIL;
+          // ob['cuisines'] = row.CUISINES;
+          ob['profilePicture'] = row.PICTURE;
+          obj.push(JSON.parse(JSON.stringify(ob)));
+        }
+        o['data'] = obj;
+        console.log(o);
+        if(obj.length !== 0)
+          res.send(o);
+
       }
     });
-    obj.push(JSON.parse(JSON.stringify(ob)));
-    ob['name'] = '';
   });
-
-  request.on('doneInProc', function (err) {
-    o['data'] = obj;
-    console.log(o);
-    if(obj.length !== 0)
-    res.send(o);
-  });
-  userConnection.execSql(request);
 });
 
 
 app.use('/addfooditem', function(req, res, next){
   const itemName = req.body['data']['itemName'];
+  const cook_email = req.body['data']['homecook'];
   const token = req.body['data']['token'];
   const location = req.body['data']['location'];
   const price = req.body['data']['price'];
@@ -246,21 +241,56 @@ app.use('/addfooditem', function(req, res, next){
   let o ={};
   console.log(token)
   console.log('insert into FoodItems values(\'' + itemName + '\', \'' + loginTokens[token] + '\', \'' + location + '\', \'' + price + '\', \'' + allergens +'\', \'' + cuisine + '\', \'' + calories +'\', \'' + picture + '\', \'' + desc + '\')')
-  let request = new Request('insert into FoodItems values(\'' + itemName + '\', \'' + loginTokens[token] + '\', \'' + location + '\', \'' + price + '\', \'' + allergens +'\', \'' + cuisine + '\', \'' + calories +'\', \'' + desc + '\')', function (err, rowCount, rows) {
-    if(err) {
-      console.log(err);
-      o['code'] = 400;
-      res.status(400)
-      o['message'] = 'Failed to add dish';
-      res.send(o);
-    } else {
-      o['code'] = 200;
-      res.status(200)
-      o['message'] = 'Successfully added dish';
-      res.send(o);
+  
+  con.getConnection(function(err) {
+    if (err) throw err;
+    var columns = "(";
+    var values = "(";
+    if(itemName.length > 0) {
+      columns += "TITLE, ";
+      values += itemName + ", ";
+    } 
+    if(price.length > 0) {
+      columns += "PRICE, ";
+      values += price + ", ";
     }
+    if(CUISINE.length > 0) {
+      columns += "CUISINE, ";
+      values += cuisine + ", ";
+    }
+    if(CALORIES.length > 0) {
+      columns += "CALORIES, ";
+      values += calories + ", ";
+    }
+    if(PICTURE.length > 0) {
+      columns += "PICTURE, ";
+      values += picture + ", ";
+    }
+    if(DESC.length > 0) {
+      columns += "DESC, ";
+      values += desc + ", ";
+    }
+    columns += "COOK_EMAIL) ";
+    values += cook_email + ") ";
+    var q = 'INSERT INTO FOOD ' + columns + 'VALUES ' + values + ';';
+
+    con.query(q, function (err, result) {
+      if (err) throw err;
+      if (result.length === 0) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'Failed to add food';
+        res.send(o);
+      }
+      else {
+        o['code'] = 200;
+        res.status(200)
+        o['message'] = title + ' added';
+        res.send(o);
+
+      }
+    });
   });
-  foodConnection.execSql(request)
 });
 
 
@@ -273,65 +303,94 @@ app.use('/editProfile', function(req,res,next){
   const profilePicture = req.param('profilePicture');
 
   let o = {};
-  console.log(profilePicture)
-  let request = new Request('update Users set AboutMe=\'' + aboutMe + '\', FirstName=\'' + name.toString().split(' ')[0] +'\', LastName=\'' + name.toString().split(' ')[1] + '\' , ProfilePicture=\''+profilePicture+'\' where Email=\'' + email +'\'', function(err, rowCount, rows){
-    if(err || rowCount === 0) {
-      o['code'] = 400;
-      res.status(400)
-      o['message'] = 'Update failed';
-      console.log(err)
-      res.send(o);
-    } else {
-      o['code'] = 200;
-      res.status(200)
-      o['message'] = 'Successfully updated';
-      res.send(o);
-    }
+
+  con.getConnection(function(err) {
+    if (err) throw err;
+    var q = 'UPDATE USER SET ABOUT_ME=\'' + aboutMe + '\', FIRST_NAME=\'' + name.toString().split(' ')[0] +'\', LAST_NAME=\'' + name.toString().split(' ')[1] + '\' , PICTURE=\''+profilePicture+'\' where EMAIL=\'' + email +'\'';
+    con.query(q, function (err, rows) {
+      // console.log(rows);
+      if(err || rows.length === 0) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'Update failed';
+        console.log(err)
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200)
+        o['message'] = 'Successfully updated';
+        res.send(o);
+      }
+    });
   });
-  userConnection.execSql(request);
 });
 
 app.use('/profile', function(req, res, next) {
   const email = req.param('email');
-  const role = req.param('role');
+  let role = req.param('role');
+  if(role === 'Homecook') role = 'cook';
   let o = {};
-  let request = new Request('select * from Users where Email=\'' + email + '\' AND Role=\'' + role + '\'', function (err, rowCount, rows) {
-    if (parseInt(rowCount.toString()) === 0 || err) {
-      o['code'] = 404;
-      res.status(404);
-      o['message'] = 'User not found';
-      res.send(o);
-    }
-  });
-  request.on('row', function (columns) {
-    o['code'] = 200;
-    res.status(200);
-    o['message'] = 'Success';
-    columns.forEach(function (column) {
-      if (column.metadata.colName === 'FirstName') {
-        o['name'] = column.value;
-      } else if (column.metadata.colName === 'LastName') {
-        o['name'] = o['name']+' '+column.value;
-      } else if (column.metadata.colName === 'AboutMe') {
-        o['aboutMe'] = column.value;
-      } else if(column.metadata.colName === 'Cuisines') {
-        if(column.value == null){
-          column.value = 'None'
-        }
-        o['cuisines'] = column.value;
-      } else if(column.metadata.colName === 'ProfilePicture') {
-        o['profilePicture'] = column.value
+  con.getConnection(function(err) {
+    if (err) throw err;
+    var q = 'SELECT * FROM USER WHERE EMAIL= "' + email + '" AND ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
+    con.query(q, function (err, result) {
+      if (err) throw err;
+      if (result.length === 0) {
+        o['code'] = 404;
+        res.status(404)
+        o['message'] = 'User not found';
+        res.send(o);
+      }
+      else {
+        var row = result[0];
+        o['name'] = row.FIRST_NAME + row.LAST_NAME;
+        o['aboutMe'] = row.ABOUT_ME;
+        o['cuisines'] = 'None';
+        o['profilePicture'] = row.PICTURE;
+        console.log(o);
+        if(o['code'] !== 404)
+        res.send(o);
       }
     });
   });
+  
+  // let request = new Request('select * from Users where Email=\'' + email + '\' AND Role=\'' + role + '\'', function (err, rowCount, rows) {
+  //   if (parseInt(rowCount.toString()) === 0 || err) {
+  //     o['code'] = 404;
+  //     res.status(404);
+  //     o['message'] = 'User not found';
+  //     res.send(o);
+  //   }
+  // });
+  // request.on('row', function (columns) {
+  //   o['code'] = 200;
+  //   res.status(200);
+  //   o['message'] = 'Success';
+  //   columns.forEach(function (column) {
+  //     if (column.metadata.colName === 'FirstName') {
+  //       o['name'] = column.value;
+  //     } else if (column.metadata.colName === 'LastName') {
+  //       o['name'] = o['name']+' '+column.value;
+  //     } else if (column.metadata.colName === 'AboutMe') {
+  //       o['aboutMe'] = column.value;
+  //     } else if(column.metadata.colName === 'Cuisines') {
+  //       if(column.value == null){
+  //         column.value = 'None'
+  //       }
+  //       o['cuisines'] = column.value;
+  //     } else if(column.metadata.colName === 'ProfilePicture') {
+  //       o['profilePicture'] = column.value
+  //     }
+  //   });
+  // });
 
-  request.on('doneInProc', function(err){
-    console.log(o);
-    if(o['code'] !== 404)
-    res.send(o);
-  });
+  // request.on('doneInProc', function(err){
+  //   console.log(o);
+  //   if(o['code'] !== 404)
+  //   res.send(o);
+  // });
 
-  userConnection.execSql(request)
+  // userConnection.execSql(request)
 });
 
 app.use('/filter', function(req, res, next){
@@ -390,25 +449,28 @@ app.use('/forgotpassword', function(req, res, next){
   const email = req.body['data']['email'];
   const encPassword = req.body['data']['encPassword'];
   const password = req.body['data']['password'];
-
+  console.log(email);
   var o = {};
-  console.log('update Users set Password=\'' + encPassword + '\' where Email=\'' + encEmail +'\'')
-  const request = new Request(
-      'update Users set Password=\'' + encPassword + '\' where Email=\'' + encEmail +'\'', function(err, rowCount, rows){
-        if(parseInt(rowCount.toString()) === 1) {
-          sendEmail(email, password, 'Here\'s your new password: ' + password);
-          o['code'] = 200;
-          res.status(200)
-          o['message'] = 'Password et successfully';
-          res.send(o);
-        } else {
-          o['code'] = 404;
-          res.status(404)
-          o['message'] = 'Reset failed';
-          res.send(o);
-        }
-      });
-  userConnection.execSql(request);
+  con.getConnection(function(err) {
+    if (err) throw err;
+    var q = 'UPDATE USER SET PASSWORD = "' + encPassword + '" WHERE EMAIL="' + encEmail + '";';
+    con.query(q, function (err, rows) {
+      // console.log(rows);
+      if (err) {
+        console.log("reset failed");
+        o['code'] = 404;
+        res.status(404)
+        o['message'] = 'Reset failed';
+        res.send(o);
+      } else {
+        sendEmail(email, password, 'Here\'s your new password: ' + password);
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Password et successfully';
+        res.send(o);
+      }
+    });
+  });
 });
 
 function sendEmail(email, password, text){
@@ -442,51 +504,58 @@ app.use('/resetpassword', function(req, res, next) {
   const oldPw = req.param['data']['oldPw'];
   const newPw = req.param['data']['newPw'];
   var  o = {};
-  console.log('update Users set Password=\'' + newPw + '\' where Email=\'' + email + '\' AND Password=\'' + oldPw + '\'')
-  const request = new Request(
-      'update Users set Password=\'' + newPw + '\' where Email=\'' + email + '\' AND Password=\'' + oldPw + '\'', function(err, rowCount, rows){
-        if(parseInt(rowCount.toString()) === 1) {
-          o['code'] = 200;
-          res.status(200)
-          o['message'] = 'Password reset successfully';
-          res.send(o);
-        } else {
-          o['code'] = 400;
-          res.status(400);
-          o['message'] = 'Reset failed';
-          res.send(o);
-        }
-      });
-  userConnection.execSql(request);
+  
+  con.getConnection(function(err) {
+    if (err) throw err;
+    var q = 'UPDATE USER SET PASSWORD = "' + newPw + '" WHERE EMAIL="' + email + '" AND PASSWORD="' + oldPw + '";';
+    con.query(q, function (err, rows) {
+      if (err) {
+        o['code'] = 400;
+        res.status(400);
+        o['message'] = 'Reset failed';
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200)
+        o['message'] = 'Password reset successfully';
+        res.send(o);
+      }
+    });
+  });
 });
 
 
 app.use('/login', function(req, res, next){
   const email = req.body['data']['email'];
   const password = req.body['data']['password'];
-  const role = req.body['data']['role'];
+  let role = req.body['data']['role'];
+  if(role === 'Homecook') role = 'cook';
   var o = {};
-  console.log('select * from Users where Email=\'' + email + '\' AND Password=\'' + password + '\' AND Role=\'' + role + '\'')
-  let request = new Request('select * from Users where Email=\'' + email + '\' AND Password=\'' + password + '\' AND Role=\'' + role + '\'', function(err, rowCount, rows){
-    if(parseInt(rowCount.toString()) === 0) {
-      o['code'] = 400;
-      o['message'] = 'Invalid login credentials';
-      res.status(400);
-      console.log(o);
-      res.send(o);
-    } else {
-      o['code'] = 200;
-      o['message'] = 'Login successful';
-      o['token'] = uuidv4();
-      loginTokens[o['token']] = email;
-      revLoginTokens[email] = o['token'];
-
-      console.log(loginTokens);
-      res.status(200);
-      res.send(o);
-    }
+  
+  con.getConnection(function(err) {
+    if (err) throw err;
+    var q = 'SELECT FIRST_NAME, LAST_NAME FROM USER WHERE EMAIL = "' + email + '" AND PASSWORD = "' + password + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC = "' + role + '");';
+    con.query(q, function (err, rows) {
+      if (err) throw err;
+      if(rows.length === 0) {
+        o['code'] = 400;
+        o['message'] = 'Invalid login credentials';
+        res.status(400);
+        console.log(o);
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        o['message'] = 'Login successful';
+        o['token'] = uuidv4();
+        loginTokens[o['token']] = email;
+        revLoginTokens[email] = o['token'];
+  
+        console.log(loginTokens);
+        res.status(200);
+        res.send(o);
+      }
+    });
   });
-  userConnection.execSql(request)
 });
 
 
@@ -500,88 +569,95 @@ app.use('/register', function(req,res,next){
   const cuisines = 'None';
 
   let o = {};
-  console.log('select * from Users where Email=\'' + email +'\' AND Role=\'' + role + '\'');
-  const request = new Request('select * from Users where Email=\'' + email +'\' AND Role=\'' + role + '\'', function(err, rowCount, rows) {
-    if (err) {
-      console.log(err);
-      o['code'] = 400;
-      o['message'] = 'Error occurred';
-      res.status(400)
-      res.send(o);
-    }
-    else if(rowCount !== 0) {
-      o['code'] = 400;
-      res.status(400);
-      o['message'] = 'User already registered';
-      res.send(o);
-    } else if (!err) {
-      console.log('allowing');
-      registerUser(firstName, lastName, email, password, role, cuisines);
-      o['code'] = 200;
-      res.status(200);
-      o['message'] = 'User registered successfully';
-      o['token'] = uuidv4();
-      loginTokens[o['token']] = email;
-      revLoginTokens[email] = o['token'];
 
-      res.send(o);
-    }
+  con.getConnection(function(err) {
+    if (err) throw err;
+    var q = 'SELECT FIRST_NAME, LAST_NAME FROM USER WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC = "' + role + '");';
+    con.query(q, function (err, rows) {
+      if (err) {
+        console.log(err);
+        o['code'] = 400;
+        o['message'] = 'Error occurred';
+        res.status(400)
+        res.send(o);
+      }
+      else if(rows.length !== 0) {
+        o['code'] = 400;
+        res.status(400);
+        o['message'] = 'User already registered';
+        res.send(o);
+      } else if (!err) {
+        console.log('allowing');
+        registerUser(firstName, lastName, email, password, role, cuisines);
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'User registered successfully';
+        o['token'] = uuidv4();
+        loginTokens[o['token']] = email;
+        revLoginTokens[email] = o['token'];
+        res.send(o);
+      }
+    });
   });
-  userConnection.execSql(request);
 });
 
 function registerUser(firstName, lastName, email, password, role, cuisines) {
-  const request = new Request('insert into Users values(\'' + firstName +'\', \'' + lastName + '\', \'' + email + '\', \'' + password + '\', \'' + role + '\', \'' +cuisines+'\', \'\', \'\', \'\')', function (err, rowCount, rows) {
-    if(err) {
-      console.log(err);
-    }
-    else {
-      console.log('success');
-      let s = 'Privacy Policy\n' +
-          '\n' +
-          'Stou values the privacy of the users who use our web service. And, we want you to be aware\n' +
-          'of how we collect, use, share information of the users. This applies to customers, people\n' +
-          'who want to get food, and home cooks, people who cook the food and are willing to share.\n' +
-          'By using our platform, you, as a user, agree to the terms and conditions of the Privacy\n' +
-          'Policy, which includes future additions and changes. In case, if you do not agree with any of\n' +
-          'the terms and conditions, please do not use the website.\n' +
-          ' \n' +
-          'Information provided by the Users\n' +
-          'We collect information in a variety of circumstances when you use our website.\n' +
-          'Some instances of those circumstances as follows. \n' +
-          ' When you register, you provide us with information regarding email, first name, last\n' +
-          'name, email, etc. After signing up, you are in a position to provide more information\n' +
-          'about you, to us. This information would be stored in our database. However, it will\n' +
-          'be encrypted for your privacy \n' +
-          ' When you use a card to pay, a third-party payment service receives your card\n' +
-          'information. We do not store that information in our database. \n' +
-          ' When you use our website to rate a home cook, we will save it on the database.\n' +
-          'However, it will be protected.   \n' +
-          'When we collect information about, it is to provide a good service for you. For example, we\n' +
-          'use your username and password to uniquely identify you. We also receive information\n' +
-          'when you interact with another user (home cooks or/and customers). We can make a\n' +
-          'promise that all the information we are collecting will be used to enhance the user\n' +
-          'experience. \n' +
-          'Use of information collected from users\n' +
-          'We enhance user experience in multiple ways. However, that requires us to collect\n' +
-          'information. We use the information in the following ways.\n' +
-          ' Improve our service.\n' +
-          ' Promote our application. \n' +
-          ' Communication with users.\n' +
-          ' Prevention of fraud.\n' +
-          'User information shared between customers and home cooks\n' +
-          'We share information about the home cook’s dishes to the customer along with his/her\n' +
-          'public profile. We will also be sharing the location of the user.\n' +
-          'Miscellaneous sharing of information\n' +
-          ' When disclosure of the information is needed to comply with the laws and\n' +
-          'regulations.\n' +
-          ' When there is a government request.\n' +
-          ' Enforce policies\n' +
-          ' With consent, you might be included in the featured home cooks.'
-      sendEmail('adrianraj1818@gmail.com', password, s)
-    }
+  console.log(role);
+  if(role === 'Homecook') role = 'cook';
+  con.getConnection(function(err) {
+    if (err) throw err;
+    var q = 'INSERT INTO USER (FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, ROLE) values("' + firstName + '", "' + lastName + '", "' + email + '", "' + password + '", (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '"));';
+    con.query(q, function (err, rows) {
+      if(err) {
+        console.log(err);
+      }
+      else {
+        console.log('success');
+        let s = 'Privacy Policy\n' +
+            '\n' +
+            'Stou values the privacy of the users who use our web service. And, we want you to be aware\n' +
+            'of how we collect, use, share information of the users. This applies to customers, people\n' +
+            'who want to get food, and home cooks, people who cook the food and are willing to share.\n' +
+            'By using our platform, you, as a user, agree to the terms and conditions of the Privacy\n' +
+            'Policy, which includes future additions and changes. In case, if you do not agree with any of\n' +
+            'the terms and conditions, please do not use the website.\n' +
+            ' \n' +
+            'Information provided by the Users\n' +
+            'We collect information in a variety of circumstances when you use our website.\n' +
+            'Some instances of those circumstances as follows. \n' +
+            ' When you register, you provide us with information regarding email, first name, last\n' +
+            'name, email, etc. After signing up, you are in a position to provide more information\n' +
+            'about you, to us. This information would be stored in our database. However, it will\n' +
+            'be encrypted for your privacy \n' +
+            ' When you use a card to pay, a third-party payment service receives your card\n' +
+            'information. We do not store that information in our database. \n' +
+            ' When you use our website to rate a home cook, we will save it on the database.\n' +
+            'However, it will be protected.   \n' +
+            'When we collect information about, it is to provide a good service for you. For example, we\n' +
+            'use your username and password to uniquely identify you. We also receive information\n' +
+            'when you interact with another user (home cooks or/and customers). We can make a\n' +
+            'promise that all the information we are collecting will be used to enhance the user\n' +
+            'experience. \n' +
+            'Use of information collected from users\n' +
+            'We enhance user experience in multiple ways. However, that requires us to collect\n' +
+            'information. We use the information in the following ways.\n' +
+            ' Improve our service.\n' +
+            ' Promote our application. \n' +
+            ' Communication with users.\n' +
+            ' Prevention of fraud.\n' +
+            'User information shared between customers and home cooks\n' +
+            'We share information about the home cook’s dishes to the customer along with his/her\n' +
+            'public profile. We will also be sharing the location of the user.\n' +
+            'Miscellaneous sharing of information\n' +
+            ' When disclosure of the information is needed to comply with the laws and\n' +
+            'regulations.\n' +
+            ' When there is a government request.\n' +
+            ' Enforce policies\n' +
+            ' With consent, you might be included in the featured home cooks.'
+        sendEmail('adrianraj1818@gmail.com', password, s)
+      }
+    });
   });
-  userConnection.execSql(request);
 }
 
 // catch 404 and forward to error handler
