@@ -2,12 +2,33 @@ import React, { Component } from 'react';
 import { Row, Col, Container, Button, ListGroup, FormControl, FormLabel, Image } from "react-bootstrap";
 import axios from 'axios';
 import { serverURL } from '../../config';
+import NavLink from 'react-bootstrap/NavLink';
+import { ModalKey } from '../../constants/ModalKeys';
+import full_white_logo from '../../constants/images/full_white_logo.png';
 
 class ViewFoodOptions extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      foodoptions: [],
+      foodoptions: [
+        {
+            id: 1,
+            name: 'Spicy Fried Chicken',
+            homecook: 'BIG BOY',
+            price: 10,
+            description: 'Crispy and spicy Sichuan chicken fried in fragrant oil',
+            picture: full_white_logo
+
+        },
+        {
+            id: 2,
+            name: 'Big Mac',
+            homecook: 'BIG BOY',
+            price: 2,
+            description: 'Homemade fresh Bic Mac',
+            picture: full_white_logo
+        }
+    ],
     };
   }
 
@@ -56,10 +77,14 @@ class ViewFoodOptions extends Component {
     }
   }
 
+  handleFoodName = (e, foodItem) => {
+    console.log(this.props);
+    const { openModal, addToOrder } = this.props;
+    e.preventDefault();
+    openModal(ModalKey.FOOD_ITEM, {item: foodItem, addToOrder: addToOrder});
+  }
 
   render() {
-    console.log(this.state.foodoptions)
-
     return (
       <Container className="ViewFoodOptions">
         <ListGroup>
@@ -67,17 +92,21 @@ class ViewFoodOptions extends Component {
             <ListGroup.Item className="food-option">
               <div className="food-option-inner">
                 <div>
-                  <Image rounded className="vfo-image" src={item.image} />
+                <NavLink className="food-link-name" onClick={e => this.handleFoodName(e, item)}>
+                  <Image rounded className="vfo-image" src={item.picture} />
+                  </NavLink>
                 </div>
                 <div className="vfo-info">
                   <div className="vfo-foodname">
+                  <NavLink className="food-link-name" onClick={e => this.handleFoodName(e, item)}>
                     <p>{item.name}</p>
+                  </NavLink>
                   </div>
                   <div className="vfo-description">
                     <p>{item.description}</p>
                   </div>
                   <div className="vfo-chefname">
-                    <p>{item.homecook}</p>
+                    <p>by </p><NavLink className="food-link-chef">{item.homecook}</NavLink>
                   </div>
                 </div>
                 <p className="vfo-price">${item.price}</p>

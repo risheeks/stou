@@ -1,38 +1,36 @@
 const initialState = {
-    baggedItems: [
-        {
-            id: 1,
-            name: 'Spicy Fried Chicken',
-            price: 10,
-            quantity: 2
-        },
-        {
-            id: 2,
-            name: 'Big Mac',
-            price: 2,
-            quantity: 5
-        }
-    ]
+    baggedItems: []
 }
 
 const orderReducer = function order(state = initialState, action) {
     switch (action.type) {
         // Add item to bag
         case 'ADD_TO_ORDER': {
-            const state = {
+            let existingItem = state.baggedItems.find( ({ id }) => id === action.newItem.id)
+            if(existingItem) {
+                existingItem.quantity += action.newItem.quantity;
+                return state;
+            }
+            state = {
                 ...state,
                 baggedItems: [...state.baggedItems, action.newItem]
             }
-            localStorage.setItem('baggedItems', state.baggedItems);
+            localStorage.setItem('baggedItems', JSON.stringify(state.baggedItems));
             return state;
         }
         // Remove item from bag
         case 'REMOVE_FROM_ORDER': {
-            const state = {
+            state = {
                 ...state,
-                baggedItems: state.baggedItems.filter(item => item.id !== action.item.id)
+                baggedItems: state.baggedItems.filter(item => item.id !== action.itemId)
             }
-            localStorage.setItem('baggedItems', state.baggedItems);
+            if(state.baggedItems.length < 1) {
+                localStorage.removeItem('baggedItems');
+            }
+            else {
+                localStorage.setItem('baggedItems', JSON.stringify(state.baggedItems));
+            }
+            console.log(state);
             return state;
         }
         case 'REFRESH': {

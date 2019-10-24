@@ -6,7 +6,11 @@ import bag from '../../../constants/images/bag.png';
 import { withRouter } from 'react-router-dom';
 import Bag from '../Bag';
 
-export class Header extends Component {
+class Header extends Component {
+    componentDidMount() {
+        this.props.refresh();
+    }
+
     handleSignOut = e => {
         e.preventDefault();
         this.props.signOut();
@@ -17,6 +21,8 @@ export class Header extends Component {
     }
 
     render() {
+        const { baggedItems, removeFromOrder, refresh } = this.props
+
         return (
             <Navbar className="navbar" expand="lg" sticky="top">
                 <Navbar.Brand as={Link} to="/">
@@ -37,13 +43,17 @@ export class Header extends Component {
                             placement="bottom"
                             overlay={
                                 <Popover className="bag-popover" id={`popover-positioned-bottom`}>
-                                    <Bag />
+                                    <Bag
+                                        baggedItems={baggedItems}
+                                        removeFromOrder={removeFromOrder}
+                                        refresh={refresh}
+                                    />
                                 </Popover>
                             }
                         >
                             <Nav.Link as={Link} className="nav-link" to="/bag" onClick={this.onBagClick}>
                                 <Image className="bag-link" src={bag} />
-                                <b className="bag-number">5</b>
+                                <b className="bag-number">{baggedItems.length > 0 ? baggedItems.length : null}</b>
                             </Nav.Link>
                         </OverlayTrigger>
                     </Nav>

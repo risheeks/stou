@@ -187,6 +187,8 @@
 
   .vfo-chefname {
     line-height: 100%;
+    display: flex;
+    flex-direction: row;
   }
   
   .vfo-price {
@@ -279,6 +281,15 @@
 
 .delete-item-image {
   width: 20px;
+}
+
+.food-link-chef {
+  margin-left: 3px;
+  padding: 0;
+}
+
+.food-link-name {
+  padding: 0;
 }
 
 @media all and (min-width: 480px) {

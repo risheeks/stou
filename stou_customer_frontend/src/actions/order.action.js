@@ -1,35 +1,26 @@
 const initialState = {
-    baggedItems: [
-        {
-            id: 1,
-            name: 'Spicy Fried Chicken',
-            price: 10,
-            quantity: 2
-        },
-        {
-            id: 2,
-            name: 'Big Mac',
-            price: 2,
-            quantity: 5
-        }
-    ]
+    baggedItems: []
 }
 
 export function addToOrder(item, quantity) {
     return {
         type: 'ADD_TO_ORDER',
-        newItem: { item, quantity }
+        newItem: { ...item, quantity }
     }
 }
 
 export function refresh() {
-    const baggedItems = localStorage.getItem('baggedItems');
-    if (baggedItems) {
-        return {
-            type: 'REFRESH',
-            baggedItems: baggedItems
+    
+    if (localStorage.hasOwnProperty('baggedItems') && localStorage.getItem('baggedItems').length > 0) {
+        let baggedItems = JSON.parse(localStorage.getItem('baggedItems'));
+        if (baggedItems) {
+            return {
+                type: 'REFRESH',
+                baggedItems: baggedItems
+            }
         }
     }
+    localStorage.setItem('baggedItems', JSON.stringify([]));
     return {
         type: 'REFRESH',
         baggedItems: initialState.baggedItems
@@ -39,6 +30,6 @@ export function refresh() {
 export function removeFromOrder(item) {
     return {
         type: 'REMOVE_FROM_ORDER',
-        item: item
+        itemId: item
     }
 }

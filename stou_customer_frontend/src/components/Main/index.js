@@ -10,19 +10,23 @@ import Home from '../Home';
 import Header from '../Common/Header';
 import Profile from '../Profile';
 import '../../styles/Main.css';
+import MyModal from '../../../../stou_customer_frontend/src/components/Common/Modals';
 
 import { getToken, signOut } from '../../actions/login.action';
+import { openModal, closeModal } from '../../actions/modal.action';
+import { addToOrder, removeFromOrder, refresh } from '../../actions/order.action';
 
 function mapStateToProps(state) {
-    state = state.loginReducer;
     return {
-        auth_token: state.auth_token,
-        email: state.email
+        auth_token: state.loginReducer.auth_token,
+        email: state.loginReducer.email,
+        modalProps: state.modalReducer,
+        baggedItems: state.orderReducer.baggedItems
     }
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ getToken, signOut }, dispatch);
+    return bindActionCreators({ getToken, signOut, openModal, closeModal, addToOrder, removeFromOrder, refresh }, dispatch);
 }
 
 const ProtectedRoute
@@ -41,16 +45,47 @@ class Main extends Component {
     }
 
     render() {
-        const { signOut, auth_token, email, getToken } = this.props;
+        const { signOut, auth_token, email, getToken, modalProps, openModal, closeModal, addToOrder, removeFromOrder, refresh, baggedItems } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
         console.log(auth_token);
         return (
             <Router>
-                <Header signOut={signOut} loggedIn={loggedIn} />
-                <Route exact path="/" render={() => <Home auth_token={auth_token} email={email} />} />
-                <Route path="/login" render={() => <Login auth_token={auth_token} email={email} getToken={getToken} />} />
-                <Route path="/register" render={() => <Register auth_token={auth_token} email={email} getToken={getToken} />} />
-                <Route path="/profile" render={() => <Profile auth_token={auth_token} email={email} />} />
+                <Header
+                    signOut={signOut}
+                    loggedIn={loggedIn}
+                    removeFromOrder={removeFromOrder}
+                    refresh={refresh}
+                    baggedItems={baggedItems}
+                />
+                <Route exact path="/" render={() =>
+                    <Home
+                        auth_token={auth_token}
+                        email={email}
+                        openModal={openModal}
+                        addToOrder={addToOrder}
+                    />} 
+                />
+                <Route path="/login" render={() =>
+                    <Login
+                        auth_token={auth_token}
+                        email={email}
+                        getToken={getToken}
+                    />}
+                />
+                <Route path="/register" render={() =>
+                    <Register
+                        auth_token={auth_token}
+                        email={email}
+                        getToken={getToken}
+                    />}
+                />
+                <Route path="/profile" render={() => 
+                    <Profile
+                        auth_token={auth_token}
+                        email={email}
+                    />}
+                />
+                <MyModal {...modalProps} closeModal={closeModal}/>
             </Router>
         );
     }
