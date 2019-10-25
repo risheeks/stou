@@ -23,7 +23,7 @@ var mysql = require('mysql');
 //   database: "stou"
 // });
 
-var connString = 'mysql://lSC9ZLcwnc:PA1r3MZ1o3@remotemysql.com:3306/lSC9ZLcwnc?charset=utf8_general_ci&timezone=-0700';
+var connString = 'mysql://lSC9ZLcwnc:5SqWHLCVs5@remotemysql.com:3306/lSC9ZLcwnc?charset=utf8_general_ci&timezone=-0700';
  
 var con = mysql.createPool(connString);
 
@@ -297,6 +297,11 @@ app.use('/addfooditem', function(req, res, next){
 
 
 app.use('/editProfile', function(req,res,next){
+  // const email = req.body['data']['email'];
+  // const aboutMe = req.body['data']['aboutMe'];
+  // const name = req.body['data']['name'];
+  // const profilePicture = req.body['data']['profilePicture'];
+
   const email = req.param('email');
   const aboutMe = req.param('aboutMe');
   const name = req.param('name');
@@ -326,6 +331,8 @@ app.use('/editProfile', function(req,res,next){
 });
 
 app.use('/profile', function(req, res, next) {
+  // const email = req.body['data']['email'];
+  // const role = req.body['data']['role'];
   const email = req.param('email');
   let role = req.param('role');
   if(role === 'Homecook') role = 'cook';
