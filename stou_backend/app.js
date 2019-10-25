@@ -23,7 +23,7 @@ var mysql = require('mysql');
 //   database: "stou"
 // });
 
-var connString = 'mysql://root:mysqlroot@localhost/stou?charset=utf8_general_ci&timezone=-0700';
+var connString = 'mysql://lSC9ZLcwnc:PA1r3MZ1o3@remotemysql.com:3306/lSC9ZLcwnc?charset=utf8_general_ci&timezone=-0700';
  
 var con = mysql.createPool(connString);
 
