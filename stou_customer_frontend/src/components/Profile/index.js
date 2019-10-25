@@ -42,10 +42,9 @@ export default class Profile extends React.Component {
       email: '',
       //   cuisines: '',
       aboutMe: '',
-      uploadedImage: uploadimage,
-      isUploading: false,
+      uploadedImage: '',
       progress: 0,
-      avatarURL: uploadimage,
+      avatarURL: '',
       fireBaseURL: '',
       isFireBaseURL: false
     };
@@ -105,7 +104,6 @@ export default class Profile extends React.Component {
     });
   
   }
-
   updateProfile = async e => {
     // this.getProfile();
     const self = this;
@@ -118,33 +116,27 @@ export default class Profile extends React.Component {
     setTimeout(function(){
       var apiCall = serverURL;
       
-    apiCall = apiCall + "/editProfile";
-    console.log("photo URL=" + self.state.fireBaseURL);
-    axios.post(`${serverURL}/editProfile`, {
-      data: {
-        name: self.state.name,
-        aboutMe: self.state.aboutMe,
-        profilePicture: self.state.fireBaseURL,
-        email:self.props.email,
-      }
-    })
+      apiCall = apiCall + "/editProfile";
+      console.log("photo URL=" + self.state.fireBaseURL);
+      axios.post(`${serverURL}/editProfile`, {
+        data: {
+          name: self.state.name,
+          aboutMe: self.state.aboutMe,
+          profilePicture: self.state.fireBaseURL,
+          email:self.props.email,
+        }
+      })
       .then(res => {
         console.log(res.data);
       })
-    }, 2500);
-    
+      window.location.reload(false);
+    }, 2000);
   }
 
+
   getProfile = e => {
-    // console.log("CHECK")
     var apiCall = serverURL;
     apiCall = apiCall + "/profile";
-    // axios.get(apiCall, {
-    //   params: {
-    //     email: btoa(this.props.email),
-    //     role: 'Customer'
-    //   }
-    // })
     axios.post(`${serverURL}/profile`, {
       data: {
         email: this.props.email,
@@ -155,6 +147,7 @@ export default class Profile extends React.Component {
         if (res.data.name.length > 0) {
           this.setState({
             name: res.data.name,
+            nameOrig: res.data.name,
             aboutMe: res.data.aboutMe,
             avatarURL: res.data.profilePicture,
             email: res.data.email
@@ -226,7 +219,8 @@ onError = (err) => {
             <br />
             <FormGroup controlId="name" className="form-group">
               <Form.Label className='form-text'><h5>Name</h5></Form.Label>
-              <Form.Control value={this.state.name} type="text" onChange={this.handleChange} className="text-about-me" placeholder={this.state.name} as="textarea" rows="1" />
+              {/* <Form.Control value={this.state.name} type="text" onChange={this.handleChange} className="text-about-me" placeholder={this.state.name} rows="1" /> */}
+              <Form.Label value={this.state.name} className='form-value'><h5>{this.state.name}</h5></Form.Label>
               {/* <p value={this.state.name} className='form-value'><h5>{this.state.name}</h5></p> */}
             </FormGroup>
             <br />
