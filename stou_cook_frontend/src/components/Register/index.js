@@ -119,9 +119,9 @@ class Register extends Component {
     
     if (!formHasErrors) {
         const data = {
-          firstName: btoa(firstName),
-          lastName: btoa(lastName),
-          email: btoa(email),
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
           password: encryptedPassword.toString(),
           role: 'Homecook'
         }

@@ -31,7 +31,7 @@ const ENV = process.env.NODE_ENV === 'production'
 export default class Profile extends React.Component {
   constructor(props) {
     let v = "sid";
-    console.log(btoa(atob(v)))
+    // console.log(btoa(atob(v)))
     super(props);
     this.updateProfile = this.updateProfile.bind(this);
     this.getProfile = this.getProfile.bind(this);
@@ -46,7 +46,8 @@ export default class Profile extends React.Component {
       isUploading: false,
       progress: 0,
       avatarURL: uploadimage,
-      fireBaseURL: ' '
+      fireBaseURL: '',
+      isFireBaseURL: false
     };
     // this.getProfile();
 
@@ -75,12 +76,15 @@ export default class Profile extends React.Component {
  }
 
   uploadToFireBase = e => {
-    let { fireBaseURL } = this.state;
+    //let { fireBaseURL } = this.state;
+    
+    const self = this;
     let randomID = this.generateUniqueID(25);
+    let url='';
     let path = "images/" + randomID;
-    var uploadTask = firebase.storage().ref().child(path).put(this.state.uploadedImage);
+    let uploadTask = firebase.storage().ref().child(path).put(this.state.uploadedImage);
     uploadTask.on('state_changed', function(snapshot){
-    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
     console.log('Upload is ' + progress + '% done');
     switch (snapshot.state) {
       case firebase.storage.TaskState.PAUSED: // or 'paused'
@@ -93,46 +97,64 @@ export default class Profile extends React.Component {
     }, function(error) {
       // Handle unsuccessful uploads
     }, function() {
-      
       uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-        fireBaseURL = downloadURL;
-        console.log('File available at', fireBaseURL);
+        console.log('File available at', downloadURL);
+        url = downloadURL;
+        self.setState({fireBaseURL:url});
       });
     });
+  
   }
 
   updateProfile = async e => {
     // this.getProfile();
-    await this.uploadToFireBase();
-    var apiCall = serverURL;
+    const self = this;
+    
+    if(this.state.avatarURL.toString().startsWith("https://firebasestorage.googleapis.co")) {
+      self.setState({fireBaseURL:this.state.avatarURL});
+    }else {
+      await this.uploadToFireBase();
+    }
+    setTimeout(function(){
+      var apiCall = serverURL;
+      
     apiCall = apiCall + "/editProfile";
-    console.log("update profile called");
-    console.log("photo URL=" + this.state.fireBaseURL);
-    axios.post(apiCall, {
-        name: this.state.name,
-        aboutMe: this.state.aboutMe,
-        profilePicture: this.state.avatarURL,
-        email:this.props.email
+    console.log("photo URL=" + self.state.fireBaseURL);
+    axios.post(`${serverURL}/editProfile`, {
+      data: {
+        name: self.state.name,
+        aboutMe: self.state.aboutMe,
+        profilePicture: self.state.fireBaseURL,
+        email:self.props.email,
+      }
     })
       .then(res => {
         console.log(res.data);
       })
+    }, 2500);
+    
   }
 
   getProfile = e => {
     // console.log("CHECK")
     var apiCall = serverURL;
     apiCall = apiCall + "/profile";
-    axios.get(apiCall, {
-      params: {
-        email: btoa(this.props.email),
+    // axios.get(apiCall, {
+    //   params: {
+    //     email: btoa(this.props.email),
+    //     role: 'Customer'
+    //   }
+    // })
+    axios.post(`${serverURL}/profile`, {
+      data: {
+        email: this.props.email,
         role: 'Customer'
       }
     })
       .then(res => {
         if (res.data.name.length > 0) {
           this.setState({
-            name: btoa(res.data.name),
+            name: res.data.name,
             aboutMe: res.data.aboutMe,
             avatarURL: res.data.profilePicture,
             email: res.data.email
