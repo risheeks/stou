@@ -297,6 +297,7 @@ app.use('/addfooditem', function(req, res, next){
 
 
 app.use('/editProfile', function(req,res,next){
+
   const email = req.body['data']['email'];
   const aboutMe = req.body['data']['aboutMe'];
   const name = req.body['data']['name'];
@@ -318,6 +319,7 @@ app.use('/editProfile', function(req,res,next){
     name = 'None';
   }
   console.log(email);
+
   let o = {};
 
   con.getConnection(function(err) {
@@ -342,6 +344,7 @@ app.use('/editProfile', function(req,res,next){
 });
 
 app.use('/profile', function(req, res, next) {
+
   const email = req.body['data']['email'];
   const role = req.body['data']['role'];
   if(role === 'Homecook') role = 'cook';
