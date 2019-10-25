@@ -297,24 +297,37 @@ app.use('/addfooditem', function(req, res, next){
 
 
 app.use('/editProfile', function(req,res,next){
-  // const email = req.body['data']['email'];
-  // const aboutMe = req.body['data']['aboutMe'];
-  // const name = req.body['data']['name'];
-  // const profilePicture = req.body['data']['profilePicture'];
 
-  const email = req.param('email');
-  const aboutMe = req.param('aboutMe');
-  const name = req.param('name');
-  const profilePicture = req.param('profilePicture');
+  const email = req.body['data']['email'];
+  const aboutMe = req.body['data']['aboutMe'];
+  const name = req.body['data']['name'];
+  const profilePicture = req.body['data']['profilePicture'];
+  const firstName = name.toString().split(' ')[0];
+  const lastName = name.toString().split(' ')[1];
+
+  console.log(lastName);
+  if(lastName === null) {
+    lastName = '';
+  }
+  if(aboutMe === null) {
+    aboutMe = 'None';
+  }
+  if(profilePicture === null) {
+    profilePicture = 'None';
+  }
+  if(name === null) {
+    name = 'None';
+  }
+  console.log(email);
 
   let o = {};
 
   con.getConnection(function(err) {
     if (err) throw err;
-    var q = 'UPDATE USER SET ABOUT_ME=\'' + aboutMe + '\', FIRST_NAME=\'' + name.toString().split(' ')[0] +'\', LAST_NAME=\'' + name.toString().split(' ')[1] + '\' , PICTURE=\''+profilePicture+'\' where EMAIL=\'' + email +'\'';
-    con.query(q, function (err, rows) {
-      // console.log(rows);
-      if(err || rows.length === 0) {
+    var q = 'UPDATE USER SET ABOUT_ME="' + aboutMe + '", FIRST_NAME="' + firstName +'", LAST_NAME="' + lastName + '" , PICTURE="' + profilePicture + '" where EMAIL="' + email +'";';
+    con.query(q, function (err, result) {
+      console.log(result);
+      if(err) {
         o['code'] = 400;
         res.status(400)
         o['message'] = 'Update failed';
@@ -331,10 +344,9 @@ app.use('/editProfile', function(req,res,next){
 });
 
 app.use('/profile', function(req, res, next) {
-  // const email = req.body['data']['email'];
-  // const role = req.body['data']['role'];
-  const email = req.param('email');
-  let role = req.param('role');
+
+  const email = req.body['data']['email'];
+  const role = req.body['data']['role'];
   if(role === 'Homecook') role = 'cook';
   let o = {};
   con.getConnection(function(err) {
@@ -350,7 +362,12 @@ app.use('/profile', function(req, res, next) {
       }
       else {
         var row = result[0];
-        o['name'] = row.FIRST_NAME + row.LAST_NAME;
+        o['name'] = row.FIRST_NAME;
+        if(row.LAST_NAME) {
+          o['name'] += " ";
+          o['name'] += row.LAST_NAME;
+        }
+        // o['name'] = row.FIRST_NAME + row.LAST_NAME;
         o['aboutMe'] = row.ABOUT_ME;
         o['cuisines'] = 'None';
         o['profilePicture'] = row.PICTURE;
