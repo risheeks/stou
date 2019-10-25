@@ -5,9 +5,9 @@ import uploadimage from '../../constants/images/wineandcode.png';
 import "../../styles/Main.css";
 import imageCompression from 'browser-image-compression';
 import firebase from "firebase";
-import FileUploader from "react-firebase-file-uploader";
 import { serverURL } from "../../config/index.js"
 import PaypalExpressBtn from 'react-paypal-express-checkout';
+import Spinner from 'react-bootstrap/Spinner'
 
 const firebaseConfig = {
   apiKey: "AIzaSyCKRmXkIQqNtPTM-_MMvsQYMH1tSm7IlNM",
@@ -45,28 +45,14 @@ export default class Profile extends React.Component {
       uploadedImage: uploadimage,
       isUploading: false,
       progress: 0,
-      avatarURL: uploadimage
+      avatarURL: uploadimage,
+      fireBaseURL: ' '
     };
     // this.getProfile();
 
   }
   handleChangeUsername = event =>
     this.setState({ username: event.target.value });
-  handleUploadStart = () => this.setState({ isUploading: true, progress: 0 });
-  handleProgress = progress => this.setState({ progress });
-  handleUploadError = error => {
-    this.setState({ isUploading: false });
-    console.error(error);
-  };
-  handleUploadSuccess = filename => {
-    this.setState({ avatar: filename, progress: 100, isUploading: false });
-    firebase
-      .storage()
-      .ref("images")
-      .child(filename)
-      .getDownloadURL()
-      .then(url => this.setState({ avatarURL: url }));
-  };
   componentDidUpdate(prevProps) {
     console.log(this.props.email);
     if (this.props.email && this.props.email != 'undefined' && this.props.email !== prevProps.email) {
@@ -78,13 +64,50 @@ export default class Profile extends React.Component {
     this.setState({ [e.target.id]: e.target.value })
   }
 
-  updateProfile = e => {
-    // this.getProfile();
+  generateUniqueID(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+ }
 
+  uploadToFireBase = e => {
+    let { fireBaseURL } = this.state;
+    let randomID = this.generateUniqueID(25);
+    let path = "images/" + randomID;
+    var uploadTask = firebase.storage().ref().child(path).put(this.state.uploadedImage);
+    uploadTask.on('state_changed', function(snapshot){
+    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    console.log('Upload is ' + progress + '% done');
+    switch (snapshot.state) {
+      case firebase.storage.TaskState.PAUSED: // or 'paused'
+        console.log('Upload is paused');
+          break;
+        case firebase.storage.TaskState.RUNNING: // or 'running'
+          console.log('Upload is running');
+          break;
+      }
+    }, function(error) {
+      // Handle unsuccessful uploads
+    }, function() {
+      
+      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+        fireBaseURL = downloadURL;
+        console.log('File available at', fireBaseURL);
+      });
+    });
+  }
+
+  updateProfile = async e => {
+    // this.getProfile();
+    await this.uploadToFireBase();
     var apiCall = serverURL;
     apiCall = apiCall + "/editProfile";
     console.log("update profile called");
-    console.log("photo URL=" + this.state.avatarURL);
+    console.log("photo URL=" + this.state.fireBaseURL);
     axios.post(apiCall, {
         name: this.state.name,
         aboutMe: this.state.aboutMe,
@@ -111,7 +134,7 @@ export default class Profile extends React.Component {
           this.setState({
             name: btoa(res.data.name),
             aboutMe: res.data.aboutMe,
-            uploadedImage: res.data.profilePicture,
+            avatarURL: res.data.profilePicture,
             email: res.data.email
           });
         }
@@ -123,17 +146,20 @@ export default class Profile extends React.Component {
   }
 
   onImageChange = e => {
+    this.setState({
+      uploadedImage: e.target.files[0]
+    });
     const reader = new FileReader();
     if (e.target.files[0]) {
       const options = {
-        maxSizeMB: 0.007,          // (default: Number.POSITIVE_INFINITY)
+        maxSizeMB: 2,          // (default: Number.POSITIVE_INFINITY)
       }
       imageCompression(e.target.files[0], options)
         .then(res => {
           const url = reader.readAsDataURL(res);
           reader.onloadend = function (e) {
             this.setState({
-              uploadedImage: [reader.result]
+              avatarURL: [reader.result]
             })
           }.bind(this);
         })
@@ -161,24 +187,14 @@ onError = (err) => {
       sandbox:    'AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC',
       production: 'YOUR-PRODUCTION-APP-ID',
   }
-    const { uploadedImage } = this.state;
+    const { avatarURL } = this.state;
     return (
       <div className="container profile">
         <div className="form-area">
           <Form role="form">
             {this.props.show}
             <br styles="clear:both" />
-            <Image className="image-upload-preview" src={uploadedImage} fluid thumbnail onClick={this.onClickUpload} />
-            <FileUploader
-              accept="image/*"
-              name="avatar"
-              randomizeFilename
-              storageRef={firebase.storage().ref("images")}
-              onUploadStart={this.handleUploadStart}
-              onUploadError={this.handleUploadError}
-              onUploadSuccess={this.handleUploadSuccess}
-              onProgress={this.handleProgress}
-            />
+            <Image className="image-upload-preview" src={avatarURL} fluid thumbnail onClick={this.onClickUpload}/>
             <FormControl
               type="file"
               className="image-upload-input"
