@@ -21,7 +21,7 @@ class ResetPassword extends Component {
   onConfirm = e => {
     const { email } = this.state;
     let SHA256 = require("crypto-js/sha256");
-    let encEmail = btoa(email)
+    let encEmail = email
     let password = Math.random().toString(36).substring(7) + Math.random().toString(36).substring(7);
     let encPassword = SHA256(password).toString();
     axios.post(`${serverURL}/forgotpassword`, {data: {
