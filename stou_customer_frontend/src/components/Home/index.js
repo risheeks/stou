@@ -5,7 +5,6 @@ import FilterBar from '../FilterBar';
 import "../../styles/Main.css";
 import ViewFoodOptions from '../ViewFoodOptions';
 import ListOfHomeCooks from '../ListOfHomeCooks';
-import FavoriteHomeCooksList from '../FavoriteHomeCooks'
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { Container, ListGroup, Form, Button, Modal, Tabs, Tab } from 'react-bootstrap';
@@ -70,7 +69,7 @@ export class Home extends Component {
                         </div>
                     </Tab>
                 </Tabs>
-                <FavoriteHomeCooksList/>
+                
             </div>
         );
     }
