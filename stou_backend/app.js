@@ -299,13 +299,23 @@ app.use('/addfooditem', function(req, res, next){
 app.use('/editProfile', function(req,res,next){
 
   const email = req.body['data']['email'];
+  let role = req.body['data']['role'];
   const aboutMe = req.body['data']['aboutMe'];
   const name = req.body['data']['name'];
   const profilePicture = req.body['data']['profilePicture'];
   const firstName = name.toString().split(' ')[0];
   const lastName = name.toString().split(' ')[1];
 
+  if(role === 'Homecook') role = 'cook';
+
+  console.log(profilePicture);
+  console.log(aboutMe);
   console.log(lastName);
+  console.log(name);
+
+  if(firstName === null) {
+    firstName = '';
+  }
   if(lastName === null) {
     lastName = '';
   }
@@ -319,12 +329,14 @@ app.use('/editProfile', function(req,res,next){
     name = 'None';
   }
   console.log(email);
+  console.log(role);
+
 
   let o = {};
 
   con.getConnection(function(err) {
     if (err) throw err;
-    var q = 'UPDATE USER SET ABOUT_ME="' + aboutMe + '", FIRST_NAME="' + firstName +'", LAST_NAME="' + lastName + '" , PICTURE="' + profilePicture + '" where EMAIL="' + email +'";';
+    var q = 'UPDATE USER SET ABOUT_ME="' + aboutMe + '", FIRST_NAME="' + firstName +'", LAST_NAME="' + lastName + '" , PICTURE="' + profilePicture + '" where EMAIL="' + email + '" AND ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
     con.query(q, function (err, result) {
       console.log(result);
       if(err) {
@@ -344,10 +356,11 @@ app.use('/editProfile', function(req,res,next){
 });
 
 app.use('/profile', function(req, res, next) {
-
+  console.log("profile");
   const email = req.body['data']['email'];
   const role = req.body['data']['role'];
-  if(role === 'Homecook') role = 'cook';
+  if(role === 'Homecook') role = 'COOK';
+  console.log(email);
   let o = {};
   con.getConnection(function(err) {
     if (err) throw err;

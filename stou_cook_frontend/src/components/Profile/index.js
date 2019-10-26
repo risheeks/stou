@@ -29,44 +29,56 @@ class Profile extends React.Component {
     this.setState({ [e.target.id]: e.target.value })
   }
 
-  updateProfile = e => {
+  updateProfile = async e => {
     // this.getProfile();
-    var apiCall = "http://192.168.43.177:3000";
-    apiCall = apiCall + "/editProfile";
-    console.log(this.state.aboutMe);
-    axios({
-      method: 'post',
-      url: apiCall,
-      data: {
-        email: this.state.email,
-        name: this.state.name,
-        aboutMe: this.state.aboutMe,
-        uploadimage: this.state.uploadedImage
-      }
+    const self = this;
+    
+    if(this.state.avatarURL.toString().startsWith("https://firebasestorage.googleapis.co")) {
+      self.setState({fireBaseURL:this.state.avatarURL});
+    }else {
+      await this.uploadToFireBase();
+    }
+    setTimeout(function(){
+      var apiCall = serverURL;
       
-    })
+      apiCall = apiCall + "/editProfile";
+      console.log("photo URL=" + self.state.fireBaseURL);
+      axios.post(`${serverURL}/editProfile`, {
+        data: {
+          name: self.state.name,
+          role: "COOK",
+          aboutMe: self.state.aboutMe,
+          profilePicture: self.state.fireBaseURL,
+          email:self.props.email,
+        }
+      })
       .then(res => {
         console.log(res.data);
       })
+      window.location.reload(false);
+    }, 2000);
   }
 
+
   getProfile = e => {
-    // console.log("CHECK")
     var apiCall = serverURL;
     apiCall = apiCall + "/profile";
-    axios.get(apiCall, {
-      params: {
-        email: btoa(this.props.email),
-        role: 'Homecook'
+    axios.post(`${serverURL}/profile`, {
+      data: {
+        email: this.props.email,
+        role: 'COOK'
       }
     })
       .then(res => {
-        // console.log(res.data);
-        this.setState({
-          name: atob(res.data.name),
-          cuisines: res.data.cuisines,
-          aboutMe: res.data.aboutMe,
-        });
+        if (res.data.name.length > 0) {
+          this.setState({
+            name: res.data.name,
+            nameOrig: res.data.name,
+            aboutMe: res.data.aboutMe,
+            avatarURL: res.data.profilePicture,
+            email: res.data.email
+          });
+        }
       })
   }
 

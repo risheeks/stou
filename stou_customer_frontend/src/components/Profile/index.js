@@ -121,6 +121,7 @@ export default class Profile extends React.Component {
       axios.post(`${serverURL}/editProfile`, {
         data: {
           name: self.state.name,
+          role: "CUSTOMER",
           aboutMe: self.state.aboutMe,
           profilePicture: self.state.fireBaseURL,
           email:self.props.email,
