@@ -359,8 +359,8 @@ app.use('/editProfile', function(req,res,next){
 
 app.use('/profile', function(req, res, next) {
   console.log("profile");
-  const email = req.body['data']['email'];
-  const role = req.body['data']['role'];
+  let email = req.body['data']['email'];
+  let role = req.body['data']['role'];
   if(role === 'Homecook') role = 'COOK';
   console.log(email);
   let o = {};
