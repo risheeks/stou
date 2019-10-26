@@ -46,7 +46,6 @@ export default class Profile extends React.Component {
       progress: 0,
       avatarURL: '',
       fireBaseURL: '',
-      isFireBaseURL: false
     };
     // this.getProfile();
 
@@ -107,8 +106,9 @@ export default class Profile extends React.Component {
   updateProfile = async e => {
     // this.getProfile();
     const self = this;
-    
-    if(this.state.avatarURL.toString().startsWith("https://firebasestorage.googleapis.co")) {
+    if(!this.state.avatarURL) {
+      self.setState({fireBaseURL:"https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/images%2FYj6nVUBRAQLrvR90IxaG9tYJL?alt=media&token=1601dd22-9bf1-4706-8f84-894cf69580c7"});
+    }else if(this.state.avatarURL.toString().startsWith("https://firebasestorage.googleapis.co")) {
       self.setState({fireBaseURL:this.state.avatarURL});
     }else {
       await this.uploadToFireBase();
@@ -130,7 +130,7 @@ export default class Profile extends React.Component {
       .then(res => {
         console.log(res.data);
       })
-      window.location.reload(false);
+      //window.location.reload(false);
     }, 2000);
   }
 
@@ -148,13 +148,17 @@ export default class Profile extends React.Component {
         if (res.data.name.length > 0) {
           this.setState({
             name: res.data.name,
-            nameOrig: res.data.name,
             aboutMe: res.data.aboutMe,
             avatarURL: res.data.profilePicture,
             email: res.data.email
           });
+          if(!this.state.avatarURL) {
+            this.setState({avatarURL:"https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/images%2FYj6nVUBRAQLrvR90IxaG9tYJL?alt=media&token=1601dd22-9bf1-4706-8f84-894cf69580c7"});
+          }
         }
       })
+      
+      
   }
 
   onClickUpload = e => {
@@ -168,7 +172,7 @@ export default class Profile extends React.Component {
     const reader = new FileReader();
     if (e.target.files[0]) {
       const options = {
-        maxSizeMB: 2,          // (default: Number.POSITIVE_INFINITY)
+        maxSizeMB: 1.5,          // (default: Number.POSITIVE_INFINITY)
       }
       imageCompression(e.target.files[0], options)
         .then(res => {
