@@ -69,6 +69,7 @@ export class Home extends Component {
                         </div>
                     </Tab>
                 </Tabs>
+                
             </div>
         );
     }
