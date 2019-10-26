@@ -31,7 +31,6 @@ const ENV = process.env.NODE_ENV === 'production'
 export default class Profile extends React.Component {
   constructor(props) {
     let v = "sid";
-    // console.log(btoa(atob(v)))
     super(props);
     this.updateProfile = this.updateProfile.bind(this);
     this.getProfile = this.getProfile.bind(this);

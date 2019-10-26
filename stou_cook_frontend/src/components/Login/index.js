@@ -63,7 +63,7 @@ export class Login extends Component {
         { this.props.auth_token ? this.props.history.push('/') : null}
         <ResetPassword show={this.props.showModal} closeModal={this.props.closeModal} />
         <form onSubmit={this.handleSubmit}>
-          <FormGroup controlId="email" bsSize="large">
+          <FormGroup controlId="email">
             <FormLabel>Email/Username</FormLabel>
             <FormControl className="email"
               autoFocus
@@ -72,7 +72,7 @@ export class Login extends Component {
               onChange={this.handleChange}
             />
           </FormGroup>
-          <FormGroup controlId="password" bsSize="large">
+          <FormGroup controlId="password">
             <FormLabel>Password</FormLabel>
             <FormControl
               value={this.state.password}
@@ -83,7 +83,6 @@ export class Login extends Component {
           <div>
             <Button
               block
-              bsSize="large"
               className="submit-button"
               disabled={!this.validateForm()}
               onClick={this.handleSubmit}
