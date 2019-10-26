@@ -39,7 +39,7 @@ export class Login extends Component {
     axios.post(`${serverURL}/login`, {
       data: {
         role: "Customer",
-        email: btoa(email),
+        email: email,
         password: encryptedPassword.toString()
       }
     })
