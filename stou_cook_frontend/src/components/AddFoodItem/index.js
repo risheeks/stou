@@ -221,7 +221,9 @@ export class AddFoodItem extends Component {
                 value={this.state.zipcode}
                 type="number"
                 onChange={this.handleChange}
-              />
+                onInput = {(e) =>{
+                  e.target.value = Math.max(0, parseInt(e.target.value) ).toString().slice(0,5)
+              }}/>
             </FormGroup>
             <div>
               <Card.Title>Allergens</Card.Title>
