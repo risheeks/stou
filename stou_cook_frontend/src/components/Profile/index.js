@@ -5,17 +5,8 @@ import "../../styles/Main.css";
 import imageCompression from 'browser-image-compression';
 import firebase from "firebase";
 import { serverURL } from "../../config/index.js"
+import { firebaseConfig } from "../../config/index.js"
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCKRmXkIQqNtPTM-_MMvsQYMH1tSm7IlNM",
-  authDomain: "stou-79b9a.firebaseapp.com",
-  databaseURL: "https://stou-79b9a.firebaseio.com",
-  projectId: "stou-79b9a",
-  storageBucket: "stou-79b9a.appspot.com",
-  messagingSenderId: "135234417719",
-  appId: "1:135234417719:web:a6233dfcab2935a2e67bb2",
-  measurementId: "G-EWZ35B7N17"
-};
 export default class Profile extends React.Component {
   constructor(props) {
     let v = "sid";
