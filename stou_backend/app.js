@@ -122,10 +122,11 @@ app.use('/logout', function(req, res, next){
 app.use('/getallfood', function(req, res, next){
   let o = {};
   con.getConnection(function(err, connection) {
-    if (err) throw err;
+    if (err) console.log(err);
     var q = 'SELECT FOOD.PICTURE, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL;';
+    
     connection.query(q, function (err, result) {
-      if (err) throw err;
+      if (err) console.log(err);
       if (result.length === 0) {
         o['code'] = 400;
         res.status(400)
@@ -247,86 +248,90 @@ app.use('/addfooditem', function(req, res, next){
   
   con.getConnection(function(err, connection) {
     if (err) console.log(err);
-    var q = 'SELECT * FROM CUISINES WHERE CUISINE="' + cuisine + '";';
-    let cuisine_present = true;
-    connection.query(q, function (err, result) {
-      if (err) console.log(err);
-      if (result.length === 0) {
-        cuisine_present = false;
-      }
-      else {
-        cuisine_present = true;
-      }
-      // connection.release();
-    });
-
-    if(cuisine_present === false) {
-      q = 'INSERT INTO CUISINES (CUISINE) VALUES ' + cuisine + ';';
+    let cuisine_present = false;
+    if(cuisine != null) {
+      var q = 'SELECT * FROM CUISINES WHERE CUISINE="' + cuisine + '";';
+      console.log(q);
       connection.query(q, function (err, result) {
-        if (err) {
-          console.log(err);
+        if (err) console.log(err);
+        // console.log(result.length);
+        if (result.length === 0) {
+          cuisine_present = false;
+          // console.log(cuisine_present);
         }
         else {
           cuisine_present = true;
+          // console.log(cuisine_present);
         }
         // connection.release();
       });
     }
-
-    if(cuisine_present === true) {
-      var columns = "(";
-      var values = "(";
-      if(itemName != null) {
-        columns += "TITLE, ";
-        values += '"' + itemName + '", ';
-      } 
-      if(price != null) {
-        columns += "PRICE, ";
-        values += price + ", ";
-      }
-      if(cuisine != null) {
-        columns += "CUISINE, ";
-        values += '"' + cuisine + '", ';
-      }
-      if(calories != null) {
-        columns += "CALORIES, ";
-        values += calories + ", ";
-      }
-      if(picture != null) {
-        columns += "PICTURE, ";
-        values += '"' + picture + '", ';
-      }
-      if(desc != null) {
-        columns += "DESC, ";
-        values += '"' + desc + '", ';
-      }
-      columns += "COOK_EMAIL) ";
-      values += '"' + cook_email + '") ';
-      q = 'INSERT INTO FOOD ' + columns + 'VALUES ' + values + ';';
+    // console.log(cuisine_present);
+    
+    if((cuisine_present === false) && (cuisine_present != null)) {
+      q = 'INSERT INTO CUISINES (CUISINE) VALUES ("' + cuisine + '");';
       console.log(q);
       connection.query(q, function (err, result) {
         if (err) {
-          o['code'] = 400;
-          res.status(400)
-          o['message'] = 'Failed to add food';
-          res.send(o);
+          console.log(err);
         }
-        else {
-          o['code'] = 200;
-          res.status(200)
-          o['message'] = title + ' added';
-          res.send(o);
+        
+          console.log(cuisine_present);
+          var columns = "(";
+          var values = "(";
+          if(itemName != null) {
+            columns += "TITLE, ";
+            values += '"' + itemName + '", ';
+          } 
+          if(price != null) {
+            columns += "PRICE, ";
+            values += price + ", ";
+          }
+          if(cuisine != null) {
+            columns += "CUISINE, ";
+            values += '"' + cuisine + '", ';
+          }
+          if(calories != null) {
+            columns += "CALORIES, ";
+            values += calories + ", ";
+          }
+          if(picture != null) {
+            columns += "PICTURE, ";
+            values += '"' + picture + '", ';
+          }
+          if(desc != null) {
+            columns += "DESCRIPTION, ";
+            values += '"' + desc + '", ';
+          }
+          columns += "FOOD_ID, VALID, ";
+          values += '"' + uuidv4() + '", "true", ';
 
-        }
-        connection.release();
+
+          columns += "COOK_EMAIL) ";
+          values += '"' + cook_email + '") ';
+
+          q = 'INSERT INTO FOOD ' + columns + 'VALUES ' + values + ';';
+          console.log(q);
+          connection.query(q, function (err, result) {
+            if (err) {
+              o['code'] = 400;
+              res.status(400)
+              o['message'] = 'Failed to add food';
+              res.send(o);
+            }
+            else {
+              o['code'] = 200;
+              res.status(200)
+              o['message'] = itemName + ' added';
+              res.send(o);
+            }
+            connection.release();
+          });
+        
+        // connection.release();
       });
     }
-    else{
-      o['code'] = 400;
-      res.status(400)
-      o['message'] = 'Failed to add food';
-      res.send(o);
-    }
+    
   });
 });
 
@@ -345,10 +350,10 @@ app.use('/editProfile', function(req,res,next){
 
   if(role === 'Homecook') role = 'COOK';
 
-  console.log(profilePicture);
-  console.log(aboutMe);
-  console.log(lastName);
-  console.log(name);
+  // console.log(profilePicture);
+  // console.log(aboutMe);
+  // console.log(lastName);
+  // console.log(name);
 
   if(firstName === null) {
     firstName = '';
