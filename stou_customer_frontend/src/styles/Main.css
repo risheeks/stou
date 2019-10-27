@@ -149,15 +149,13 @@
 .saveHeart {
   float: right;
   margin: 10px;
-  color: gray;
-    display: none;
+  color: red;
 }
 
 .saveOpenHeart {
   float: right;
   margin: 10px;
-  color: gray;
-
+  color: red;
 }
 
 #profile-container {

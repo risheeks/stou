@@ -8,6 +8,7 @@ import firebase from "firebase";
 import { serverURL } from "../../config/index.js"
 import PaypalExpressBtn from 'react-paypal-express-checkout';
 import Spinner from 'react-bootstrap/Spinner'
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCKRmXkIQqNtPTM-_MMvsQYMH1tSm7IlNM",
@@ -164,6 +165,14 @@ export default class Profile extends React.Component {
       
   }
 
+  ChangeSaveFavHomeCookStatus =(e)=> {
+        const currentFavHomeCookStatus=this.state.isFavoriteHomeCook;
+        this.setState({
+            isFavoriteHomeCook: !currentFavHomeCookStatus
+        })
+        console.log("status: ", !currentFavHomeCookStatus);
+  }
+
   onClickUpload = e => {
     this.inputElement.click();
   }
@@ -262,7 +271,14 @@ onError = (err) => {
                         <img className="vfo-image rounded float-left" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" alr=""></img>
                       </Col>
                       <Col>
+                        <Row onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'none' : 'block' }}>
+                          <i><FaRegHeart className="saveOpenHeart"/></i> 
+                        </Row>
+                        <Row onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'block' : 'none' }}>
+                          <i><FaHeart className="saveHeart"/></i>
+                        </Row>
                         <Row className="vfo-foodname">
+                        
                           <p>Spicy Pasta</p>
                         </Row>
                         <Row className="vfo-description">
@@ -279,6 +295,12 @@ onError = (err) => {
                         <img className="vfo-image rounded float-left" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" alr=""></img>
                       </Col>
                       <Col>
+                        <Row onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'none' : 'block' }}>
+                          <i><FaRegHeart className="saveOpenHeart"/></i> 
+                        </Row>
+                        <Row onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'block' : 'none' }}>
+                          <i><FaHeart className="saveHeart"/></i>
+                        </Row>
                         <Row className="vfo-foodname">
                           <p>Chicken Tikka Masala</p>
                         </Row>

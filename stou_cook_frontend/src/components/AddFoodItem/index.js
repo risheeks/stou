@@ -62,7 +62,7 @@ export class AddFoodItem extends Component {
         description: description,
         allergens: chosenAllergens,
         cuisine: chosenCuisines[0],
-        picture: uploadedImage,
+        picture: 'sample',//uploadedImage,
         location: '47906',
         token: this.props.auth_token
       }
