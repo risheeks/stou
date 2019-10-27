@@ -1,3 +1,8 @@
+textarea {
+  resize: none;
+  height: 7rem !important;
+}
+
 .basic-checkbox {
     margin: 0;
 }
@@ -309,6 +314,47 @@
 
 .food-link-name {
   padding: 0;
+}
+
+.checkout-container {
+  display: flex;
+  flex-direction: row;
+  margin: 2%;
+}
+
+.checkout-items {
+  width: 500px;
+}
+
+.checkout-items-list {
+  width: 100%;
+}
+
+.delivery-container {
+  width: 50%;
+  margin: 0 2%;
+  border: solid lightgray 0.5px;
+  border-radius: 1%;
+  padding: 2%;
+}
+
+.input-row {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.address-inputs {
+  width: 50%;
+  margin: 1%;
+}
+
+.address-div {
+  margin-bottom: 5%;
+}
+
+.paypal-button {
+  margin-top: 50px;
 }
 
 @media all and (min-width: 480px) {

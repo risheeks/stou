@@ -25,7 +25,7 @@ class BagItem extends Component {
                             src={deleteicon}
                         />
                     </Button>
-                    <p className="bag-item-price">${price}</p>
+                    <p className="bag-item-price">${quantity * price}</p>
             </ListGroup.Item>
         );
     }
