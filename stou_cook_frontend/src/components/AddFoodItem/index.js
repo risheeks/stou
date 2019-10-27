@@ -56,6 +56,7 @@ export class AddFoodItem extends Component {
     event.preventDefault();
     axios.post(`${serverURL}/addfooditem`, {
       data: {
+        homecook: this.props.email,
         itemName: foodname,
         price: price,
         calories: calories,
