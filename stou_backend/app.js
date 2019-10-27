@@ -254,6 +254,8 @@ app.use('/gethomecooks', function(req,res,next){
           var row = result[i];
           ob['name'] = row.FIRST_NAME + " " + row.LAST_NAME;
           ob['email'] = row.EMAIL;
+          ob['rating'] = row.RATING;
+          OB['aboutMe'] = row.ABOUT_ME;
           // ob['cuisines'] = row.CUISINES;
           ob['profilePicture'] = row.PICTURE;
           obj.push(JSON.parse(JSON.stringify(ob)));
