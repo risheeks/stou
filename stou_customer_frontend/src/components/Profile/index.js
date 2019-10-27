@@ -7,7 +7,6 @@ import imageCompression from 'browser-image-compression';
 import firebase from "firebase";
 import { serverURL } from "../../config/index.js"
 import { firebaseConfig } from "../../config/index.js"
-import PaypalExpressBtn from 'react-paypal-express-checkout';
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 
@@ -47,6 +46,7 @@ export default class Profile extends React.Component {
   }
   handleChangeUsername = event =>
     this.setState({ username: event.target.value });
+
   componentDidUpdate(prevProps) {
     console.log(this.props.email);
     if (this.props.email && this.props.email != 'undefined' && this.props.email !== prevProps.email) {
@@ -59,44 +59,44 @@ export default class Profile extends React.Component {
   }
 
   generateUniqueID(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;
- }
+  }
 
   uploadToFireBase = e => {
     //let { fireBaseURL } = this.state;
-    
+
     const self = this;
     let randomID = this.generateUniqueID(25);
-    let url='';
+    let url = '';
     let path = "images/" + randomID;
     let uploadTask = firebase.storage().ref().child(path).put(this.state.uploadedImage);
-    uploadTask.on('state_changed', function(snapshot){
-    let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    console.log('Upload is ' + progress + '% done');
-    switch (snapshot.state) {
-      case firebase.storage.TaskState.PAUSED: // or 'paused'
-        console.log('Upload is paused');
+    uploadTask.on('state_changed', function (snapshot) {
+      let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log('Upload is ' + progress + '% done');
+      switch (snapshot.state) {
+        case firebase.storage.TaskState.PAUSED: // or 'paused'
+          console.log('Upload is paused');
           break;
         case firebase.storage.TaskState.RUNNING: // or 'running'
           console.log('Upload is running');
           break;
       }
-    }, function(error) {
+    }, function (error) {
       // Handle unsuccessful uploads
-    }, function() {
-      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+    }, function () {
+      uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
         console.log('File available at', downloadURL);
         url = downloadURL;
         self.setState({fireBaseURL:url}, () => self.updateProfileCallBack());
       });
     });
-  
+
   }
   updateProfileCallBack = () => {
 
@@ -151,8 +151,8 @@ export default class Profile extends React.Component {
           }
         }
       })
-      
-      
+
+
   }
 
   ChangeSaveFavHomeCookStatus =(e)=> {
@@ -187,28 +187,28 @@ export default class Profile extends React.Component {
         })
     }
   }
-onSuccess = (payment) => {
-        console.log("The payment was succeeded!", payment);
-}
+  onSuccess = (payment) => {
+    console.log("The payment was succeeded!", payment);
+  }
 
-onCancel = (data) => {
+  onCancel = (data) => {
     console.log('The payment was cancelled!', data);
-}
+  }
 
-onError = (err) => {
+  onError = (err) => {
     console.log("Error!", err);
-}
+  }
 
   render() {
 
 
-  let env = 'sandbox'; 
-  let currency = 'USD'; 
-  let total = 1; 
-  const client = {
-      sandbox:    'AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC',
+    let env = 'sandbox';
+    let currency = 'USD';
+    let total = 1;
+    const client = {
+      sandbox: 'AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC',
       production: 'YOUR-PRODUCTION-APP-ID',
-  }
+    }
     const { avatarURL } = this.state;
     return (
       <div className="container profile bg-profile">        
@@ -216,14 +216,14 @@ onError = (err) => {
           <Form role="form">
             {this.props.show}
             <br styles="clear:both" />
-            <Image className="image-upload-preview" src={avatarURL} fluid thumbnail onClick={this.onClickUpload} roundedCircle/>
+            <Image className="image-upload-preview" src={avatarURL} fluid thumbnail onClick={this.onClickUpload} roundedCircle />
             <FormControl
               type="file"
               className="image-upload-input"
               onChange={this.onImageChange}
               ref={input => this.inputElement = input}
             />
-            
+
             <FormGroup controlId="name" className="form-group">
               {/* <Form.Label className='form-text'><h5>Name</h5></Form.Label> */}
               <Form.Label value={this.state.name} className='form-value'><h1>{this.state.name}</h1></Form.Label>
@@ -239,7 +239,7 @@ onError = (err) => {
             <br /> */}
             <FormGroup controlId="aboutMe" className="form-group">
               <Form.Label className='form-text text-about-me-label'><h6><b>About Me</b></h6></Form.Label>
-              <Form.Control value={this.state.aboutMe} type="text" onChange={this.handleChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3" as="textarea"/>
+              <Form.Control value={this.state.aboutMe} type="text" onChange={this.handleChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3" as="textarea" />
               {/* <Textarea value={this.state.aboutMe} type="text" onChange={this.handleAboutMeChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3"></Textarea> */}
             </FormGroup>
             <br />
@@ -306,11 +306,10 @@ onError = (err) => {
               </Container>
             </div>
           </Form>
-            
+
         </div>
-        <PaypalExpressBtn env={env} client={client} currency={currency} total={total} onError={this.onError} onSuccess={this.onSuccess} onCancel={this.onCancel} />
       </div>
-      
+
     )
   }
 }
