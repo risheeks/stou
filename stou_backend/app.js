@@ -154,11 +154,11 @@ app.use('/logout', function(req, res, next){
 
 
 app.use('/getallfood', function(req, res, next){
-  const itemName = req.body['data']['location'];
+  const location = req.body['data']['location'];
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) console.log(err);
-    var q = 'SELECT FOOD.PICTURE, COOK_EMAIL, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL AND USER.ROLE=1;';
+    var q = 'SELECT FOOD.PICTURE, COOK_EMAIL, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL AND USER.ROLE=1 AND (LOCATION BETWEEN ' + (parseInt(location - 2)) + ' AND ' + (parseInt(location) +2) + ';';
     
     connection.query(q, function (err, result) {
       if (err) console.log(err);
