@@ -108,16 +108,17 @@ export default class Profile extends React.Component {
       
       apiCall = apiCall + "/editProfile";
       console.log("photo URL=" + self.state.fireBaseURL);
+      console.log(self.state.name);
       if(!self.state.aboutMe) self.state.aboutMe = " "
-      axios.post(`${serverURL}/editProfile`, {
-        data: {
-          name: self.state.name,
-          role: "COOK",
-          aboutMe: self.state.aboutMe,
-          profilePicture: self.state.fireBaseURL,
-          email:self.props.email,
-        }
-      })
+        axios.post(`${serverURL}/editProfile`, {
+          data: {
+            name: self.state.name,
+            role: "COOK",
+            aboutMe: self.state.aboutMe,
+            profilePicture: self.state.fireBaseURL,
+            email:self.props.email,
+          }
+        })
       .then(res => {
         console.log(res.data);
       })

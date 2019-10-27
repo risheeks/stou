@@ -242,58 +242,91 @@ app.use('/addfooditem', function(req, res, next){
   const picture = req.body['data']['picture'];
   const desc = req.body['data']['description'];
   let o ={};
-  console.log(token)
-  console.log('insert into FoodItems values(\'' + itemName + '\', \'' + loginTokens[token] + '\', \'' + location + '\', \'' + price + '\', \'' + allergens +'\', \'' + cuisine + '\', \'' + calories +'\', \'' + picture + '\', \'' + desc + '\')')
+  // console.log(token)
+  // console.log('insert into FoodItems values(\'' + itemName + '\', \'' + loginTokens[token] + '\', \'' + location + '\', \'' + price + '\', \'' + allergens +'\', \'' + cuisine + '\', \'' + calories +'\', \'' + picture + '\', \'' + desc + '\')')
   
   con.getConnection(function(err, connection) {
-    if (err) throw err;
-    var columns = "(";
-    var values = "(";
-    if(itemName.length > 0) {
-      columns += "TITLE, ";
-      values += itemName + ", ";
-    } 
-    if(price.length > 0) {
-      columns += "PRICE, ";
-      values += price + ", ";
-    }
-    if(CUISINE.length > 0) {
-      columns += "CUISINE, ";
-      values += cuisine + ", ";
-    }
-    if(CALORIES.length > 0) {
-      columns += "CALORIES, ";
-      values += calories + ", ";
-    }
-    if(PICTURE.length > 0) {
-      columns += "PICTURE, ";
-      values += picture + ", ";
-    }
-    if(DESC.length > 0) {
-      columns += "DESC, ";
-      values += desc + ", ";
-    }
-    columns += "COOK_EMAIL) ";
-    values += cook_email + ") ";
-    var q = 'INSERT INTO FOOD ' + columns + 'VALUES ' + values + ';';
-
+    if (err) console.log(err);
+    var q = 'SELECT * FROM CUISINES WHERE CUISINE="' + cuisine + '";';
+    let cuisine_present = true;
     connection.query(q, function (err, result) {
-      if (err) throw err;
+      if (err) console.log(err);
       if (result.length === 0) {
-        o['code'] = 400;
-        res.status(400)
-        o['message'] = 'Failed to add food';
-        res.send(o);
+        cuisine_present = false;
       }
       else {
-        o['code'] = 200;
-        res.status(200)
-        o['message'] = title + ' added';
-        res.send(o);
-
+        cuisine_present = true;
       }
-      connection.release();
+      // connection.release();
     });
+
+    if(cuisine_present === false) {
+      q = 'INSERT INTO CUISINES (CUISINE) VALUES ' + cuisine + ';';
+      connection.query(q, function (err, result) {
+        if (err) {
+          console.log(err);
+        }
+        else {
+          cuisine_present = true;
+        }
+        // connection.release();
+      });
+    }
+
+    if(cuisine_present === true) {
+      var columns = "(";
+      var values = "(";
+      if(itemName != null) {
+        columns += "TITLE, ";
+        values += '"' + itemName + '", ';
+      } 
+      if(price != null) {
+        columns += "PRICE, ";
+        values += price + ", ";
+      }
+      if(cuisine != null) {
+        columns += "CUISINE, ";
+        values += '"' + cuisine + '", ';
+      }
+      if(calories != null) {
+        columns += "CALORIES, ";
+        values += calories + ", ";
+      }
+      if(picture != null) {
+        columns += "PICTURE, ";
+        values += '"' + picture + '", ';
+      }
+      if(desc != null) {
+        columns += "DESC, ";
+        values += '"' + desc + '", ';
+      }
+      columns += "COOK_EMAIL) ";
+      values += '"' + cook_email + '") ';
+      q = 'INSERT INTO FOOD ' + columns + 'VALUES ' + values + ';';
+      console.log(q);
+      connection.query(q, function (err, result) {
+        if (err) {
+          o['code'] = 400;
+          res.status(400)
+          o['message'] = 'Failed to add food';
+          res.send(o);
+        }
+        else {
+          o['code'] = 200;
+          res.status(200)
+          o['message'] = title + ' added';
+          res.send(o);
+
+        }
+        connection.release();
+      });
+    }
+    else{
+      o['code'] = 400;
+      res.status(400)
+      o['message'] = 'Failed to add food';
+      res.send(o);
+    }
   });
 });
 
@@ -338,6 +371,7 @@ app.use('/editProfile', function(req,res,next){
   con.getConnection(function(err, connection) {
     if (err) throw err;
     var q = 'UPDATE USER SET ABOUT_ME="' + aboutMe + '", FIRST_NAME="' + firstName +'", LAST_NAME="' + lastName + '" , PICTURE="' + profilePicture + '" where EMAIL="' + email + '" AND ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
+    console.log(q);
     connection.query(q, function (err, result) {
       console.log(result);
       if(err) {
@@ -610,7 +644,7 @@ app.use('/register', function(req,res,next){
 
 function registerUser(firstName, lastName, email, password, role, cuisines) {
   console.log(role);
-  if(role === 'Homecook') role = 'cook';
+  if(role === 'Homecook') role = 'COOK';
   con.getConnection(function(err, connection) {
     if (err) throw err;
     var q = 'INSERT INTO USER (FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, ROLE) values("' + firstName + '", "' + lastName + '", "' + email + '", "' + password + '", (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '"));';
