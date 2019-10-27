@@ -118,6 +118,7 @@ export default class Profile extends React.Component {
       
       apiCall = apiCall + "/editProfile";
       console.log("photo URL=" + self.state.fireBaseURL);
+      if(!self.state.aboutMe) self.state.aboutMe = " "
       axios.post(`${serverURL}/editProfile`, {
         data: {
           name: self.state.name,
@@ -218,44 +219,41 @@ onError = (err) => {
     const { avatarURL } = this.state;
     return (
       <div className="container profile">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
+        
         <div className="form-area">
           <Form role="form">
             {this.props.show}
             <br styles="clear:both" />
-            <Image className="image-upload-preview" src={avatarURL} fluid thumbnail onClick={this.onClickUpload}/>
+            <Image className="image-upload-preview" src={avatarURL} fluid thumbnail onClick={this.onClickUpload} roundedCircle/>
             <FormControl
               type="file"
               className="image-upload-input"
               onChange={this.onImageChange}
               ref={input => this.inputElement = input}
             />
-            <br />
+            
             <FormGroup controlId="name" className="form-group">
-              <Form.Label className='form-text'><h5>Name</h5></Form.Label>
-              {/* <Form.Control value={this.state.name} type="text" onChange={this.handleChange} className="text-about-me" placeholder={this.state.name} rows="1" /> */}
-              <Form.Label value={this.state.name} className='form-value'><h5>{this.state.name}</h5></Form.Label>
-              {/* <p value={this.state.name} className='form-value'><h5>{this.state.name}</h5></p> */}
+              {/* <Form.Label className='form-text'><h5>Name</h5></Form.Label> */}
+              <Form.Label value={this.state.name} className='form-value'><h1>{this.state.name}</h1></Form.Label>
             </FormGroup>
-            <br />
             <FormGroup className="form-group">
-              <Form.Label className='form-text'><h5>Email</h5></Form.Label>
-              <Form.Label value={this.state.name} className='form-value'><h5>{this.props.email}</h5></Form.Label>
+              {/* <Form.Label className='form-text'><h5>Email</h5></Form.Label> */}
+              <Form.Label value={this.state.name} className='form-value profileEmail'><h5>{this.props.email}</h5></Form.Label>
             </FormGroup>
-            <br />
             {/* <FormGroup className="form-group">
               <Form.Label className='form-text'><h5>Cuisines</h5></Form.Label>
               <Form.Label value={this.state.name} className='form-value'><h5>{this.state.cuisines}</h5></Form.Label>
             </FormGroup>
             <br /> */}
             <FormGroup controlId="aboutMe" className="form-group">
-              <Form.Label className='form-text'><h5>About Me</h5></Form.Label>
-              <Form.Control value={this.state.aboutMe} type="text" onChange={this.handleChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3" as="textarea" />
+              <Form.Label className='form-text text-about-me-label'><h6><b>About Me</b></h6></Form.Label>
+              <Form.Control value={this.state.aboutMe} type="text" onChange={this.handleChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3" as="textarea"/>
               {/* <Textarea value={this.state.aboutMe} type="text" onChange={this.handleAboutMeChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3"></Textarea> */}
             </FormGroup>
             <br />
             <Button
               block
-              bsSize="large"
               className="submit-button"
               onClick={this.updateProfile}
             >
@@ -263,7 +261,7 @@ onError = (err) => {
             </Button>
             <br />
             <div className="form-group">
-              <p className='form-text'><h5>Past Food:</h5></p>
+              <h5><p className='form-text'>Past Food:</p></h5>
               <Container className="ViewFood">
                 <ListGroup>
                   <ListGroup.Item>
