@@ -123,7 +123,7 @@ app.use('/getallfood', function(req, res, next){
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) console.log(err);
-    var q = 'SELECT FOOD.PICTURE, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL;';
+    var q = 'SELECT FOOD.PICTURE, COOK_EMAIL TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL;';
     
     connection.query(q, function (err, result) {
       if (err) console.log(err);
@@ -140,6 +140,8 @@ app.use('/getallfood', function(req, res, next){
           var row = result[i];
           ob['name'] = row.TITLE;
           ob['homecook'] = row.FIRST_NAME + " " + row.LAST_NAME;
+          ob['email'] = row.COOK_EMAIL;
+          ob['description'] = row.DESCRIPTION;
           ob['price'] = row.PRICE;
           ob['cuisine'] = row.CUISINE;
           ob['calories'] = row.CALORIES;
@@ -234,6 +236,7 @@ app.use('/gethomecooks', function(req,res,next){
 app.use('/addfooditem', function(req, res, next){
   const itemName = req.body['data']['itemName'];
   const cook_email = req.body['data']['homecook'];
+  const food_id = uuidv4();
   const token = req.body['data']['token'];
   const location = req.body['data']['location'];
   const price = req.body['data']['price'];
@@ -304,7 +307,7 @@ app.use('/addfooditem', function(req, res, next){
             values += '"' + desc + '", ';
           }
           columns += "FOOD_ID, VALID, ";
-          values += '"' + uuidv4() + '", "true", ';
+          values += '"' + food_id + '", "true", ';
 
 
           columns += "COOK_EMAIL) ";
