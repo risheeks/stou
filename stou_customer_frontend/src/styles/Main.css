@@ -101,10 +101,13 @@
     width: 600px;
     border: 1px solid rgb(202, 202, 202);
     padding: 60px;
+    background-color:#fcfcfc;
 }
-
-.text-about-me {
-    width: 400px;
+.text-about-me-label {
+  /* width: 400px; */
+  color: grey;
+  font-size: 18px;
+  text-align: center;
 }
 
 .filterbar-container {
@@ -371,4 +374,8 @@
     .form span.required {
       display: block;
     }
-    }
+}
+.profileEmail {
+  color: grey;
+  font-size: 18px;
+}
