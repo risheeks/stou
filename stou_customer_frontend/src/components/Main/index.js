@@ -16,6 +16,7 @@ import MyModal from '../../../../stou_customer_frontend/src/components/Common/Mo
 import { getToken, signOut } from '../../actions/login.action';
 import { openModal, closeModal } from '../../actions/modal.action';
 import { addToOrder, removeFromOrder, refresh } from '../../actions/order.action';
+import Checkout from '../Checkout';
 
 function mapStateToProps(state) {
     return {
@@ -40,7 +41,7 @@ class Main extends Component {
     componentDidMount() {
         let tempToken = localStorage.getItem('auth_token');
         let tempEmail = localStorage.getItem('email');
-        if(tempToken && tempEmail) {
+        if (tempToken && tempEmail) {
             this.props.getToken(tempToken, tempEmail);
         }
     }
@@ -52,6 +53,8 @@ class Main extends Component {
         return (
             <Router>
                 <Header
+                    auth_token={auth_token}
+                    email={email}
                     signOut={signOut}
                     loggedIn={loggedIn}
                     removeFromOrder={removeFromOrder}
@@ -64,7 +67,7 @@ class Main extends Component {
                         email={email}
                         openModal={openModal}
                         addToOrder={addToOrder}
-                    />} 
+                    />}
                 />
                 <Route path="/login" render={() =>
                     <Login
@@ -92,8 +95,15 @@ class Main extends Component {
                         email={email}
                     />}
                 />
-
-                <MyModal {...modalProps} closeModal={closeModal}/>
+                <Route path="/checkout" render={() =>
+                    <Checkout
+                        auth_token={auth_token}
+                        email={email}
+                        baggedItems={baggedItems}
+                        refresh={refresh}
+                    />}
+                />
+                <MyModal {...modalProps} closeModal={closeModal} />
             </Router>
         );
     }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { ListGroup, Button } from 'react-bootstrap';
+import { withRouter } from 'react-router-dom';
 
 import BagItem from './BagItem';
 
@@ -15,6 +16,10 @@ class Bag extends Component {
             sum += baggedItems[i].price * baggedItems[i].quantity;
         }
         return sum;
+    }
+
+    onCheckout = e => {
+        this.props.history.push('/checkout')
     }
 
     render() {
@@ -37,12 +42,12 @@ class Bag extends Component {
                     )}
                     <ListGroup.Item>
                         <div className="bag-item-container">
-                            <p className="bag-item-name">Subtotal:</p>
+                            <p className="bag-item-name"><b>Subtotal:</b></p>
                             <p className="bag-item-price">${this.getSubtotal()}</p>
                         </div>
                     </ListGroup.Item>
                     <ListGroup.Item>
-                        <Button variant="success">Continue to Checkout</Button>
+                        <Button variant="success" onClick={this.onCheckout}>Continue to Checkout</Button>
                     </ListGroup.Item>
                 </ListGroup>
             );
@@ -57,4 +62,4 @@ class Bag extends Component {
     }
 }
 
-export default Bag;
+export default withRouter(Bag);

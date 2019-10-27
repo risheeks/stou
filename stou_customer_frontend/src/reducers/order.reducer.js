@@ -9,6 +9,7 @@ const orderReducer = function order(state = initialState, action) {
             let existingItem = state.baggedItems.find( ({ id }) => id === action.newItem.id)
             if(existingItem) {
                 existingItem.quantity += action.newItem.quantity;
+                localStorage.setItem('baggedItems', JSON.stringify(state.baggedItems));
                 return state;
             }
             state = {
