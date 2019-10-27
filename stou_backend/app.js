@@ -123,7 +123,7 @@ app.use('/getallfood', function(req, res, next){
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) console.log(err);
-    var q = 'SELECT FOOD.PICTURE, COOK_EMAIL TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL;';
+    var q = 'SELECT FOOD.PICTURE, COOK_EMAIL, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL AND USER.ROLE=1;';
     
     connection.query(q, function (err, result) {
       if (err) console.log(err);
@@ -138,6 +138,7 @@ app.use('/getallfood', function(req, res, next){
         let ob = {};
         for(var i = 0; i < result.length; i++){
           var row = result[i];
+          console.log(row);
           ob['name'] = row.TITLE;
           ob['homecook'] = row.FIRST_NAME + " " + row.LAST_NAME;
           ob['email'] = row.COOK_EMAIL;
