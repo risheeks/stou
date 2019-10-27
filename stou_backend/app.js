@@ -83,13 +83,17 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port))
 
-app.use('/location', function(req, res, next){
+app.use('/setlocation', function(req, res, next){
   const email = req.param('email');
   const location = req.param('location');
+  let role = req.param('role');
+  if (role === 'Homecook') {
+    role = 'COOK';
+  }
   var o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'UPDATE USER SET LOCATION = ' + location + ' WHERE EMAIL = "' + email + '";';
+    var q = 'UPDATE USER SET LOCATION = ' + location + ' WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -110,6 +114,36 @@ app.use('/location', function(req, res, next){
   });
 });
 
+app.use('/getlocation', function(req, res, next){
+  const email = req.param('email');
+  let role = req.param('role');
+  if (role === 'Homecook') {
+    role = 'COOK';
+  }
+  var o = {};
+  con.getConnection(function(err, connection) {
+    if (err) throw err;
+    var q = 'SELECT * FROM USER WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'User does not exist!';
+        res.send(o);
+      }
+      else {
+        o['data'] = {'location': rows[0].LOCATION};
+        o['code'] = 200;
+        res.status(200);
+        res.send(o);
+      }
+      console.log(rows[0]);
+    });
+    connection.release();
+  });
+});
+
 app.use('/logout', function(req, res, next){
   const token = req.param('token');
   delete revLoginTokens[loginTokens[token]];
@@ -120,6 +154,7 @@ app.use('/logout', function(req, res, next){
 
 
 app.use('/getallfood', function(req, res, next){
+  const itemName = req.body['data']['location'];
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) console.log(err);
@@ -138,7 +173,7 @@ app.use('/getallfood', function(req, res, next){
         let ob = {};
         for(var i = 0; i < result.length; i++){
           var row = result[i];
-          console.log(row);
+          // console.log(row);
           ob['name'] = row.TITLE;
           ob['homecook'] = row.FIRST_NAME + " " + row.LAST_NAME;
           ob['email'] = row.COOK_EMAIL;
@@ -199,7 +234,7 @@ app.use('/getfooditems', function(req,res,next){
 
 
 app.use('/gethomecooks', function(req,res,next){
-  const location = req.param('location');
+  const location = req.body['data']['location'];
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
