@@ -5,17 +5,8 @@ import "../../styles/Main.css";
 import imageCompression from 'browser-image-compression';
 import firebase from "firebase";
 import { serverURL } from "../../config/index.js"
+import { firebaseConfig } from "../../config/index.js"
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCKRmXkIQqNtPTM-_MMvsQYMH1tSm7IlNM",
-  authDomain: "stou-79b9a.firebaseapp.com",
-  databaseURL: "https://stou-79b9a.firebaseio.com",
-  projectId: "stou-79b9a",
-  storageBucket: "stou-79b9a.appspot.com",
-  messagingSenderId: "135234417719",
-  appId: "1:135234417719:web:a6233dfcab2935a2e67bb2",
-  measurementId: "G-EWZ35B7N17"
-};
 export default class Profile extends React.Component {
   constructor(props) {
     let v = "sid";
@@ -31,14 +22,19 @@ export default class Profile extends React.Component {
       name: '',
       email: '',
       //   cuisines: '',
+      role: 'COOK',
       aboutMe: '',
       uploadedImage: '',
       progress: 0,
       avatarURL: '',
       fireBaseURL: '',
+      defaultURL: 'https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/3.png?alt=media&token=a3fb8d89-3afc-48ea-9b07-bf7c26699ef4'
     };
     // this.getProfile();
 
+  }
+  componentDidMount() {
+    this.getProfile();
   }
   handleChangeUsername = event =>
     this.setState({ username: event.target.value });
@@ -71,7 +67,7 @@ export default class Profile extends React.Component {
     let url='';
     let path = "images/" + randomID;
     let uploadTask = firebase.storage().ref().child(path).put(this.state.uploadedImage);
-    uploadTask.on('state_changed', function(snapshot){
+    uploadTask.on('state_changed', function(snapshot) {
     let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
     console.log('Upload is ' + progress + '% done');
     switch (snapshot.state) {
@@ -83,52 +79,51 @@ export default class Profile extends React.Component {
           break;
       }
     }, function(error) {
-      // Handle unsuccessful uploads
+      console.log("Firebase upload error")
+      self.updateProfileCallBack()
     }, function() {
       uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
         console.log('File available at', downloadURL);
         url = downloadURL;
         self.setState({fireBaseURL:url});
+        self.updateProfileCallBack()
       });
     });
   
   }
-  updateProfile = async e => {
-    // this.getProfile();
-    const self = this;
+  updateProfileCallBack = () => {
+
+    let apiCall = serverURL;
+    apiCall = apiCall + "/editProfile";
+    console.log("photo URL=" + this.state.fireBaseURL);
+    if(!this.state.aboutMe) this.state.aboutMe = " "
+    axios.post(`${serverURL}/editProfile`, {
+      data: {
+        name: this.state.name,
+        role: this.state.role,
+        aboutMe: this.state.aboutMe,
+        profilePicture: this.state.fireBaseURL,
+        email:this.props.email,
+      }
+    })
+    .then(res => {
+      console.log(res.data);
+    })
+  }
+  updateProfile = e => {
     if(!this.state.avatarURL) {
-      self.setState({fireBaseURL:"https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/images%2FYj6nVUBRAQLrvR90IxaG9tYJL?alt=media&token=1601dd22-9bf1-4706-8f84-894cf69580c7"});
+      this.setState({fireBaseURL:this.state.defaultURL});
+      this.updateProfileCallBack();
     }else if(this.state.avatarURL.toString().startsWith("https://firebasestorage.googleapis.co")) {
-      self.setState({fireBaseURL:this.state.avatarURL});
+      this.setState({fireBaseURL:this.state.avatarURL}, () => this.updateProfileCallBack());
     }else {
-      await this.uploadToFireBase();
+      this.uploadToFireBase();
     }
-    setTimeout(function(){
-      var apiCall = serverURL;
-      
-      apiCall = apiCall + "/editProfile";
-      console.log("photo URL=" + self.state.fireBaseURL);
-      if(!self.state.aboutMe) self.state.aboutMe = " "
-      axios.post(`${serverURL}/editProfile`, {
-        data: {
-          name: self.state.name,
-          role: "COOK",
-          aboutMe: self.state.aboutMe,
-          profilePicture: self.state.fireBaseURL,
-          email:self.props.email,
-        }
-      })
-      .then(res => {
-        console.log(res.data);
-      })
-      //window.location.reload(false);
-    }, 2000);
   }
 
 
   getProfile = e => {
-    console.log("EMAI:="+this.props.email)
-    var apiCall = serverURL;
+    let apiCall = serverURL;
     apiCall = apiCall + "/profile";
     axios.post(`${serverURL}/profile`, {
       data: {
@@ -145,7 +140,7 @@ export default class Profile extends React.Component {
             email: res.data.email
           });
           if(!this.state.avatarURL) {
-            this.setState({avatarURL:"https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/images%2FYj6nVUBRAQLrvR90IxaG9tYJL?alt=media&token=1601dd22-9bf1-4706-8f84-894cf69580c7"});
+            this.setState({avatarURL:this.state.defaultURL});
           }
         }
       })
@@ -180,39 +175,35 @@ export default class Profile extends React.Component {
   render() {
     const { avatarURL } = this.state;
     return (
-      <div className="container profile">
+      <div className="container profile">        
         <div className="form-area">
           <Form role="form">
             {this.props.show}
             <br styles="clear:both" />
-            <Image className="image-upload-preview" src={avatarURL} fluid thumbnail onClick={this.onClickUpload}/>
+            <Image className="image-upload-preview" src={avatarURL} fluid thumbnail onClick={this.onClickUpload} roundedCircle/>
             <FormControl
               type="file"
               className="image-upload-input"
               onChange={this.onImageChange}
               ref={input => this.inputElement = input}
             />
-            <br />
+            
             <FormGroup controlId="name" className="form-group">
-              <Form.Label className='form-text'><h5>Name</h5></Form.Label>
-              {/* <Form.Control value={this.state.name} type="text" onChange={this.handleChange} className="text-about-me" placeholder={this.state.name} rows="1" /> */}
-              <Form.Label value={this.state.name} className='form-value'><h5>{this.state.name}</h5></Form.Label>
-              {/* <p value={this.state.name} className='form-value'><h5>{this.state.name}</h5></p> */}
+              {/* <Form.Label className='form-text'><h5>Name</h5></Form.Label> */}
+              <Form.Label value={this.state.name} className='form-value'><h1>{this.state.name}</h1></Form.Label>
             </FormGroup>
-            <br />
             <FormGroup className="form-group">
-              <Form.Label className='form-text'><h5>Email</h5></Form.Label>
-              <Form.Label value={this.state.name} className='form-value'><h5>{this.props.email}</h5></Form.Label>
+              {/* <Form.Label className='form-text'><h5>Email</h5></Form.Label> */}
+              <Form.Label value={this.state.name} className='form-value profileEmail'><h5><b>{this.props.email}</b></h5></Form.Label>
             </FormGroup>
-            <br />
             {/* <FormGroup className="form-group">
               <Form.Label className='form-text'><h5>Cuisines</h5></Form.Label>
               <Form.Label value={this.state.name} className='form-value'><h5>{this.state.cuisines}</h5></Form.Label>
             </FormGroup>
             <br /> */}
             <FormGroup controlId="aboutMe" className="form-group">
-              <Form.Label className='form-text'><h5>About Me</h5></Form.Label>
-              <Form.Control value={this.state.aboutMe ? this.state.aboutMe:" "} type="text" onChange={this.handleChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3" as="textarea" />
+              <Form.Label className='form-text text-about-me-label'><h6><b>About Me</b></h6></Form.Label>
+              <Form.Control value={this.state.aboutMe} type="text" onChange={this.handleChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3" as="textarea"/>
               {/* <Textarea value={this.state.aboutMe} type="text" onChange={this.handleAboutMeChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3"></Textarea> */}
             </FormGroup>
             <br />

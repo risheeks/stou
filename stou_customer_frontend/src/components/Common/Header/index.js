@@ -43,7 +43,10 @@ class Header extends Component {
                         <Nav.Link as={Link} className="nav-link" to="/">Home</Nav.Link>
                         {!loggedIn ?
                             <Nav.Link as={Link} className="nav-link" to="/login">Login</Nav.Link> : null}
-                        <Nav.Link as={Link} className="nav-link" to="/about">About</Nav.Link>
+                        {loggedIn ?
+                            <Nav.Link as={Link} className="nav-link" to="/profile">Profile</Nav.Link>
+                        {loggedIn ?
+                        <Nav.Link as={Link} className="nav-link" to="/favoriteHomecooks">Favorites</Nav.Link>
                         {loggedIn ?
                             <Nav.Link as={Link} className="nav-link" to="/" onClick={this.handleSignOut}>Sign Out</Nav.Link> : null}
                         <OverlayTrigger

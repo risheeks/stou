@@ -9,6 +9,7 @@ import Register from '../Register';
 import Home from '../Home';
 import Header from '../Common/Header';
 import Profile from '../Profile';
+import FavoriteHomeCooksList from '../FavoriteHomeCooks';
 import '../../styles/Main.css';
 import MyModal from '../../../../stou_customer_frontend/src/components/Common/Modals';
 
@@ -82,7 +83,13 @@ class Main extends Component {
                         getToken={getToken}
                     />}
                 />
-                <Route path="/profile" render={() =>
+                <Route path="/favoriteHomecooks" render={() => 
+                    <FavoriteHomeCooksList
+                        auth_token={auth_token}
+                        email={email}
+                    />}
+                />
+                <Route path="/profile" render={() => 
                     <Profile
                         auth_token={auth_token}
                         email={email}

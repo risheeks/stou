@@ -7,6 +7,7 @@ import imageCompression from 'browser-image-compression';
 import firebase from "firebase";
 import { serverURL } from "../../config/index.js"
 import Spinner from 'react-bootstrap/Spinner'
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCKRmXkIQqNtPTM-_MMvsQYMH1tSm7IlNM",
@@ -38,15 +39,20 @@ export default class Profile extends React.Component {
     this.state = {
       name: '',
       email: '',
+      role: 'CUSTOMER',
       //   cuisines: '',
       aboutMe: '',
       uploadedImage: '',
       progress: 0,
       avatarURL: '',
       fireBaseURL: '',
+      defaultURL: 'https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/4.png?alt=media&token=47d52479-c8cf-46a1-8116-e5f1bc8765f7'
     };
     // this.getProfile();
 
+  }
+  componentDidMount() {
+    this.getProfile();
   }
   handleChangeUsername = event =>
     this.setState({ username: event.target.value });
@@ -97,46 +103,44 @@ export default class Profile extends React.Component {
       uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
         console.log('File available at', downloadURL);
         url = downloadURL;
-        self.setState({ fireBaseURL: url });
+        self.setState({fireBaseURL:url}, () => self.updateProfileCallBack());
       });
     });
 
   }
-  updateProfile = async e => {
-    // this.getProfile();
-    const self = this;
-    if (!this.state.avatarURL) {
-      self.setState({ fireBaseURL: "https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/images%2FYj6nVUBRAQLrvR90IxaG9tYJL?alt=media&token=1601dd22-9bf1-4706-8f84-894cf69580c7" });
-    } else if (this.state.avatarURL.toString().startsWith("https://firebasestorage.googleapis.co")) {
-      self.setState({ fireBaseURL: this.state.avatarURL });
-    } else {
-      await this.uploadToFireBase();
-    }
-    setTimeout(function () {
-      var apiCall = serverURL;
+  updateProfileCallBack = () => {
 
-      apiCall = apiCall + "/editProfile";
-      console.log("photo URL=" + self.state.fireBaseURL);
-      if (!self.state.aboutMe) self.state.aboutMe = " "
-      axios.post(`${serverURL}/editProfile`, {
-        data: {
-          name: self.state.name,
-          role: "CUSTOMER",
-          aboutMe: self.state.aboutMe,
-          profilePicture: self.state.fireBaseURL,
-          email: self.props.email,
-        }
-      })
-        .then(res => {
-          console.log(res.data);
-        })
-      //window.location.reload(false);
-    }, 2000);
+    let apiCall = serverURL;
+    apiCall = apiCall + "/editProfile";
+    console.log("photo URL=" + this.state.fireBaseURL);
+    if(!this.state.aboutMe) this.state.aboutMe = " "
+    axios.post(`${serverURL}/editProfile`, {
+      data: {
+        name: this.state.name,
+        role: this.state.role,
+        aboutMe: this.state.aboutMe,
+        profilePicture: this.state.fireBaseURL,
+        email:this.props.email,
+      }
+    })
+    .then(res => {
+      console.log(res.data);
+    })
+  }
+  updateProfile = e => {
+    if(!this.state.avatarURL) {
+      this.setState({fireBaseURL:this.state.defaultURL});
+      this.updateProfileCallBack();
+    }else if(this.state.avatarURL.toString().startsWith("https://firebasestorage.googleapis.co")) {
+      this.setState({fireBaseURL:this.state.avatarURL}, () => this.updateProfileCallBack());
+    }else {
+      this.uploadToFireBase();
+    }
   }
 
 
   getProfile = e => {
-    var apiCall = serverURL;
+    let apiCall = serverURL;
     apiCall = apiCall + "/profile";
     axios.post(`${serverURL}/profile`, {
       data: {
@@ -152,13 +156,21 @@ export default class Profile extends React.Component {
             avatarURL: res.data.profilePicture,
             email: res.data.email
           });
-          if (!this.state.avatarURL) {
-            this.setState({ avatarURL: "https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/images%2FYj6nVUBRAQLrvR90IxaG9tYJL?alt=media&token=1601dd22-9bf1-4706-8f84-894cf69580c7" });
+          if(!this.state.avatarURL) {
+            this.setState({avatarURL:this.state.defaultURL});
           }
         }
       })
 
 
+  }
+
+  ChangeSaveFavHomeCookStatus =(e)=> {
+        const currentFavHomeCookStatus=this.state.isFavoriteHomeCook;
+        this.setState({
+            isFavoriteHomeCook: !currentFavHomeCookStatus
+        })
+        console.log("status: ", !currentFavHomeCookStatus);
   }
 
   onClickUpload = e => {
@@ -209,9 +221,7 @@ export default class Profile extends React.Component {
     }
     const { avatarURL } = this.state;
     return (
-      <div className="container profile">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
-
+      <div className="container profile bg-profile">        
         <div className="form-area">
           <Form role="form">
             {this.props.show}
@@ -230,7 +240,7 @@ export default class Profile extends React.Component {
             </FormGroup>
             <FormGroup className="form-group">
               {/* <Form.Label className='form-text'><h5>Email</h5></Form.Label> */}
-              <Form.Label value={this.state.name} className='form-value profileEmail'><h5>{this.props.email}</h5></Form.Label>
+              <Form.Label value={this.state.name} className='form-value profileEmail'><h5><b>{this.props.email}</b></h5></Form.Label>
             </FormGroup>
             {/* <FormGroup className="form-group">
               <Form.Label className='form-text'><h5>Cuisines</h5></Form.Label>
@@ -261,7 +271,14 @@ export default class Profile extends React.Component {
                         <img className="vfo-image rounded float-left" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" alr=""></img>
                       </Col>
                       <Col>
+                        <Row onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'none' : 'block' }}>
+                          <i><FaRegHeart className="saveOpenHeart"/></i> 
+                        </Row>
+                        <Row onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'block' : 'none' }}>
+                          <i><FaHeart className="saveHeart"/></i>
+                        </Row>
                         <Row className="vfo-foodname">
+                        
                           <p>Spicy Pasta</p>
                         </Row>
                         <Row className="vfo-description">
@@ -278,6 +295,12 @@ export default class Profile extends React.Component {
                         <img className="vfo-image rounded float-left" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" alr=""></img>
                       </Col>
                       <Col>
+                        <Row onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'none' : 'block' }}>
+                          <i><FaRegHeart className="saveOpenHeart"/></i> 
+                        </Row>
+                        <Row onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'block' : 'none' }}>
+                          <i><FaHeart className="saveHeart"/></i>
+                        </Row>
                         <Row className="vfo-foodname">
                           <p>Chicken Tikka Masala</p>
                         </Row>

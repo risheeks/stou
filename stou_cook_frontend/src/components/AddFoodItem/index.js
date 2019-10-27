@@ -3,33 +3,34 @@ import { Button, FormGroup, FormControl, FormLabel, FormCheck, Form, Image, Card
 import uploadimage from '../../constants/images/uploadimage.png';
 import { withRouter } from 'react-router-dom';
 import axios from 'axios';
+import firebase from "firebase";
+import imageCompression from 'browser-image-compression';
 import "../../styles/Main.css";
-import { serverURL } from '../../config';
-import FileUploader from "react-firebase-file-uploader";
-const firebaseConfig = {
-  apiKey: "AIzaSyCKRmXkIQqNtPTM-_MMvsQYMH1tSm7IlNM",
-  authDomain: "stou-79b9a.firebaseapp.com",
-  databaseURL: "https://stou-79b9a.firebaseio.com",
-  projectId: "stou-79b9a",
-  storageBucket: "stou-79b9a.appspot.com",
-  messagingSenderId: "135234417719",
-  appId: "1:135234417719:web:a6233dfcab2935a2e67bb2",
-  measurementId: "G-EWZ35B7N17"
-};
+import { serverURL } from "../../config/index.js"
+import { firebaseConfig } from '../../config';
+
+
 
 export class AddFoodItem extends Component {
   constructor(props) {
     super(props);
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+    }
     this.state = {
       foodname: '',
       price: 0,
       calories: 0,
+      zipcode: '',
       description: '',
-      uploadedImage: uploadimage,
+      uploadedImage: '',
       cuisines: ['Chinese', 'Indian', 'Asian', 'Mexican', 'Japanese', 'Italian', 'Thai', 'French', 'Mediterranean'],
       allergens: ['Dairy', 'Shellfish', 'Nuts', 'Eggs', 'Others'],
       chosenAllergens: [],
       chosenCuisines: [],
+      firebaseURL: '',
+      avatarURL: 'https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/full_red_logo.png?alt=media&token=47a33c08-e2e9-4d10-929f-3d29154b1d90',
     };
     this.inputElement = React.createRef();
   }
@@ -50,26 +51,74 @@ export class AddFoodItem extends Component {
       [event.target.id]: event.target.value
     });
   }
-
-  handleSubmit = event => {
-    const { foodname, price, calories, description, chosenAllergens, chosenCuisines, uploadedImage } = this.state;
-    event.preventDefault();
+  generateUniqueID(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+ }
+  uploadToFireBase = e => {
+    //let { fireBaseURL } = this.state;
+    
+    const self = this;
+    let randomID = this.generateUniqueID(25);
+    let url='';
+    let path = "fooditems/" + randomID;
+    let uploadTask = firebase.storage().ref().child(path).put(this.state.uploadedImage);
+    uploadTask.on('state_changed', function(snapshot) {
+    let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    console.log('Upload is ' + progress + '% done');
+    switch (snapshot.state) {
+      case firebase.storage.TaskState.PAUSED: // or 'paused'
+        console.log('Upload is paused');
+          break;
+        case firebase.storage.TaskState.RUNNING: // or 'running'
+          console.log('Upload is running');
+          break;
+      }
+    }, function(error) {
+      console.log("Firebase upload error")
+      self.handleSubmitCallBack()
+    }, function() {
+      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+        console.log('File available at', downloadURL);
+        url = downloadURL;
+        self.setState({fireBaseURL:url}, () => self.handleSubmitCallBack());
+      });
+    });
+  
+  }
+  handleSubmitCallBack = event => {
+    console.log("IMG URL="+this.state.fireBaseURL);
+    const { foodname, price, calories, description, chosenAllergens, chosenCuisines, fireBaseURL, zipcode} = this.state;
     axios.post(`${serverURL}/addfooditem`, {
       data: {
+        homecook: this.props.email,
         itemName: foodname,
         price: price,
         calories: calories,
         description: description,
         allergens: chosenAllergens,
         cuisine: chosenCuisines[0],
-        picture: uploadedImage,
-        location: '47906',
+        picture: fireBaseURL,
+        location: zipcode,
         token: this.props.auth_token
       }
     })
       .then(res => {
         console.log(res.data);
       })
+  }
+
+  handleSubmit = event => {
+    if(this.state.avatarURL.toString().startsWith("https://firebasestorage.googleapis.co")) {
+      this.setState({fireBaseURL:this.state.avatarURL}, () => this.handleSubmitCallBack());
+    }else {
+      this.uploadToFireBase();
+    }
   }
 
   onAllergenCheckChange = (e, allergen) => {
@@ -99,14 +148,23 @@ export class AddFoodItem extends Component {
   }
 
   onImageChange = e => {
+    this.setState({
+      uploadedImage: e.target.files[0]
+    });
     const reader = new FileReader();
     if (e.target.files[0]) {
-      const url = reader.readAsDataURL(e.target.files[0]);
-      reader.onloadend = function (e) {
-        this.setState({
-          uploadedImage: [reader.result]
+      const options = {
+        maxSizeMB: 1.5,          // (default: Number.POSITIVE_INFINITY)
+      }
+      imageCompression(e.target.files[0], options)
+        .then(res => {
+          const url = reader.readAsDataURL(res);
+          reader.onloadend = function (e) {
+            this.setState({
+              avatarURL: [reader.result]
+            })
+          }.bind(this);
         })
-      }.bind(this);
     }
   }
 
@@ -117,7 +175,7 @@ export class AddFoodItem extends Component {
       <div className="outer-container">
         <div className="addfood-container">
           <Form onSubmit={this.handleSubmit}>
-            <Image className="image-upload-preview" src={uploadedImage} thumbnail onClick={this.onClickUpload} />
+            <Image className="image-upload-preview" src={this.state.avatarURL} thumbnail onClick={this.onClickUpload} />
             <FormControl
               type="file"
               className="image-upload-input"
@@ -153,6 +211,14 @@ export class AddFoodItem extends Component {
               <FormLabel>Calories (kCal)</FormLabel>
               <FormControl
                 value={this.state.calories}
+                type="number"
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+            <FormGroup controlId="zipcode" bsSize="large">
+              <FormLabel>ZipCode</FormLabel>
+              <FormControl
+                value={this.state.zipcode}
                 type="number"
                 onChange={this.handleChange}
               />
