@@ -11,7 +11,7 @@ import Header from '../Common/Header';
 import AddFoodItem from '../AddFoodItem';
 import Profile from '../Profile';
 import '../../styles/Main.css';
-
+import MyModal from '../Common/Modals';
 import { getToken, signOut } from '../../actions/login.action';
 import PrivacyPolicy from '../PrivacyPolicy';
 import { openModal, closeModal } from '../../actions/modal.action';
@@ -44,7 +44,7 @@ class Main extends Component {
     }
 
     render() {
-        const { signOut, auth_token, email, getToken, openModal, closeModal, showModal, modalKey } = this.props;
+        const { signOut, auth_token, email, getToken, openModal, closeModal, showModal, modalKey, modalProps } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
         console.log(auth_token);
         return (
@@ -56,6 +56,7 @@ class Main extends Component {
                 <Route path="/addfood" render={() => <AddFoodItem auth_token={auth_token} email={email} />} />
                 <Route path="/profile" render={() => <Profile auth_token={auth_token} email={email} />} />
                 <Route path="/privacyPolicy" render={() => <PrivacyPolicy auth_token={auth_token} email={email} />} />
+                <MyModal {...modalProps} closeModal={closeModal} />
             </Router>
         );
     }

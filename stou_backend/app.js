@@ -12,6 +12,20 @@ var http = require('http');
 var querystring = require('querystring');
 const concat = require('concat-stream');
 
+var Pusher = require('pusher');
+
+var channels_client = new Pusher({
+  appId: '888493',
+  key: '244fae1265174aa1b9eb',
+  secret: '2a96871bdc54e2e3629a',
+  cluster: 'us2',
+  encrypted: true
+});
+
+channels_client.trigger('my-channel1', 'my-event', {
+  "message": "hello world"
+});
+
 // // const dotenv = require('dotenv')
 const bodyParser = require('body-parser')
 // const webpush = require('web-push')

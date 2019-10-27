@@ -17,6 +17,20 @@ import { getToken, signOut } from '../../actions/login.action';
 import { openModal, closeModal } from '../../actions/modal.action';
 import { addToOrder, removeFromOrder, refresh } from '../../actions/order.action';
 import Checkout from '../Checkout';
+import Pusher from 'pusher-js';
+
+// Enable pusher logging - don't include this in production
+Pusher.logToConsole = true;
+
+var pusher = new Pusher('244fae1265174aa1b9eb', {
+  cluster: 'us2',
+  forceTLS: true
+});
+
+var channel = pusher.subscribe('my-channel1');
+channel.bind('my-event', function(data) {
+  alert(JSON.stringify(data));
+});
 
 function mapStateToProps(state) {
     return {

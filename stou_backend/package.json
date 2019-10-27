@@ -13,6 +13,7 @@
     "morgan": "~1.9.1",
     "mysql": "^2.17.1",
     "pug": "2.0.0-beta11",
+    "pusher": "^3.0.0",
     "tedious": "^6.4.0",
     "uuid": "latest"
   },

@@ -10,69 +10,12 @@ class ListOfHomeCooks extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			homecooks: [
-				{
-					picture: ImageOfCook,
-					name: "Adrian",
-					cuisineList: "Italian",
-					description: "This is just a random description",
-					email: "",
-					menu: []
-				},
-				{
-					picture: ImageOfCook,
-					name: "Adrian",
-					cuisineList: "Italian",
-					description: "This is just a random description",
-					email: "",
-					menu: []
-				},
-				{
-					picture: ImageOfCook,
-					name: "Adrian",
-					cuisineList: "Italian",
-					description: "This is just a random description",
-					email: "",
-					menu: []
-				},
-				{
-					picture: ImageOfCook,
-					name: "Adrian",
-					cuisineList: "Italian",
-					description: "This is just a random description",
-					email: "",
-					menu: []
-				},
-				{
-					picture: ImageOfCook,
-					name: "Adrian",
-					cuisineList: "Italian",
-					description: "This is just a random description",
-					email: "",
-					menu: []
-				},
-				{
-					picture: ImageOfCook,
-					name: "Adrian",
-					cuisineList: "Italian",
-					description: "This is just a random description",
-					email: "",
-					menu: []
-				},
-				{
-					picture: ImageOfCook,
-					name: "Adrian",
-					cuisineList: "Italian",
-					description: "This is just a random description",
-					email: "",
-					menu: []
-				}
-			]
+			homecooks: []
 		};
 	}
 
 	componentDidMount() {
-		//this.getHomecooks();
+		this.getHomecooks();
 		return;
 	}
 
@@ -93,9 +36,9 @@ class ListOfHomeCooks extends Component {
 					{this.state.homecooks.map(item => (
 						<HomeCook
 							name={item.name}
-							picture={item.picture}
-							description={item.description}
-							rating={3.5}
+							picture={item.profilePicture}
+							description={item.aboutMe}
+							rating={item.rating}
 						/>
 					))}
 			</Container>

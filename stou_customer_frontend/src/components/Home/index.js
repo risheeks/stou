@@ -9,6 +9,7 @@ import axios from 'axios';
 import { serverURL } from '../../config';
 import { Container, ListGroup, Form, Button, Modal, Tabs, Tab } from 'react-bootstrap';
 import { ModalKey } from '../../constants/ModalKeys';
+import { ROLE } from '../../constants';
 
 export class Home extends Component {
 
@@ -23,9 +24,22 @@ export class Home extends Component {
 
     }
 
-    /*componentDidMount() {
-        this.props.openModal(ModalKey.ZIPCODE);
-    }*/
+    componentDidMount() {
+        //this.props.openModal(ModalKey.ZIPCODE);
+        this.getLocation();
+    }
+
+    getLocation = () => {
+        const data = {
+            email: this.props.email,
+            role: ROLE
+        };
+
+        axios.post(`${serverURL}/getlocation`, data)
+            .then(res => {
+                console.log(res.data);
+            })
+    }
 
     sendLocation = e => {
         e.preventDefault();
