@@ -84,9 +84,9 @@ const uuidv4 = require('uuid/v4');
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port))
 
 app.use('/setlocation', function(req, res, next){
-  const email = req.param('email');
-  const location = req.param('location');
-  let role = req.param('role');
+  const email = req.body['data']['email'];
+  let role = req.body['data']['role'];
+  const location = req.body['data']['location'];
   if (role === 'Homecook') {
     role = 'COOK';
   }
@@ -115,8 +115,8 @@ app.use('/setlocation', function(req, res, next){
 });
 
 app.use('/getlocation', function(req, res, next){
-  const email = req.param('email');
-  let role = req.param('role');
+  const email = req.body['data']['email'];
+  let role = req.body['data']['role'];
   if (role === 'Homecook') {
     role = 'COOK';
   }
