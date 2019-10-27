@@ -241,7 +241,7 @@ export class AddFoodItem extends Component {
               <div className="checkbox-div">
                 {cuisines.map((cuisine, index) =>
                   <ToggleButtonGroup className="single-checkbox-div" type="checkbox">
-                    <ToggleButton className="single-checkbox" key={index} value={index} onChange={e => this.onCuisineCheckChange(e, cuisine)}>{cuisine}</ToggleButton>
+                    <ToggleButton className="single-checkbox" key={index} type="radio" onChange={e => this.onCuisineCheckChange(e, cuisine)}>{cuisine}</ToggleButton>
                   </ToggleButtonGroup>
                 )}
               </div>
