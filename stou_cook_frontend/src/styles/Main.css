@@ -59,14 +59,27 @@
 }
 
 .profile {
-    width: 600px;
-    border: 1px solid rgb(202, 202, 202);
-    padding: 60px;
+  width: 600px;
+  border: 1px solid rgb(202, 202, 202);
+  padding: 60px;
+  background-color:#f7fbfc;
+}
+.profileEmail {
+  color: grey;
+  font-size: 18px;
 }
 
-.text-about-me {
-    width: 80%;
+.text-about-me-label {
+  /* width: 400px; */
+  color: grey;
+  font-size: 18px;
+  text-align: center;
 }
+/* .text-about-me {
+  color: grey;
+  font-size: 18px;
+  text-align: center;
+} */
 
 .filterbar-container {
     width: 25%;
