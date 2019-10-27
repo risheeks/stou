@@ -121,6 +121,11 @@
     border-color: #ff2700;
 }
 
+.multi-checkbox-div {
+  display: block;
+  margin-bottom: 30px;
+}
+
 @media all and (min-width: 480px) {
     .Login {
       padding: 60px 0;

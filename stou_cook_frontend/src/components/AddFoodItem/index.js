@@ -25,10 +25,10 @@ export class AddFoodItem extends Component {
       zipcode: '',
       description: '',
       uploadedImage: '',
-      cuisines: ['Chinese', 'Indian', 'Asian', 'Mexican', 'Japanese', 'Italian', 'Thai', 'French', 'Mediterranean'],
+      cuisines: ['Chinese', 'Indian', 'Asian', 'Mexican', 'Japanese', 'Italian', 'Thai', 'French', 'Mediterranean', 'Other'],
       allergens: ['Dairy', 'Shellfish', 'Nuts', 'Eggs', 'Others'],
       chosenAllergens: [],
-      chosenCuisines: [],
+      chosenCuisines: null,
       firebaseURL: '',
       avatarURL: 'https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/full_red_logo.png?alt=media&token=47a33c08-e2e9-4d10-929f-3d29154b1d90',
     };
@@ -133,14 +133,11 @@ export class AddFoodItem extends Component {
   }
 
   onCuisineCheckChange = (e, cuisine) => {
-    const { chosenCuisines } = this.state;
     if (e.target.checked) {
-      chosenCuisines.push(cuisine);
-    } else {
-      let index = chosenCuisines.indexOf(cuisine);
-      chosenCuisines.splice(index, 1);
+      this.setState({
+        chosenCuisines: cuisine,
+      });
     }
-    this.setState({ chosenCuisines });
   }
 
   onClickUpload = e => {
@@ -239,11 +236,11 @@ export class AddFoodItem extends Component {
             <div>
               <Card.Title>Cuisines</Card.Title>
               <div className="checkbox-div">
+              <ToggleButtonGroup className="multi-checkbox-div" type="radio" name="cuisine">
                 {cuisines.map((cuisine, index) =>
-                  <ToggleButtonGroup className="single-checkbox-div" type="checkbox">
-                    <ToggleButton className="single-checkbox" key={index} type="radio" onChange={e => this.onCuisineCheckChange(e, cuisine)}>{cuisine}</ToggleButton>
-                  </ToggleButtonGroup>
+                    <ToggleButton className="single-checkbox" id={index} key={index} value={index} type="checkbox" checked={true} onChange={e => this.onCuisineCheckChange(e, cuisine)}>{cuisine}</ToggleButton>
                 )}
+              </ToggleButtonGroup>
               </div>
             </div>
             <div>
