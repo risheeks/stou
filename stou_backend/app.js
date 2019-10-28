@@ -136,6 +136,34 @@ app.use('/getallorders', function (req, res, next) {
   });
 });
 
+app.use('/getfooditemsbyorder', function(req, res, next){
+  const orderId = req.body['data']['orderId'];
+  let o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT FOOD_ID from ORDER_FOOD where ORDER_ID=\'' + orderId + '\'';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'Invalid Order';
+        res.send(o);
+      } else {
+        let l = [];
+        for(let i = 0; i < rows.length; i++){
+          l.push(rows[i].FOOD_ID);
+        }
+        o['code'] = 200;
+        res.status(200);
+        o['data']['items'].push(l);
+        o['message'] = 'Success';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
 
 app.use('/getstatus', function(req, res, next) {
   const cookEmail = req.body['data']['cookEmail'];
