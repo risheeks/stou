@@ -24,8 +24,10 @@ export default class Profile extends React.Component {
     super(props);
     this.updateProfile = this.updateProfile.bind(this);
     this.getProfile = this.getProfile.bind(this);
-    firebase.initializeApp(firebaseConfig);
-    firebase.analytics();
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+    }
     this.state = {
       name: '',
       email: '',
