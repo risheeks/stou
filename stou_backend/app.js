@@ -619,6 +619,35 @@ app.use('/forgotpassword', function(req, res, next){
     });
   });
 });
+app.use('/setstatus', function(req, res, next){
+  console.log("COMES TO STATUS")
+  let email = req.body['data']['email'];
+  let status = req.body['data']['status'];
+  let role = req.body['data']['role'];
+  if(role === "Homecook") role = "COOK"
+  var o = {};
+  con.getConnection(function(err, connection) {
+    if (err) throw err;
+    var q = 'UPDATE USER SET ONLINE = ' + status + ' WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';    console.log(q);
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'Invalid cook';
+        res.send(o);
+      }
+      else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'status updated';
+        res.send(o);
+      }
+      console.log(rows[0]);
+    });
+    connection.release();
+  });
+});
 
 function sendEmail(email, password, text){
   const nodemailer = require('nodemailer');

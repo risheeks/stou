@@ -7,7 +7,7 @@ export class Home extends Component {
     render() {
         return (
             <div>
-                <OnlineStatus/>
+                <OnlineStatus email={this.props.email}/>
                 <h1>THIS IS HOME</h1>
 				
             </div>
