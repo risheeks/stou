@@ -35,14 +35,27 @@ class ListOfHomeCooks extends Component {
                     homecooks: Array.from(res.data.data)
                 });
             });
-    }
+	}
+	
+	// updateFavoriteHomeCooks =(e) => {
+    //     axios.post(`${serverURL}/favoritehomecooks`, {
+    //         data: {
+    //           email: this.props.email,
+    //           cook_email: 
+    //         }
+    //       })
+    //       .then(res => {
+    //         console.log(res.data);
+    //       })
+    // }
 
 	render() {
 		return (
 			<Container className="homecook-container">
 					{this.state.homecooks.map(item => (
-						<HomeCook
+						<HomeCook email={this.props.email}
 							name={item.name}
+							cook_email = {item.email}
 							picture={item.profilePicture}
 							description={item.aboutMe}
 							rating={item.rating}
