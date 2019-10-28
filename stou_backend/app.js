@@ -782,7 +782,7 @@ app.use('/getfavoritehomecooks', function(req, res, next){
   var o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'SELECT * FROM USER A, (SELECT COOK_EMAIL FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL = "'+ email +'") B WHERE A.EMAIL = B.COOK_EMAIL AND A.ROLE = 1';    console.log(q);
+    var q = 'SELECT * FROM USER A, (SELECT COOK_EMAIL FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL = "'+ email +'") B WHERE A.EMAIL = B.COOK_EMAIL AND A.ROLE = 1';    
     console.log(q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
@@ -793,13 +793,12 @@ app.use('/getfavoritehomecooks', function(req, res, next){
         res.send(o);
       }
       else {
-        o['code'] = 200;
-        res.status(200);
-        o['message'] = 'favorite cooks sent';
-        for(var i = 0; i < res.length; i++){
+        obj = [];
+        ob = {};
+        for(var i = 0; i < rows.length; i++){
           var r = rows[i];
           ob['cook_name'] = r.FIRST_NAME +' '+r.LAST_NAME;
-          if (row.ABOUT_ME !== null){
+          if (r.ABOUT_ME !== null){
             ob['cook_description'] = r.ABOUT_ME;  
           }
           else {
@@ -814,6 +813,10 @@ app.use('/getfavoritehomecooks', function(req, res, next){
           ob['cook_picture'] = r.PICTURE;
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
+        o = obj;
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'favorite cooks sent';
         res.send(o);
       }
       console.log(rows[0]);
