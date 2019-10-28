@@ -58,6 +58,8 @@ class Checkout extends Component {
 
     getSubtotal = () => {
         const { baggedItems } = this.props;
+        console.log("CHECK ME OUT");
+        console.log(baggedItems)
         let sum = 0;
         for (let i = 0; i < baggedItems.length; i++) {
             sum += baggedItems[i].price * baggedItems[i].quantity;
@@ -67,6 +69,36 @@ class Checkout extends Component {
 
     onSuccess = (payment) => {
         console.log("The payment was succeeded!", payment);
+        this.placeOrder();
+    }
+
+    placeOrder = () => {
+        const { baggedItems, email } = this.props;
+        const { instructions, street, city, state, zipcode, subtotal } = this.state;
+
+        let orderedBag = [];
+        for(let i = 0; i < baggedItems.length; i++) {
+            orderedBag.push({
+                foodId: baggedItems[i].food_id,
+                quantity: baggedItems[i].quantity,
+                price: baggedItems[i].quantity * baggedItems[i].price
+            });
+        }
+
+        const data = {
+            cookEmail: baggedItems[0].email,
+            customerEmail: email,
+            instructions: instructions,
+            deliveryTime: 30,
+            orderStatus: 'placed',
+            orderAddress: `${street}, ${city}, ${state} - ${zipcode}`,
+            itemList: orderedBag
+        };
+
+        axios.post(`${serverURL}/placeorder`, {data: data})
+            .then(res => {
+                console.log(res.data)
+            })
     }
 
     onCancel = (data) => {
@@ -127,6 +159,7 @@ class Checkout extends Component {
                         onCancel={this.onCancel}
                         style={style}
                     />
+                    <Button onClick={this.placeOrder}>Random</Button>
                 </div>
                 <div className="delivery-container">
                     <div className="address-div">

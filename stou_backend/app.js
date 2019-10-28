@@ -97,6 +97,54 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port))
 
+app.use('/placeorder', function (req, res, next) {
+  console.log(req.body)
+  const orderID = uuidv4();
+  const cookEmail = req.body['data']['cookEmail'];
+  const customerEmail = req.body['data']['customerEmail'];
+  const instructions = req.body['data']['instructions'];
+  const deliveryTime = req.body['data']['deliveryTime'];
+  const orderStatus = req.body['data']['orderStatus'];
+  const orderAddress = req.body['data']['orderAddress'];
+  const itemList = req.body['data']['itemList'];
+  const subTotal = req.body['data']['subTotal'];
+  console.log("cemail: "+itemList[0].foodId);
+
+  var o = {};
+
+  console.log(req.body.data);
+  con.getConnection(function(err, connection) {
+    if (err) throw err;
+    var q = 'Insert into ORDERS values(\''+ orderID +'\', CURRENT_TIMESTAMP, \''+ cookEmail +'\', \''+customerEmail+'\', \''+ instructions +'\', CURRENT_TIMESTAMP, \''+ orderAddress + '\',\'' + orderStatus + '\', \'\');';
+    console.log('MEssage:' + q);
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+
+      else {
+        for(let i =0; i < itemList.length; i++){
+          console.log('in');
+          con.getConnection(function(err, connection) {
+            if (err) throw err;
+            console.log(itemList[i]);
+            var q = 'Insert into ORDER_FOOD (ORDER_ID, FOOD_ID, QUANTITY, PRICE) values(\''+orderID+'\', \''+itemList[i].foodId+'\', '+itemList[i].quantity + ', '+ itemList[i].price + ');';
+            console.log(q);
+            connection.query(q, function (err, rows) {
+              if (err) throw err;
+            });
+            connection.release();
+          });
+        }
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Order placed';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+
+});
+
 app.use('/setlocation', function(req, res, next){
   const email = req.body['data']['email'];
   let role = req.body['data']['role'];
@@ -172,7 +220,7 @@ app.use('/getallfood', function(req, res, next){
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) console.log(err);
-    var q = 'SELECT FOOD.PICTURE, COOK_EMAIL, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL AND USER.ROLE=1 AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ');';
+    var q = 'SELECT FOOD.PICTURE, FOOD_ID, COOK_EMAIL, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL AND USER.ROLE=1 AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ');';
     
     connection.query(q, function (err, result) {
       if (err) {
@@ -195,6 +243,7 @@ app.use('/getallfood', function(req, res, next){
           ob['cuisine'] = row.CUISINE;
           ob['calories'] = row.CALORIES;
           ob['picture'] = row.PICTURE;
+          ob['food_id'] = row.FOOD_ID;
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         o['data'] = obj;
