@@ -9,57 +9,45 @@ class FavoriteHomeCooksList extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			favHomecooks: [
-				{
-					picture: ImageOfCook,
-					name: "Adrian",
-					cuisineList: "Italian",
-					description: "This is just a random description",
-					email: "",
-					menu: []
-				},
-				{
-					picture: ImageOfCook,
-					name: "Adrian",
-					cuisineList: "Italian",
-					description: "This is just a random description",
-					email: "",
-					menu: []
-				},
-				{
-					picture: ImageOfCook,
-					name: "Adrian",
-					cuisineList: "Italian",
-					description: "This is just a random description",
-					email: "",
-					menu: []
-				}
-				
-			]
+			favHomecooks: []
 		};
+		//console.log(this.props.email)
+	}
+
+	getFavHomecooks = () => {
+
+		let data = { email: this.props.email }
+        axios.post(`${serverURL}/getfavoritehomecooks`, { data: data})
+            .then(res => {
+                console.log(res.data.data)
+                this.setState({
+                    favhomecooks: Array.from(res.data.data)
+                });
+			});
+		console.log()
 	}
 
 	componentDidMount() {
-		//this.getHomecooks();
+		this.getFavHomecooks();
 		return;
 	}
 
-	getHomecooks = () => {
-        axios.get(`${serverURL}/gethomecooks?location=47906`)
-            .then(res => {
-                console.log(res.data)
-                console.log(Array.from(res.data.data))
-                this.setState({
-                    favHomecooks: Array.from(res.data.data)
-                });
-            });
-    }
+	// getHomecooks = () => {
+    //     axios.get(`${serverURL}/gethomecooks?location=47906`)
+    //         .then(res => {
+    //             console.log(res.data)
+    //             console.log(Array.from(res.data.data))
+    //             this.setState({
+    //                 favHomecooks: Array.from(res.data.data)
+    //             });
+    //         });
+    // }
 
 	render() {
 		return (
 			<Container className="homecook-container">
 					{this.state.favHomecooks.map(item => (
-						<FavoriteHomeCook
+						<FavoriteHomeCook 
 							name={item.name}
 							picture={item.picture}
 							description={item.description}

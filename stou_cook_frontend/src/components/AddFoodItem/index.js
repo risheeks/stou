@@ -213,10 +213,10 @@ export class AddFoodItem extends Component {
               />
             </FormGroup>
             <FormGroup controlId="zipcode" bsSize="large">
-              <FormLabel>ZipCode</FormLabel>
+              <FormLabel>Avergage cook time</FormLabel>
               <FormControl
                 value={this.state.zipcode}
-                type="number"
+                // type="number"
                 onChange={this.handleChange}
                 onInput = {(e) =>{
                   e.target.value = Math.max(0, parseInt(e.target.value) ).toString().slice(0,5)
