@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, Button, Form, Image } from 'react-bootstrap';
+import { Modal, Button, Form, Image, InputGroup, FormControl } from 'react-bootstrap';
 import NavLink from 'react-bootstrap/NavLink';
 
 class FoodModal extends Component {
@@ -8,6 +8,7 @@ class FoodModal extends Component {
 
         this.state = {
             request: '',
+            quantity: 1
         }
     }
 
@@ -19,12 +20,46 @@ class FoodModal extends Component {
 
     addToBag = e => {
         const { item, addToOrder, closeModal } = this.props;
-        addToOrder(item, 1);
+        addToOrder(item, this.state.quantity);
         closeModal();
+    }
+
+    handleQuantityChange = e => {
+        if(e.target.value === '') {
+            this.setState({
+                quantity: ''
+            });
+            return;
+        }
+        const newQuantity = parseInt(e.target.value);
+        if(newQuantity > 0 && newQuantity < 100) {
+            this.setState({
+                quantity: newQuantity
+            });
+        }
+    }
+
+    incrementQuantity = e => {
+        const newQuantity = parseInt(e.target.value) + 1;
+        if(newQuantity < 99) {
+            this.setState({
+                quantity: newQuantity
+            });
+        }
+    }
+
+    decrementQuantity = e => {
+        const newQuantity = parseInt(e.target.value) - 1;
+        if(newQuantity > 0) {
+            this.setState({
+                quantity: newQuantity
+            });
+        }
     }
 
     render() {
         const { showModal, closeModal, item } = this.props;
+        const { quantity } = this.state;
 
         return (
             <Modal show={showModal} onHide={() => closeModal()}>
@@ -53,7 +88,20 @@ class FoodModal extends Component {
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="success" onClick={this.addToBag}>Add to Bag</Button>
+                    <InputGroup className="quantity-input-div">
+                        <InputGroup.Prepend>
+                            <Button variant="outline-secondary" onClick={this.decrementQuantity}>-</Button>
+                        </InputGroup.Prepend>
+                        <FormControl
+                            value={quantity}
+                            onChange={this.handleQuantityChange}
+                            className="quantity-input"
+                        />
+                        <InputGroup.Append>
+                            <Button variant="outline-secondary" onClick={this.incrementQuantity}>+</Button>
+                        </InputGroup.Append>
+                    </InputGroup>
+                    <Button variant="success" disabled={quantity === ''} onClick={this.addToBag}>Add to Bag</Button>
                 </Modal.Footer>
             </Modal>
         );
