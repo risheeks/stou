@@ -96,6 +96,77 @@ let revLoginTokens = {};
 const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port))
+app.use('/getallorders', function (req, res, next) {
+  const cookEmail = req.body['data']['cookEmail'];
+  var o = {};
+  con.getConnection(function(err, connection) {
+    if (err) throw err;
+    var q = 'SELECT * from ORDERS where COOK_EMAIL=\'' + cookEmail + '\'';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'Invalid Cook';
+        res.send(o);
+      }
+      else {
+        var obj = o['data']['orders'];
+        var ord = {};
+        for(let i = 0; i < rows.length; i++){
+          ord['orderId'] = rows[i].ORDER_ID;
+          ord['orderedAt'] = rows[i].ORDERED_AT;
+          ord['cookEmail'] = rows[i].COOK_EMAIL;
+          ord['customerEmail'] = rows[i].CUSTOMER_EMAIL;
+          ord['instructions'] = rows[i].INSTRUCTIONS;
+          ord['deliveryTime'] = rows[i].DELIVERY_TIME;
+          ord['orderAddress'] = rows[i].ORDER_ADDRESS;
+          ord['orderStatus'] = rows[i].ORDER_STATUS;
+          ord['paymentKey'] = rows[i].PAYMENT_KEY;
+          obj.push(ord);
+        }
+        o = obj;
+        o['code'] = 200;
+        o['message'] = 'Success';
+        res.status(200);
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+
+app.use('/getstatus', function(req, res, next) {
+  const cookEmail = req.body['data']['cookEmail'];
+  let role = req.body['data']['role'];
+  if (role === 'Homecook') {
+    role = 'COOK';
+  }
+  var o = {};
+
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT online from USER where EMAIL=\'' + cookEmail + '\' AND ROLE=\'' + role + '\';';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'Invalid Cook';
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200);
+        o['data'] = {'status': rows[0].online};
+        o['message'] = 'Success';
+        res.send(o);
+      }
+      console.log(rows[0]);
+    });
+    connection.release();
+  });
+});
 
 app.use('/placeorder', function (req, res, next) {
   console.log(req.body)
