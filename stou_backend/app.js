@@ -301,7 +301,7 @@ app.use('/gethomecooks', function(req,res,next){
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'SELECT * FROM USER, ROLES WHERE USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ');';
+    var q = 'SELECT * FROM USER, ROLES WHERE USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ' AND ONLINE=1 );';
     connection.query(q, function (err, result) {
       if (err) throw err;
       if (result.length === 0) {
