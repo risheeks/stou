@@ -12,20 +12,26 @@ import AddFoodItem from '../AddFoodItem';
 import Profile from '../Profile';
 import '../../styles/Main.css';
 import MyModal from '../Common/Modals';
-import { getToken, signOut } from '../../actions/login.action';
+import { getToken, signOut, changeLocation } from '../../actions/login.action';
 import PrivacyPolicy from '../PrivacyPolicy';
 import { openModal, closeModal } from '../../actions/modal.action';
+import { ModalKey } from '../../constants/ModalKeys';
+import axios from 'axios';
+import { serverURL } from '../../config';
+import { ROLE } from '../../constants';
 
 function mapStateToProps(state) {
     return {
         auth_token: state.loginReducer.auth_token,
         email: state.loginReducer.email,
         showModal: state.modalReducer.showModal,
+        location: state.loginReducer.location,
+        modalProps: state.modalReducer
     }
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ getToken, signOut, openModal, closeModal }, dispatch);
+    return bindActionCreators({ getToken, signOut, openModal, closeModal, changeLocation }, dispatch);
 }
 
 const ProtectedRoute
@@ -35,18 +41,44 @@ const ProtectedRoute
             : <Redirect to="/login" />;
 
 class Main extends Component {
-    componentDidMount() {
+    async componentDidMount() {
         let tempToken = localStorage.getItem('auth_token');
         let tempEmail = localStorage.getItem('email');
         if(tempToken && tempEmail) {
-            this.props.getToken(tempToken, tempEmail);
+            await this.props.getToken(tempToken, tempEmail);
         }
+        const { auth_token, email, location } = this.props;
+        const loggedIn = auth_token && auth_token.length > 0;
+        if(loggedIn) {
+            const newLocation = await this.getLocation();
+            if(!newLocation || newLocation === '') {
+                this.props.openModal(ModalKey.ZIPCODE, { email: email, changeLocation: this.props.changeLocation });
+            }
+            else {
+                this.props.changeLocation(newLocation);
+            }
+        }
+    }
+
+    getLocation = async () => {
+        const data = {
+            email: this.props.email,
+            role: ROLE
+        };
+
+        let location = null;
+
+        await axios.post(`${serverURL}/getlocation`, { data: data })
+            .then(res => {
+                location = res.data.data.location;
+            });
+        return location;
     }
 
     render() {
         const { signOut, auth_token, email, getToken, openModal, closeModal, showModal, modalKey, modalProps } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
-        console.log(auth_token);
+        console.log(modalProps);
         return (
             <Router>
                 <Header signOut={signOut} loggedIn={loggedIn} />

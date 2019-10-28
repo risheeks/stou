@@ -1,7 +1,8 @@
-export function openModal(modalKey) {
+export function openModal(modalKey, props) {
     return {
         type: 'OPEN_MODAL',
         modalKey: modalKey,
+        props: props
     }
 }
 

@@ -13,11 +13,15 @@ import FavoriteHomeCooksList from '../FavoriteHomeCooks';
 import '../../styles/Main.css';
 import MyModal from '../../../../stou_customer_frontend/src/components/Common/Modals';
 
-import { getToken, signOut } from '../../actions/login.action';
+import { getToken, signOut, changeLocation } from '../../actions/login.action';
 import { openModal, closeModal } from '../../actions/modal.action';
 import { addToOrder, removeFromOrder, refresh } from '../../actions/order.action';
 import Checkout from '../Checkout';
 import Pusher from 'pusher-js';
+import { ModalKey } from '../../constants/ModalKeys';
+import axios from 'axios';
+import { serverURL } from '../../config';
+import { ROLE } from '../../constants';
 
 // Enable pusher logging - don't include this in production
 Pusher.logToConsole = true;
@@ -29,20 +33,21 @@ var pusher = new Pusher('244fae1265174aa1b9eb', {
 
 var channel = pusher.subscribe('my-channel1');
 channel.bind('my-event', function(data) {
-  alert(JSON.stringify(data));
+  return;
 });
 
 function mapStateToProps(state) {
     return {
         auth_token: state.loginReducer.auth_token,
         email: state.loginReducer.email,
+        location: state.loginReducer.location,
         modalProps: state.modalReducer,
         baggedItems: state.orderReducer.baggedItems
     }
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ getToken, signOut, openModal, closeModal, addToOrder, removeFromOrder, refresh }, dispatch);
+    return bindActionCreators({ getToken, signOut, openModal, closeModal, addToOrder, removeFromOrder, refresh, changeLocation }, dispatch);
 }
 
 const ProtectedRoute
@@ -52,16 +57,42 @@ const ProtectedRoute
             : <Redirect to="/login" />;
 
 class Main extends Component {
-    componentDidMount() {
+    async componentDidMount() {
         let tempToken = localStorage.getItem('auth_token');
         let tempEmail = localStorage.getItem('email');
         if (tempToken && tempEmail) {
-            this.props.getToken(tempToken, tempEmail);
+            await this.props.getToken(tempToken, tempEmail);
+        }
+        const { auth_token, email, location } = this.props;
+        const loggedIn = auth_token && auth_token.length > 0;
+        if(loggedIn) {
+            const newLocation = await this.getLocation();
+            if(!newLocation || newLocation === '') {
+                this.props.openModal(ModalKey.ZIPCODE, { email: email, changeLocation: this.props.changeLocation });
+            }
+            else {
+                this.props.changeLocation(newLocation);
+            }
         }
     }
 
+    getLocation = async () => {
+        const data = {
+            email: this.props.email,
+            role: ROLE
+        };
+
+        let location = null;
+
+        await axios.post(`${serverURL}/getlocation`, { data: data })
+            .then(res => {
+                location = res.data.data.location;
+            });
+        return location;
+    }
+
     render() {
-        const { signOut, auth_token, email, getToken, modalProps, openModal, closeModal, addToOrder, removeFromOrder, refresh, baggedItems } = this.props;
+        const { signOut, auth_token, email, getToken, modalProps, openModal, closeModal, addToOrder, removeFromOrder, refresh, baggedItems, location } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
         console.log(auth_token);
         return (
@@ -81,6 +112,7 @@ class Main extends Component {
                         email={email}
                         openModal={openModal}
                         addToOrder={addToOrder}
+                        location={location}
                     />}
                 />
                 <Route path="/login" render={() =>

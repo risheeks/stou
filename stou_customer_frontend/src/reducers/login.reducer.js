@@ -1,6 +1,7 @@
 const initialState = {
     auth_token: null,
     email: null,
+    location: null
 }
 
 const loginReducer = function login(state = initialState, action) {
@@ -19,6 +20,12 @@ const loginReducer = function login(state = initialState, action) {
                 ...state,
                 auth_token: null,
                 email: null
+            }
+        }
+        case 'CHANGE_LOCATION': {
+            return state = {
+                ...state,
+                location: action.location
             }
         }
         default:

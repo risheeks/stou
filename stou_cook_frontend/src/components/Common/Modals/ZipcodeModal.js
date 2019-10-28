@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
+import { ROLE } from '../../../constants';
+import axios from 'axios';
+import { serverURL } from '../../../config';
 
 class ZipcodeModal extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
             zipcode: '',
         }
@@ -22,8 +24,23 @@ class ZipcodeModal extends Component {
         const { closeModal } = this.props;
         const { zipcode } = this.state;
         if(zipcode > '0' && zipcode < '99999' && zipcode.length === 5) {
-            closeModal();
+            this.sendLocation(zipcode);
         }
+    }
+
+    sendLocation = zipcode => {
+        const { email } = this.props;
+        axios.post(`${serverURL}/setlocation`, {
+            data: {
+                location: zipcode,
+                email: email,
+                role: ROLE
+            }
+        })
+            .then(res => {
+                this.props.changeLocation(zipcode)
+                this.props.closeModal();
+            })
     }
 
     render() {

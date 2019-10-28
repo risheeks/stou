@@ -14,3 +14,11 @@ export function signOut() {
         type: 'SIGN_OUT'
     }
 }
+
+export function changeLocation(location) {
+    return {
+        type: 'CHANGE_LOCATION',
+        location
+    }
+}
+

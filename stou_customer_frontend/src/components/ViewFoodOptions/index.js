@@ -34,7 +34,8 @@ class ViewFoodOptions extends Component {
 
   componentDidMount() {
     if (this.props.allergens.length <= 0 && this.props.cuisines.length <= 0) {
-      axios.get(`${serverURL}/getallfood`)
+      const data = { location: this.props.location }
+      axios.post(`${serverURL}/getallfood`, { data: data })
         .then(res => {
           console.log(res.data)
           console.log(Array.from(res.data.data));
@@ -50,7 +51,7 @@ class ViewFoodOptions extends Component {
       const data = {
         allergens: this.props.allergens.toString(),
         cuisines: this.props.cuisines.toString(),
-        location: '47906'
+        location: this.props.location
       }
       axios.post(`${serverURL}/filter`, { data: data })
         .then(res => {
@@ -66,8 +67,8 @@ class ViewFoodOptions extends Component {
         })
     }
     else if ((this.props.allergens !== prevProps.allergens || this.props.cuisines !== prevProps.cuisines) && (this.props.allergens.length <= 0 && this.props.cuisines.length <= 0)) {
-      const data = { location: '47906' }
-      axios.post(`${serverURL}/getallfood`, data)
+      const data = { location: this.props.location }
+      axios.post(`${serverURL}/getallfood`, { data: data })
         .then(res => {
           console.log(res.data)
           console.log(Array.from(res.data.data));

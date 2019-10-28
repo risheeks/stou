@@ -24,36 +24,6 @@ export class Home extends Component {
 
     }
 
-    componentDidMount() {
-        //this.props.openModal(ModalKey.ZIPCODE);
-        this.getLocation();
-    }
-
-    getLocation = () => {
-        const data = {
-            email: this.props.email,
-            role: ROLE
-        };
-
-        axios.post(`${serverURL}/getlocation`, data)
-            .then(res => {
-                console.log(res.data);
-            })
-    }
-
-    sendLocation = e => {
-        e.preventDefault();
-        axios.post(`${serverURL}/location`, {
-            params: {
-                location: this.state.zip
-            }
-        })
-            .then(res => {
-                this.setState({ modalisOpen: false })
-                this.getLocation();
-            })
-    }
-
     onFilter = (allergens, cuisines) => {
         this.setState({
             allergens: allergens,
@@ -62,7 +32,7 @@ export class Home extends Component {
     }
 
     render() {
-        const { openModal, addToOrder} = this.props;
+        const { openModal, addToOrder, location } = this.props;
         return (
             <div className="home">
                 <Tabs defaultActiveKey="food" id="uncontrolled-tab-example">
@@ -74,12 +44,13 @@ export class Home extends Component {
                                 cuisines={this.state.cuisines}
                                 openModal={openModal}
                                 addToOrder={addToOrder}
+                                location={location}
                             />
                         </div>
                     </Tab>
                     <Tab eventKey="cooks" title="Homecooks">
                         <div className="homec">
-                            <ListOfHomeCooks />
+                            <ListOfHomeCooks location={location} />
                         </div>
                     </Tab>
                 </Tabs>

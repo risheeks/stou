@@ -9,6 +9,7 @@ const modalReducer = function modal(state = initialState, action) {
             return state = {
                 showModal: true,
                 modalKey: action.modalKey,
+                ...action.props
             };
         }
         case 'CLOSE_MODAL': {
