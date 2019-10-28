@@ -10,30 +10,12 @@ class ViewFoodOptions extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      foodoptions: [
-        {
-            id: 1,
-            name: 'Spicy Fried Chicken',
-            homecook: 'BIG BOY',
-            price: 10,
-            description: 'Crispy and spicy Sichuan chicken fried in fragrant oil',
-            picture: full_white_logo
-
-        },
-        {
-            id: 2,
-            name: 'Big Mac',
-            homecook: 'BIG BOY',
-            price: 2,
-            description: 'Homemade fresh Bic Mac',
-            picture: full_white_logo
-        }
-    ],
+      foodoptions: [],
     };
   }
 
   componentDidMount() {
-    if (this.props.allergens.length <= 0 && this.props.cuisines.length <= 0) {
+    if (this.props.allergens.length <= 0 && this.props.cuisines.length <= 0 && this.props.location) {
       const data = { location: this.props.location }
       axios.post(`${serverURL}/getallfood`, { data: data })
         .then(res => {
@@ -47,6 +29,17 @@ class ViewFoodOptions extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    if (this.props.allergens.length <= 0 && this.props.cuisines.length <= 0 && this.props !== prevProps) {
+      const data = { location: this.props.location }
+      axios.post(`${serverURL}/getallfood`, { data: data })
+        .then(res => {
+          console.log(res.data)
+          console.log(Array.from(res.data.data));
+          this.setState({
+            foodoptions: Array.from(res.data.data)
+          });
+        })
+    }
     if ((this.props.allergens.length > 0 || this.props.cuisines.length > 0) && (this.props.allergens !== prevProps.allergens || this.props.cuisines !== prevProps.cuisines)) {
       const data = {
         allergens: this.props.allergens.toString(),

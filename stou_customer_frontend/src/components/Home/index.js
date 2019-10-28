@@ -33,6 +33,8 @@ export class Home extends Component {
 
     render() {
         const { openModal, addToOrder, location } = this.props;
+        console.log("CHECK ME");
+        console.log(location)
         return (
             <div className="home">
                 <Tabs defaultActiveKey="food" id="uncontrolled-tab-example">

@@ -172,7 +172,7 @@ app.use('/getallfood', function(req, res, next){
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) console.log(err);
-    var q = 'SELECT FOOD.PICTURE, COOK_EMAIL, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL AND USER.ROLE=1 AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ';';
+    var q = 'SELECT FOOD.PICTURE, COOK_EMAIL, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL AND USER.ROLE=1 AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ');';
     
     connection.query(q, function (err, result) {
       if (err) {
@@ -247,11 +247,12 @@ app.use('/getfooditems', function(req,res,next){
 
 
 app.use('/gethomecooks', function(req,res,next){
-  const location = req.body['data']['location'];
+  console.log(req.body)
+  let location = req.body['data']['location'];
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'SELECT * FROM USER, ROLES WHERE USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location - 2)) + ' AND ' + (parseInt(location) +2) + ');';
+    var q = 'SELECT * FROM USER, ROLES WHERE USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ');';
     connection.query(q, function (err, result) {
       if (err) throw err;
       if (result.length === 0) {
@@ -268,7 +269,7 @@ app.use('/gethomecooks', function(req,res,next){
           ob['name'] = row.FIRST_NAME + " " + row.LAST_NAME;
           ob['email'] = row.EMAIL;
           ob['rating'] = row.RATING;
-          OB['aboutMe'] = row.ABOUT_ME;
+          ob['aboutMe'] = row.ABOUT_ME;
           // ob['cuisines'] = row.CUISINES;
           ob['profilePicture'] = row.PICTURE;
           obj.push(JSON.parse(JSON.stringify(ob)));

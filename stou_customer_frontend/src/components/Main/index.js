@@ -60,6 +60,7 @@ class Main extends Component {
     async componentDidMount() {
         let tempToken = localStorage.getItem('auth_token');
         let tempEmail = localStorage.getItem('email');
+        let tempLocation = localStorage.getItem('location');
         if (tempToken && tempEmail) {
             await this.props.getToken(tempToken, tempEmail);
         }
@@ -94,7 +95,7 @@ class Main extends Component {
     render() {
         const { signOut, auth_token, email, getToken, modalProps, openModal, closeModal, addToOrder, removeFromOrder, refresh, baggedItems, location } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
-        console.log(auth_token);
+        console.log(location);
         return (
             <Router>
                 <Header

@@ -15,12 +15,19 @@ class ListOfHomeCooks extends Component {
 	}
 
 	componentDidMount() {
-		this.getHomecooks();
-		return;
+		if(this.props.location) {
+			this.getHomecooks();
+		}
+	}
+
+	componentDidUpdate(prevProps) {
+		if(this.props !== prevProps && this.props.location)
+			this.getHomecooks();
 	}
 
 	getHomecooks = () => {
-        axios.get(`${serverURL}/gethomecooks?location=47906`)
+		const data = { location: this.props.location }
+        axios.post(`${serverURL}/gethomecooks`, { data: data})
             .then(res => {
                 console.log(res.data)
                 console.log(Array.from(res.data.data))
