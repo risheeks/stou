@@ -9,7 +9,7 @@ class FavoriteHomeCook extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isFavoriteHomeCook : false,
+            isFavoriteHomeCook : true,
 		};
     }
 
