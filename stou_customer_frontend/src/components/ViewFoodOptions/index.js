@@ -80,6 +80,7 @@ class ViewFoodOptions extends Component {
   }
 
   render() {
+
     return (
       <Container className="ViewFoodOptions">
         <ListGroup>
@@ -102,6 +103,9 @@ class ViewFoodOptions extends Component {
                   </div>
                   <div className="vfo-chefname">
                     <p>by </p><NavLink className="food-link-chef">{item.homecook}</NavLink>
+                  </div>
+                  <div className="vfo-estimatedTime">
+                    <p>Estimated time: {item.delivery_time.toString()}</p>
                   </div>
                 </div>
                 <p className="vfo-price">${item.price}</p>
