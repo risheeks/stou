@@ -91,7 +91,71 @@ let revLoginTokens = {};
 
 const uuidv4 = require('uuid/v4');
 
-app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port))
+app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
+
+app.use('/setorderstatus', function(req, res, next){
+  const orderId = req.param('orderId');//req.body['data']['orderId'];
+  const newOrderStatus = req.param('orderStatus');//req.body['data']['orderStatus'];
+  let o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT ORDER_STATUS from ORDERS where ORDER_ID=\'' + orderId +'\';';
+    connection.query(q, function (err, rows) {
+      if (err) {
+        o['code'] = 400;
+        res.status(400);
+        o['message'] = 'Invalid Order';
+        res.send(o);
+      } else {
+        const currentOrderStatus = rows[0].ORDER_STATUS;
+        let update = false;
+        if(newOrderStatus === 'accepted' && currentOrderStatus === 'placed') {
+          update = true;
+        } else if (newOrderStatus === 'in progress' && currentOrderStatus === 'accepted'){
+          update = true;
+        } else if (newOrderStatus === 'on its way' && currentOrderStatus === 'in progress') {
+          update = true;
+        } else if (newOrderStatus === 'delivered' && currentOrderStatus === 'on its way') {
+          update = true;
+        } else if (currentOrderStatus !== 'delivered' && currentOrderStatus !== 'on its way' && newOrderStatus === 'canceled') {
+          update = true;
+        } else if (currentOrderStatus === 'placed' && newOrderStatus === 'declined') {
+          update = true;
+        }
+        if (update) {
+          con.getConnection(function (err, connection) {
+            if (err) throw err;
+            var q = 'UPDATE ORDERS SET ORDER_STATUS=\'' + newOrderStatus + '\' where ORDER_ID=\'' + orderId +'\';';
+            console.log(q)
+            connection.query(q, function (err, rows) {
+              if (err) {
+                o['code'] = 400;
+                res.status(400);
+                o['message'] = 'Failed to update status';
+                res.send(o);
+              } else {
+                o['code'] = 200;
+                res.status(200);
+                o['message'] = 'Status update successful';
+                res.send(o);
+              }
+            });
+            connection.release();
+          });
+        }
+        else {
+          o['code'] = 400;
+          res.status(400);
+          o['message'] = 'Invalid Status Update';
+          res.send(o);
+        }
+      }
+    });
+    connection.release();
+  });
+
+});
+
 app.use('/getallorders', function (req, res, next) {
   const cookEmail = req.body['data']['cookEmail'];
   const status = req.body['data']['status'];
@@ -267,7 +331,7 @@ app.use('/setlocation', function(req, res, next){
       if (err) throw err;
       if (rows.length === 0) {
         o['code'] = 400;
-        res.status(400)
+        res.status(400);
         o['message'] = 'Invalid customer';
         res.send(o);
       }
@@ -355,7 +419,7 @@ app.use('/getallfood', function(req, res, next){
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) console.log(err);
-    var q = 'SELECT FOOD.PICTURE, FOOD_ID, COOK_EMAIL, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL AND USER.ROLE=1 AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ');';
+    var q = 'SELECT FOOD.PICTURE, FOOD_ID, COOK_EMAIL, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, DELIVERY_TIME FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL AND USER.ROLE=1 AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ');';
     
     connection.query(q, function (err, result) {
       if (err) {
@@ -379,6 +443,7 @@ app.use('/getallfood', function(req, res, next){
           ob['calories'] = row.CALORIES;
           ob['picture'] = row.PICTURE;
           ob['food_id'] = row.FOOD_ID;
+          ob['delivery_time'] = row.DELIVERY_TIME;
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         o['data'] = obj;
@@ -482,6 +547,7 @@ app.use('/addfooditem', function(req, res, next){
   const calories = req.body['data']['calories'];
   const picture = req.body['data']['picture'];
   const desc = req.body['data']['description'];
+  const deliveryTime = req.body['data']['deliveryTime'];
   let o ={};
   // console.log(token)
   // console.log('insert into FoodItems values(\'' + itemName + '\', \'' + loginTokens[token] + '\', \'' + location + '\', \'' + price + '\', \'' + allergens +'\', \'' + cuisine + '\', \'' + calories +'\', \'' + picture + '\', \'' + desc + '\')')
@@ -534,6 +600,10 @@ app.use('/addfooditem', function(req, res, next){
           if(calories != null) {
             columns += "CALORIES, ";
             values += calories + ", ";
+          }
+          if(deliveryTime != null) {
+            columns += "DELIVERY_TIME, ";
+            values += deliveryTime + ", ";
           }
           if(picture != null) {
             columns += "PICTURE, ";
