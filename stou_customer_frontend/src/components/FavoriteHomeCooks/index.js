@@ -40,6 +40,7 @@ class FavoriteHomeCooksList extends Component {
 			<Container className="homecook-container">
 					{this.state.favhomecooks.map(item => (
 						<FavoriteHomeCook 
+							// cook_email = {item.email}
 							name={item.cook_name}
 							picture={item.picture}
 							description={item.description}
