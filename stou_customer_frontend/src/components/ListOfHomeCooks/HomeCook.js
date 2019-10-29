@@ -20,12 +20,15 @@ class HomeCook extends Component {
             isFavoriteHomeCook: !currentFavHomeCookStatus
         })
         if(!currentFavHomeCookStatus) {
-            this.updateFavoriteHomeCooks()
+            this.AddFavoriteHomeCook()
+        }
+        else {
+            this.RemoveFavoriteHomeCook() 
         }
         console.log("status: ", !currentFavHomeCookStatus);
         console.log(this.props.cook_email);
     }
-    updateFavoriteHomeCooks =(e) => {
+    AddFavoriteHomeCook =(e) => {
         console.log(this.props.email + " " + this.state.cook_email);
         axios.post(`${serverURL}/setfavoritehomecooks`, {
             data: {
@@ -37,6 +40,21 @@ class HomeCook extends Component {
             console.log(res.data);
         })
     }
+
+    RemoveFavoriteHomeCook =(e) => {
+        console.log(this.props.email + " " + this.state.cook_email);
+        axios.post(`${serverURL}/removefavoritehomecooks`, {
+            data: {
+                customerEmail: this.props.email,
+                cookEmail: this.state.cook_email
+            }
+        })
+        .then(res => {
+            console.log("Reached remove")
+            console.log(res.data);
+        })
+    }
+
 
     render() {
         const { name, description, picture, rating } = this.props;
