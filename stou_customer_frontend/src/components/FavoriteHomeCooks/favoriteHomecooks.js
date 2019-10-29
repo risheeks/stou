@@ -14,7 +14,7 @@ class FavoriteHomeCook extends Component {
     }
 
     RemoveFavoriteHomeCook =(e) => {
-        console.log(this.props.email + " " + this.state.cook_email);
+        //console.log(this.props.email + " " + this.props.cook_email);
         axios.post(`${serverURL}/removefavoritehomecooks`, {
             data: {
                 customerEmail: this.props.email,
@@ -22,9 +22,9 @@ class FavoriteHomeCook extends Component {
             }
         })
         .then(res => {
-            console.log("Reached remove")
             console.log(res.data);
         })
+        // window.location.reload();
     }
 
    
@@ -33,7 +33,10 @@ class FavoriteHomeCook extends Component {
   		this.setState({
   			isFavoriteHomeCook: !currentFavHomeCookStatus
   		})
-  		console.log("status: ", !currentFavHomeCookStatus);
+        console.log("status: ", !currentFavHomeCookStatus);
+        if(currentFavHomeCookStatus) {
+            this.RemoveFavoriteHomeCook();
+        }
   	}
 
     render() {
@@ -49,7 +52,7 @@ class FavoriteHomeCook extends Component {
                 <div onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'block' : 'none' }}>
                 	<i><FaHeart className="saveHeart"/></i>
                 </div>
-                <Card.Img variant="top" src={picture} style={{maxHeight: '200px'}} />
+                <Card.Img class="cook-image" variant="top" src={picture} style={{maxHeight: '200px'}} />
                 <Card.Body>
                     <Card.Title>{name}</Card.Title>
                     <Card.Text>

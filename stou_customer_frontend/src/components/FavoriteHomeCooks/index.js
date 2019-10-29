@@ -11,12 +11,10 @@ class FavoriteHomeCooksList extends Component {
 		this.state = {
 			favhomecooks: []
 		};
-		//console.log(this.props.email)
 	}
 
 	getFavHomecooks = () => {
 
-		// let data = { email: this.props.email }
         axios.post(`${serverURL}/getfavoritehomecooks`, { 
 			data: {
 				email:this.props.email,
@@ -40,10 +38,11 @@ class FavoriteHomeCooksList extends Component {
 			<Container className="homecook-container">
 					{this.state.favhomecooks.map(item => (
 						<FavoriteHomeCook 
-							// cook_email = {item.email}
+							email = {this.props.email}
+							cook_email = {item.email}
 							name={item.cook_name}
-							picture={item.picture}
-							description={item.description}
+							picture={item.cook_picture}
+							description={item.cook_description}
 							rating={item.rating}
 						/>
 					))}
