@@ -10,7 +10,6 @@ class FavoriteHomeCook extends Component {
         super(props);
         this.state = {
             isFavoriteHomeCook : false,
-            favhomecooks: []
 		};
     }
 
@@ -25,7 +24,7 @@ class FavoriteHomeCook extends Component {
 
     render() {
         const { name, description, picture, rating } = this.props;
-
+        console.log(name + " " + rating);
 
         return (
             <Card className="homecook-card" style={{ width: '18rem' }}>
@@ -40,7 +39,8 @@ class FavoriteHomeCook extends Component {
                 <Card.Body>
                     <Card.Title>{name}</Card.Title>
                     <Card.Text>
-                        {description}
+                        {/* {description} */}
+                        I love cooking
                     </Card.Text>
                     <CustomRating rating={rating} readonly={true} />
                     <Button  variant="link">View Menu</Button>
