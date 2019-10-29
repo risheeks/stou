@@ -94,10 +94,11 @@ const uuidv4 = require('uuid/v4');
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port))
 app.use('/getallorders', function (req, res, next) {
   const cookEmail = req.body['data']['cookEmail'];
+  const status = req.body['data']['status'];
   var o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'SELECT * from ORDERS where COOK_EMAIL=\'' + cookEmail + '\'';
+    var q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORSERS.CUSTOMER_EMAIL COOK_EMAIL="' + cookEmail + '" AND ORDER_STATUS="' + status + '";';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -110,6 +111,7 @@ app.use('/getallorders', function (req, res, next) {
         var obj = o['data']['orders'];
         var ord = {};
         for(let i = 0; i < rows.length; i++){
+          ord['name'] = rows[i].FIRST_NAME + rows[i].LAST_NAME;
           ord['orderId'] = rows[i].ORDER_ID;
           ord['orderedAt'] = rows[i].ORDERED_AT;
           ord['cookEmail'] = rows[i].COOK_EMAIL;
@@ -122,6 +124,7 @@ app.use('/getallorders', function (req, res, next) {
           obj.push(ord);
         }
         o = obj;
+        console.log(o);
         o['code'] = 200;
         o['message'] = 'Success';
         res.status(200);
