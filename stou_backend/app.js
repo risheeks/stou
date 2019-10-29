@@ -162,7 +162,7 @@ app.use('/getallorders', function (req, res, next) {
   var o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORSERS.CUSTOMER_EMAIL COOK_EMAIL="' + cookEmail + '" AND ORDER_STATUS="' + status + '";';
+    var q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.CUSTOMER_EMAIL AND COOK_EMAIL="' + cookEmail + '" AND ORDER_STATUS="' + status + '";';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -172,7 +172,7 @@ app.use('/getallorders', function (req, res, next) {
         res.send(o);
       }
       else {
-        var obj = o['data']['orders'];
+        var obj = []
         var ord = {};
         for(let i = 0; i < rows.length; i++){
           ord['name'] = rows[i].FIRST_NAME + rows[i].LAST_NAME;

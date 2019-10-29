@@ -1,257 +1,287 @@
 .navbar-logo {
-    max-width: 5rem;
+  max-width: 5rem;
 }
 
 .navbar {
-    background-color: #ff2700;
-    padding-left: 2rem;
-    padding-right: 2rem;
+  background-color: #ff2700;
+  padding-left: 2rem;
+  padding-right: 2rem;
 }
 
 .navbar-content {
-    align-self: right;
+  align-self: right;
 }
 
 .navbar-content > .nav-link {
-    color: white !important;
+  color: white !important;
 }
 
 .navbar-content > .active {
-    color: grey !important;
-    background-color: white !important;
+  color: grey !important;
+  background-color: white !important;
 }
 
 .submit-button {
-    background-color: #ff2700 !important;
+  background-color: #ff2700 !important;
 }
 
 .addfood-container {
-    padding: 50px 50px;
-    border: 1px solid rgb(202, 202, 202);
-    width: 50%;
-    margin-top: 2%;
+  padding: 50px 50px;
+  border: 1px solid rgb(202, 202, 202);
+  width: 50%;
+  margin-top: 2%;
 }
 
 .outer-container {
-    align-items: center;
-    width: 100%;
-    display: flex;
-    justify-content: center;
+  align-items: center;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .image-upload-input {
-    visibility: hidden;
+  visibility: hidden;
 }
 
 .image-upload-preview {
-  cursor: pointer;
-  height: 20rem;
-  width: 20rem;
-  object-fit: cover;
+cursor: pointer;
+height: 20rem;
+width: 20rem;
+object-fit: cover;
 }
 
 .form-text {
-    text-align: left;
+  text-align: left;
 }
 
 .form-value {
-    text-align: center;
+  text-align: center;
 }
 
 .profile {
-  width: 600px;
-  border: 1px solid rgb(202, 202, 202);
-  padding: 60px;
-  background-color:#f7fbfc;
+width: 600px;
+border: 1px solid rgb(202, 202, 202);
+padding: 60px;
+background-color:#f7fbfc;
 }
 .profileEmail {
-  color: grey;
-  font-size: 18px;
+color: grey;
+font-size: 18px;
 }
 
 .text-about-me-label {
-  /* width: 400px; */
-  color: grey;
-  font-size: 18px;
-  text-align: center;
+/* width: 400px; */
+color: grey;
+font-size: 18px;
+text-align: center;
 }
 /* .text-about-me {
-  color: grey;
-  font-size: 18px;
-  text-align: center;
+color: grey;
+font-size: 18px;
+text-align: center;
 } */
 
 .filterbar-container {
-    width: 25%;
-    padding: 2% 2%;
+  width: 25%;
+  padding: 2% 2%;
 }
 
 .basic-horizontal-div {
-    display: flex;
-    flex-direction: row;
-}
-
-.checkbox-div {
-    max-width: 100%;
-}
-
-.single-checkbox-div {
-    margin: 5px 5px;
-}
-
-.single-checkbox {
-    background-color: #ffffff;
-    border-color: #ff2700;
-    color: #ff2700;
-}
-
-.single-checkbox.active {
-    background-color: #ff2700 !important;
-    border-color: #ff2700 !important;
-}
-
-.single-checkbox:active {
-    background-color: #ff2700 !important;
-    color: #ff2700;
-    border-color: #ff2700;
-}
-
-.single-checkbox:hover {
-    background-color: #ff2700 !important;
-    border-color: #ff2700;
-}
-
-.multi-checkbox-div {
-  display: block;
-  margin-bottom: 30px;
-}
-
-.order-item-info {
   display: flex;
   flex-direction: row;
 }
 
+.checkbox-div {
+  max-width: 100%;
+}
+
+.single-checkbox-div {
+  margin: 5px 5px;
+}
+
+.single-checkbox {
+  background-color: #ffffff;
+  border-color: #ff2700;
+  color: #ff2700;
+}
+
+.single-checkbox.active {
+  background-color: #ff2700 !important;
+  border-color: #ff2700 !important;
+}
+
+.single-checkbox:active {
+  background-color: #ff2700 !important;
+  color: #ff2700;
+  border-color: #ff2700;
+}
+
+.single-checkbox:hover {
+  background-color: #ff2700 !important;
+  border-color: #ff2700;
+}
+
+.multi-checkbox-div {
+display: block;
+margin-bottom: 30px;
+}
+
+.order-item-info {
+display: flex;
+flex-direction: row;
+}
+
 .order-item-quantity {
-  margin-left: auto;
-  margin-right: 70%;
+margin-left: auto;
+margin-right: 70%;
+}
+
+.orders-type-tabs {
+margin: 3rem 0;
+}
+
+.orders-container {
+display: flex;
+flex-direction: column;
+flex-flow: center;
+justify-content: center;
+}
+
+.orders-list {
+width: 70%;
+max-height: 500px;
+align-self: center;
+overflow-y: scroll;
+}
+
+.button-div {
+display: flex;
+flex-direction: row;
+align-self: center;
+justify-content: center;
+}
+
+.margined-buttons {
+margin: 0 10px;
+align-self: center;
 }
 
 @media all and (min-width: 480px) {
-    .Login {
-      padding: 60px 0;
-      border: 1px solid rgb(202, 202, 202);
-      width: 450px;
-    }
-  
-    .Login form {
-      margin: 0 auto;
-      max-width: 320px;
-    }
+  .Login {
+    padding: 60px 0;
+    border: 1px solid rgb(202, 202, 202);
+    width: 450px;
+  }
+
+  .Login form {
+    margin: 0 auto;
+    max-width: 320px;
+  }
 }
 @media all and (min-width: 480px) {
-    .Register {
-      border: 1px solid rgb(202, 202, 202);
-      width: 450px;
-    }
-    .form {
-      margin: 0 auto;
-      max-width: 320px;
-      padding-top: 60px;
-      padding-bottom: 50px;
-    }
+  .Register {
+    border: 1px solid rgb(202, 202, 202);
+    width: 450px;
+  }
+  .form {
+    margin: 0 auto;
+    max-width: 320px;
+    padding-top: 60px;
+    padding-bottom: 50px;
+  }
+  
+  .title {
     
-    .title {
-      
-      /* display: flex; */
-      justify-content: left;
-      align-items: center;
-      height: 33px;
-      background-color: #ff2700;
-      color: #ffffff;
-      padding-left: 22px;
-    }
-    input {
-      border: 1px solid rgb(202, 202, 202);
-      border-radius: 4px;
-      height: 25px;
-      width: 100%;
-      font-size: .9em
-    }
-    .form input.error {
-      border-color: red;
-    }
-    input:focus {
-      outline: none;
-    }
-    .note {
-      display: block;
-      color: rgba(111, 95, 95, 0.67);
-      font-size: 0.7em;
-    }
-    .sb-text {
-      font-size: 0.7em;
-      margin-top: 20px;
-    }
-    .sb-text a {
-      text-decoration: none;
-      color: #337ab7;
-    }
-    label {
-      display: block;
-    }
-    .required-field {
-      display: none;
-      color: red;
-      font-size: 0.5em;
-      text-align: left;
-    }
-    .hidden {
-      display: none;
-    }
-    .form span.required {
-      display: block;
-    }
+    /* display: flex; */
+    justify-content: left;
+    align-items: center;
+    height: 33px;
+    background-color: #ff2700;
+    color: #ffffff;
+    padding-left: 22px;
+  }
+  input {
+    border: 1px solid rgb(202, 202, 202);
+    border-radius: 4px;
+    height: 25px;
+    width: 100%;
+    font-size: .9em
+  }
+  .form input.error {
+    border-color: red;
+  }
+  input:focus {
+    outline: none;
+  }
+  .note {
+    display: block;
+    color: rgba(111, 95, 95, 0.67);
+    font-size: 0.7em;
+  }
+  .sb-text {
+    font-size: 0.7em;
+    margin-top: 20px;
+  }
+  .sb-text a {
+    text-decoration: none;
+    color: #337ab7;
+  }
+  label {
+    display: block;
+  }
+  .required-field {
+    display: none;
+    color: red;
+    font-size: 0.5em;
+    text-align: left;
+  }
+  .hidden {
+    display: none;
+  }
+  .form span.required {
+    display: block;
+  }
 }
 
 .ViewFood {
-    border: 1px solid rgb(202, 202, 202);
-    /* width: 100% !important; */
-    margin-right: auto;
-    padding: 5%;
-    height: 100%;
-  }
-  .vfo-image {
-    max-width:100%;
-    max-height:100px;  
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-right: 0px;
-  }
-  .vfo-description {
-    /* display: block; */
-    color: rgba(111, 95, 95, 0.67);
-    font-size: 0.75em;
-    text-align: left;
-  
-  }
-  
-  .vfo-chefname {
-    padding-top: 5px;
-    align-items: flex-end;
-  }
+  border: 1px solid rgb(202, 202, 202);
+  /* width: 100% !important; */
+  margin-right: auto;
+  padding: 5%;
+  height: 100%;
+}
+.vfo-image {
+  max-width:100%;
+  max-height:100px;  
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-right: 0px;
+}
+.vfo-description {
+  /* display: block; */
+  color: rgba(111, 95, 95, 0.67);
+  font-size: 0.75em;
+  text-align: left;
 
-  .vfo-foodname {
-    padding-top: 5px;
-    align-items: flex-end;
-  }
+}
 
-  .vfo-price {
-    text-align: right;
-    font-weight: bold;
-    font-size: 0.90em;
-  }
+.vfo-chefname {
+  padding-top: 5px;
+  align-items: flex-end;
+}
+
+.vfo-foodname {
+  padding-top: 5px;
+  align-items: flex-end;
+}
+
+.vfo-price {
+  text-align: right;
+  font-weight: bold;
+  font-size: 0.90em;
+}
 
 .online-status-position {
-    float: right;
+  float: right;
 }
 

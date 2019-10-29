@@ -19,6 +19,7 @@ import { ModalKey } from '../../constants/ModalKeys';
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { ROLE } from '../../constants';
+import Orders from '../Orders';
 
 function mapStateToProps(state) {
     return {
@@ -88,6 +89,7 @@ class Main extends Component {
                 <Route path="/addfood" render={() => <AddFoodItem auth_token={auth_token} email={email} />} />
                 <Route path="/profile" render={() => <Profile auth_token={auth_token} email={email} />} />
                 <Route path="/privacyPolicy" render={() => <PrivacyPolicy auth_token={auth_token} email={email} />} />
+                <Route path="/orders" render={() => <Orders auth_token={auth_token} email={email} />} />
                 <MyModal {...modalProps} closeModal={closeModal} />
             </Router>
         );

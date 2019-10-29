@@ -26,6 +26,8 @@ export class Header extends Component {
                         { this.props.loggedIn ?
                         <Nav.Link as={Link} className="nav-link" to="/profile">Profile</Nav.Link> : null}
                         { this.props.loggedIn ?
+                        <Nav.Link as={Link} className="nav-link" to="/orders">Orders</Nav.Link> : null}
+                        { this.props.loggedIn ?
                         <Nav.Link as={Link} className="nav-link" to="/addfood">Add Food Item</Nav.Link> : null}
                         { this.props.loggedIn ?
                         <Nav.Link as={Link} className="nav-link" to="/" onClick={this.handleSignOut}>Sign Out</Nav.Link> : null}
