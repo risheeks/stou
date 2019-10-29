@@ -1088,10 +1088,16 @@ app.use('/register', function(req,res,next){
 
 function registerUser(firstName, lastName, email, password, role, cuisines) {
   console.log(role);
+  let pic = '';
   if(role === 'Homecook') role = 'COOK';
+  if(role === 'COOK') {
+    pic = 'https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/3.png?alt=media&token=a3fb8d89-3afc-48ea-9b07-bf7c26699ef4';
+  } else {
+    pic = 'https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/4.png?alt=media&token=47d52479-c8cf-46a1-8116-e5f1bc8765f7';
+  }
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'INSERT INTO USER (FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, ROLE) values("' + firstName + '", "' + lastName + '", "' + email + '", "' + password + '", (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '"));';
+    var q = 'INSERT INTO USER (PICTURE, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, ROLE) values("' + pic + '", "' + firstName + '", "' + lastName + '", "' + email + '", "' + password + '", (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '"));';
     connection.query(q, function (err, rows) {
       if(err) {
         console.log(err);
