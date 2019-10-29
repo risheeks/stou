@@ -61,16 +61,18 @@ class HomeCook extends Component {
 
         return (
             <Card className="homecook-card" style={{ width: '18rem' }}>
-                <Card.Img variant="top" src={picture} style={{maxHeight: '200px'}} />
                 <div onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'none' : 'block' }}>
                 	<i><FaRegHeart className="saveOpenHeart"/></i> 
                 </div>
                 <div onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'block' : 'none' }}>
                 	<i><FaHeart className="saveHeart"/></i>
                 </div>
+                <Card.Img class="cook-image" variant="top" src={picture} style={{maxHeight: '200px'}} />
+                
                 <Card.Body>
-                    <Card.Title>{name}</Card.Title>
-                    <Card.Text>
+                    <Card.Title class="wrapped-cook-text"><b>{name}</b></Card.Title>
+                    <br/>
+                    <Card.Text class="text-about-me-label wrapped-cook-text">
                         {description}
                     </Card.Text>
                     <CustomRating rating={rating} readonly={true} />

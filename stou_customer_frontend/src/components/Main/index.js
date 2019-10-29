@@ -118,6 +118,7 @@ class Main extends Component {
                 />
                 <Route path="/favoriteHomecooks" render={() => 
                     <FavoriteHomeCooksList
+                        openModal={openModal}
                         auth_token={auth_token}
                         email={email}
                     />}

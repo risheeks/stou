@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { ModalKey } from '../../../constants/ModalKeys';
 import ZipcodeModal from './ZipcodeModal';
 import FoodModal from './FoodModal';
+import ProfileModal from './ProfileModal';
 
 class MyModal extends Component {
     render() {
@@ -12,6 +13,8 @@ class MyModal extends Component {
                 return <ZipcodeModal {...this.props} />;
             case ModalKey.FOOD_ITEM:
                 return <FoodModal {...this.props} />;
+            case ModalKey.PROFILE:
+                return <ProfileModal {...this.props} />;
             default:
                 return null;
         }

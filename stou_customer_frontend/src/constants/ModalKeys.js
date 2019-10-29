@@ -1,4 +1,5 @@
 export const ModalKey = {
     FOOD_ITEM: 'FOOD_ITEM_MODAL',
-    ZIPCODE: 'ZIPCODE_MODAL'
+    ZIPCODE: 'ZIPCODE_MODAL',
+    PROFILE: 'PROFILE_MODAL'
 }

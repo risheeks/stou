@@ -38,6 +38,7 @@ class FavoriteHomeCooksList extends Component {
 			<Container className="homecook-container">
 					{this.state.favhomecooks.map(item => (
 						<FavoriteHomeCook 
+							openModal={this.props.openModal}
 							email = {this.props.email}
 							cook_email = {item.email}
 							name={item.cook_name}
