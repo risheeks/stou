@@ -13,6 +13,20 @@ class FavoriteHomeCook extends Component {
 		};
     }
 
+    RemoveFavoriteHomeCook =(e) => {
+        console.log(this.props.email + " " + this.state.cook_email);
+        axios.post(`${serverURL}/removefavoritehomecooks`, {
+            data: {
+                customerEmail: this.props.email,
+                cookEmail: this.props.cook_email
+            }
+        })
+        .then(res => {
+            console.log("Reached remove")
+            console.log(res.data);
+        })
+    }
+
    
     ChangeSaveFavHomeCookStatus =(e)=> {
   		const currentFavHomeCookStatus=this.state.isFavoriteHomeCook;
@@ -39,7 +53,7 @@ class FavoriteHomeCook extends Component {
                 <Card.Body>
                     <Card.Title>{name}</Card.Title>
                     <Card.Text>
-                        {/* {description} */}
+                        {description}
                         I love cooking
                     </Card.Text>
                     <CustomRating rating={rating} readonly={true} />
