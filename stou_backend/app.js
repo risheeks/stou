@@ -94,8 +94,8 @@ const uuidv4 = require('uuid/v4');
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
 app.use('/setorderstatus', function(req, res, next){
-  const orderId = req.param('orderId');//req.body['data']['orderId'];
-  const newOrderStatus = req.param('orderStatus');//req.body['data']['orderStatus'];
+  const orderId = req.body['data']['orderId'];
+  const newOrderStatus = req.body['data']['orderStatus'];
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
@@ -126,7 +126,7 @@ app.use('/setorderstatus', function(req, res, next){
           con.getConnection(function (err, connection) {
             if (err) throw err;
             var q = 'UPDATE ORDERS SET ORDER_STATUS=\'' + newOrderStatus + '\' where ORDER_ID=\'' + orderId +'\';';
-            console.log(q)
+            console.log(q);
             connection.query(q, function (err, rows) {
               if (err) {
                 o['code'] = 400;
@@ -444,6 +444,9 @@ app.use('/getallfood', function(req, res, next){
           ob['picture'] = row.PICTURE;
           ob['food_id'] = row.FOOD_ID;
           ob['delivery_time'] = row.DELIVERY_TIME;
+          if(ob['delivery_time'] === null){
+            ob['delivery_time'] = '2019-10-29 01:47:45';
+          }
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         o['data'] = obj;
