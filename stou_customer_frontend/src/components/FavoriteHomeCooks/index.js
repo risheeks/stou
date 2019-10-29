@@ -28,7 +28,7 @@ class FavoriteHomeCooksList extends Component {
                     favhomecooks: Array.from(res.data)
                 });
 			});
-		console.log()
+		//console.log(this.state.favhomecooks)
 	}
 
 	componentDidMount() {
