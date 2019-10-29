@@ -917,6 +917,21 @@ app.use('/resetpassword', function(req, res, next) {
   });
 });
 
+app.use('/checklogin', function(req, res, next){
+  const email = req.body['data']['email'];
+  const token = req.body['data']['token'];
+  var o = {};
+  tok = revLoginTokens[email];
+  if(tok === token) {
+    o['code'] = 200;
+    o['message'] = 'Login successful';
+    o['token'] = token;
+  } else{
+    o['code'] = 400;
+    o['message'] = 'Login token does not match';
+  }
+  res.send(o);
+});
 
 app.use('/login', function(req, res, next){
   const email = req.body['data']['email'];
