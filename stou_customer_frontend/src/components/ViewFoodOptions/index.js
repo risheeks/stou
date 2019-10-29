@@ -4,7 +4,6 @@ import axios from 'axios';
 import { serverURL } from '../../config';
 import NavLink from 'react-bootstrap/NavLink';
 import { ModalKey } from '../../constants/ModalKeys';
-import full_white_logo from '../../constants/images/full_white_logo.png';
 
 class ViewFoodOptions extends Component {
   constructor(props) {
@@ -79,6 +78,11 @@ class ViewFoodOptions extends Component {
     openModal(ModalKey.FOOD_ITEM, {item: foodItem, addToOrder: addToOrder});
   }
 
+  clickProfile = e => {
+    const { name, description, picture, rating, openModal } = this.props;
+    openModal(ModalKey.PROFILE, {name, description, picture, rating});
+}
+
   render() {
     return (
       <Container className="ViewFoodOptions">
@@ -101,7 +105,7 @@ class ViewFoodOptions extends Component {
                     <p>{item.description}</p>
                   </div>
                   <div className="vfo-chefname">
-                    <p>by </p><NavLink className="food-link-chef">{item.homecook}</NavLink>
+                    <p>by </p><NavLink className="food-link-chef" onClick={this.clickProfile}>{item.homecook}</NavLink>
                   </div>
                 </div>
                 <p className="vfo-price">${item.price}</p>
