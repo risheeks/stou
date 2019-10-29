@@ -318,6 +318,34 @@ app.use('/logout', function(req, res, next){
   res.send({'code': '200', 'message': 'Logout successful'});
 });
 
+app.use('/removefavoritehomecooks', function(req, res, next){
+  const cookEmail = req.body['data']['cookEmail'];
+  const customerEmail = req.body['data']['customerEmail'];
+  console.log("Reached remove");
+  let o = {};
+  con.getConnection(function(err, connection) {
+    if (err) throw err;
+    var q = 'DELETE from FAVORITE_HOMECOOKS where COOK_EMAIL=\'' + cookEmail +'\' AND CUSTOMER_EMAIL=\'' + customerEmail + '\';';
+    console.log("Reached remove");
+    connection.query(q, function (err, rows) {
+      if (err) {
+        o['code'] = 400;
+        res.status(400);
+        o['message'] = 'Remove failed';
+        res.send(o);
+      }
+      else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Removed favorite homecook';
+        res.send(o);
+      }
+      console.log(rows[0]);
+      console.log("Reached remove");
+    });
+    connection.release();
+  });
+});
 
 app.use('/getallfood', function(req, res, next){
   let location = req.body['data']['location'];
