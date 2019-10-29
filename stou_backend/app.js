@@ -428,14 +428,15 @@ app.use('/getfooditems', function(req,res,next){
 
 
 app.use('/gethomecooks', function(req,res,next){
-  console.log(req.body)
+  // console.log(req.body)
   let location = req.body['data']['location'];
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'SELECT * FROM USER, ROLES WHERE USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ' AND ONLINE=1 );';
+    var q = 'SELECT * FROM USER, ROLES WHERE online=1 AND USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ' AND ONLINE=1 );';
     connection.query(q, function (err, result) {
-      if (err) throw err;
+      console.log(result);
+      if (err) console.log(err);
       if (result.length === 0) {
         o['code'] = 400;
         res.status(400)
@@ -456,7 +457,7 @@ app.use('/gethomecooks', function(req,res,next){
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         o['data'] = obj;
-        console.log(o);
+        // console.log(o);
         if(obj.length !== 0)
           res.send(o);
       }
@@ -831,6 +832,7 @@ app.use('/getfavoritehomecooks', function(req, res, next){
         ob = {};
         for(var i = 0; i < rows.length; i++){
           var r = rows[i];
+          ob['email'] = r.EMAIL;
           ob['cook_name'] = r.FIRST_NAME +' '+r.LAST_NAME;
           if (r.ABOUT_ME !== null){
             ob['cook_description'] = r.ABOUT_ME;  
