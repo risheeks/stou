@@ -19,12 +19,12 @@ class FavoriteHomeCooksList extends Component {
 		let data = { email: this.props.email }
         axios.post(`${serverURL}/getfavoritehomecooks`, { data: data})
             .then(res => {
-                console.log(res.data.data)
+                console.log(res.data)
                 this.setState({
-                    favhomecooks: Array.from(res.data.data)
+                    favhomecooks: Array.from(res.data)
                 });
 			});
-		console.log()
+		//console.log(this.state.favhomecooks)
 	}
 
 	componentDidMount() {
