@@ -75,16 +75,7 @@ class Checkout extends Component {
     placeOrder = () => {
         const { baggedItems, email } = this.props;
         const { instructions, street, city, state, zipcode, subtotal } = this.state;
-
-        let orderedBag = [];
-        for(let i = 0; i < baggedItems.length; i++) {
-            orderedBag.push({
-                foodId: baggedItems[i].food_id,
-                quantity: baggedItems[i].quantity,
-                price: baggedItems[i].quantity * baggedItems[i].price
-            });
-        }
-
+        console.log(this.state)
         const data = {
             cookEmail: baggedItems[0].email,
             customerEmail: email,
@@ -92,7 +83,7 @@ class Checkout extends Component {
             deliveryTime: 30,
             orderStatus: 'placed',
             orderAddress: `${street}, ${city}, ${state} - ${zipcode}`,
-            itemList: orderedBag
+            itemList: baggedItems
         };
 
         axios.post(`${serverURL}/placeorder`, {data: data})
@@ -117,7 +108,7 @@ class Checkout extends Component {
             production: 'YOUR-PRODUCTION-APP-ID',
         }
         const { baggedItems } = this.props;
-        const { subtotal, fees, total } = this.state;
+        const { instructions, street, city, state, zipcode, subtotal, fees, total } = this.state;
 
         return (
             <div className="checkout-container">
@@ -168,21 +159,21 @@ class Checkout extends Component {
                             <div className="input-row">
                                 <Form.Group className="address-inputs" controlId="street">
                                     <Form.Label>Street address</Form.Label>
-                                    <Form.Control type="text" placeholder="Address Line 1" />
+                                    <Form.Control type="text" placeholder="Address Line 1" value={street} onChange={this.handleChange} />
                                 </Form.Group>
                                 <Form.Group className="address-inputs" controlId="city">
                                     <Form.Label>City</Form.Label>
-                                    <Form.Control type="text" placeholder="City" />
+                                    <Form.Control type="text" placeholder="City" value={city} onChange={this.handleChange} />
                                 </Form.Group>
                             </div>
                             <div className="input-row">
                                 <Form.Group className="address-inputs" controlId="state">
                                     <Form.Label>State</Form.Label>
-                                    <Form.Control type="text" placeholder="State" />
+                                    <Form.Control type="text" placeholder="State" value={state} onChange={this.handleChange} />
                                 </Form.Group>
                                 <Form.Group className="address-inputs" controlId="zipcode">
                                     <Form.Label>Zipcode</Form.Label>
-                                    <Form.Control type="number" placeholder="Zipcode" />
+                                    <Form.Control type="number" placeholder="Zipcode" value={zipcode} onChange={this.handleChange} />
                                 </Form.Group>
                             </div>
                         </Form>
@@ -192,7 +183,7 @@ class Checkout extends Component {
                         <Form>
                             <Form.Group controlId="instructions">
                                 <Form.Label>Delivery Instructions</Form.Label>
-                                <Form.Control as="textarea" type="text" placeholder="Delivery instructions..." />
+                                <Form.Control as="textarea" type="text" placeholder="Delivery instructions..." value={instructions} onChange={this.handleChange} />
                             </Form.Group>
                         </Form>
                     </div>

@@ -9,6 +9,7 @@
     "crypto-js": "^3.1.9-1",
     "firebase": "^7.2.2",
     "image-to-base64": "^2.0.1",
+    "pusher-js": "^5.0.2",
     "react": "^16.9.0",
     "react-bootstrap": "^1.0.0-beta.12",
     "react-dom": "^16.9.0",

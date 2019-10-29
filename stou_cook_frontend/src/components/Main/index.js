@@ -82,7 +82,7 @@ class Main extends Component {
         return (
             <Router>
                 <Header signOut={signOut} loggedIn={loggedIn} />
-                <Route exact path="/" render={() => <Home auth_token={auth_token} email={email} />} />
+                <Route exact path="/" render={() => <Home auth_token={auth_token} email={email} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
                 <Route path="/login" render={() => <Login auth_token={auth_token} email={email} getToken={getToken} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
                 <Route path="/register" render={() => <Register auth_token={auth_token} email={email} getToken={getToken} />} />
                 <Route path="/addfood" render={() => <AddFoodItem auth_token={auth_token} email={email} />} />

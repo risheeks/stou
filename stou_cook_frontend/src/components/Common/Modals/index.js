@@ -2,16 +2,19 @@ import React, { Component } from 'react';
 import { ModalKey } from '../../../constants/ModalKeys';
 import ZipcodeModal from './ZipcodeModal';
 import FoodModal from './FoodModal';
+import OrderAlert from './OrderAlert';
 
 class MyModal extends Component {
     render() {
         console.log(this.props);
         const { modalKey } = this.props;
-        switch(modalKey) {
+        switch (modalKey) {
             case ModalKey.ZIPCODE:
                 return <ZipcodeModal {...this.props} />;
             case ModalKey.FOOD_ITEM:
                 return <FoodModal {...this.props} />;
+            case ModalKey.NEW_ORDER:
+                return <OrderAlert {...this.props} />;
             default:
                 return null;
         }

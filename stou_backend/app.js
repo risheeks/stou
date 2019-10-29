@@ -14,16 +14,12 @@ const concat = require('concat-stream');
 
 var Pusher = require('pusher');
 
-var channels_client = new Pusher({
+var pusher = new Pusher({
   appId: '888493',
   key: '244fae1265174aa1b9eb',
   secret: '2a96871bdc54e2e3629a',
   cluster: 'us2',
   encrypted: true
-});
-
-channels_client.trigger('my-channel1', 'my-event', {
-  "message": "hello world"
 });
 
 // // const dotenv = require('dotenv')
@@ -126,7 +122,7 @@ app.use('/placeorder', function (req, res, next) {
           con.getConnection(function(err, connection) {
             if (err) throw err;
             console.log(itemList[i]);
-            var q = 'Insert into ORDER_FOOD (ORDER_ID, FOOD_ID, QUANTITY, PRICE) values(\''+orderID+'\', \''+itemList[i].foodId+'\', '+itemList[i].quantity + ', '+ itemList[i].price + ');';
+            var q = 'Insert into ORDER_FOOD (ORDER_ID, FOOD_ID, QUANTITY, PRICE) values(\''+orderID+'\', \''+itemList[i].food_id+'\', '+itemList[i].quantity + ', '+ itemList[i].price + ');';
             console.log(q);
             connection.query(q, function (err, rows) {
               if (err) throw err;
@@ -134,9 +130,18 @@ app.use('/placeorder', function (req, res, next) {
             connection.release();
           });
         }
+        pusher.trigger(`cook-${cookEmail}`, 'new-order', {
+          "message": "New order placed",
+          "orderId": orderID,
+          "items": itemList,
+          "customerEmail": customerEmail,
+          "address": orderAddress,
+          "instructions": instructions
+        });
         o['code'] = 200;
         res.status(200);
         o['message'] = 'Order placed';
+        o['orderId'] = orderID;
         res.send(o);
       }
     });
@@ -641,6 +646,7 @@ app.use('/setstatus', function(req, res, next){
         o['code'] = 200;
         res.status(200);
         o['message'] = 'status updated';
+        o['status'] = status;
         res.send(o);
       }
       console.log(rows[0]);

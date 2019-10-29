@@ -17,24 +17,10 @@ import { getToken, signOut, changeLocation } from '../../actions/login.action';
 import { openModal, closeModal } from '../../actions/modal.action';
 import { addToOrder, removeFromOrder, refresh } from '../../actions/order.action';
 import Checkout from '../Checkout';
-import Pusher from 'pusher-js';
 import { ModalKey } from '../../constants/ModalKeys';
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { ROLE } from '../../constants';
-
-// Enable pusher logging - don't include this in production
-Pusher.logToConsole = true;
-
-var pusher = new Pusher('244fae1265174aa1b9eb', {
-  cluster: 'us2',
-  forceTLS: true
-});
-
-var channel = pusher.subscribe('my-channel1');
-channel.bind('my-event', function(data) {
-  return;
-});
 
 function mapStateToProps(state) {
     return {

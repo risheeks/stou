@@ -6,7 +6,7 @@ const orderReducer = function order(state = initialState, action) {
     switch (action.type) {
         // Add item to bag
         case 'ADD_TO_ORDER': {
-            let existingItem = state.baggedItems.find( ({ id }) => id === action.newItem.id)
+            let existingItem = state.baggedItems.find( ({ food_id }) => food_id === action.newItem.food_id)
             if(existingItem) {
                 existingItem.quantity += action.newItem.quantity;
                 localStorage.setItem('baggedItems', JSON.stringify(state.baggedItems));
