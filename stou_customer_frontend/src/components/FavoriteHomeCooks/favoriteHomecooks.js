@@ -58,11 +58,11 @@ class FavoriteHomeCook extends Component {
                 <div onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'block' : 'none' }}>
                 	<i><FaHeart className="saveHeart"/></i>
                 </div>
-                <Card.Img class="cook-image" variant="top" src={picture} style={{maxHeight: '200px'}} onClick={this.clickProfile}/>
+                <Card.Img className="cook-image" variant="top" src={picture} style={{maxHeight: '200px'}} onClick={this.clickProfile}/>
                 <Card.Body>
-                    <Card.Title class="wrapped-cook-text"><b>{name}</b></Card.Title>
+                    <Card.Title className="wrapped-cook-text"><b>{name}</b></Card.Title>
                     <br/>
-                    <Card.Text class="text-about-me-label wrapped-cook-text">
+                    <Card.Text className="text-about-me-label wrapped-cook-text">
                         {description}
                     </Card.Text>
                     <CustomRating rating={rating} readonly={true} />

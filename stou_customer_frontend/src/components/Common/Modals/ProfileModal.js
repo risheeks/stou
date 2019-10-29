@@ -11,17 +11,25 @@ class ProfileModal extends Component {
     }
 
     render() {
-        const { showModal, closeModal } = this.props;
-
+        let { showModal, closeModal, description} = this.props;
+        
         return (
             <Modal show={showModal} onHide={() => closeModal()}>
-                <Modal.Header closeButton>
+                <Modal.Header closeButton className="profile-footer-modal">
+                <Form.Label className='text-profile-modal'><h1 className='text-profile-name-modal'>{this.props.name}</h1></Form.Label>
                 </Modal.Header>
                 <Modal.Body>
-                <Image className="image-upload-preview-modal" src={this.props.picture} fluid thumbnail roundedCircle />
+                <Row>
+                    <Col xs="4">
+                        <Image className="image-upload-preview-modal" src={this.props.picture} fluid thumbnail roundedCircle />
+                    </Col>
+                    <Col>
+                    <Form.Label><h1 className='text-profile-description-modal'>{this.props.description ? this.props.description : "I am pationate about cooking"}</h1></Form.Label>
+                    </Col>
+                </Row>
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="success">Add to Bag</Button>
+                <Modal.Footer className="profile-footer-modal">
+                    
                 </Modal.Footer>
             </Modal>
         );

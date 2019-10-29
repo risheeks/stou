@@ -4,6 +4,7 @@ import CustomRating from '../Common/CustomRating';
 import { FaHeart, FaRegHeart } from "react-icons/fa"; 
 import axios from 'axios';
 import { serverURL } from '../../config';
+import { ModalKey } from '../../constants/ModalKeys';
 
 class HomeCook extends Component {
     constructor(props) {
@@ -55,6 +56,12 @@ class HomeCook extends Component {
         })
     }
 
+    clickProfile = e => {
+        const { name, description, picture, rating, openModal } = this.props;
+        console.log(this.props);
+        openModal(ModalKey.PROFILE, {name, description, picture, rating});
+    }
+
 
     render() {
         const { name, description, picture, rating } = this.props;
@@ -67,12 +74,12 @@ class HomeCook extends Component {
                 <div onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'block' : 'none' }}>
                 	<i><FaHeart className="saveHeart"/></i>
                 </div>
-                <Card.Img class="cook-image" variant="top" src={picture} style={{maxHeight: '200px'}} />
+                <Card.Img className="cook-image" variant="top" src={picture} onClick={this.clickProfile} style={{maxHeight: '200px'}} />
                 
                 <Card.Body>
-                    <Card.Title class="wrapped-cook-text"><b>{name}</b></Card.Title>
+                    <Card.Title className="wrapped-cook-text"><b>{name}</b></Card.Title>
                     <br/>
-                    <Card.Text class="text-about-me-label wrapped-cook-text">
+                    <Card.Text className="text-about-me-label wrapped-cook-text">
                         {description}
                     </Card.Text>
                     <CustomRating rating={rating} readonly={true} />

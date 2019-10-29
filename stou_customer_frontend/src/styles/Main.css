@@ -443,7 +443,7 @@ textarea {
     object-fit: cover;
 }
 .image-upload-preview-modal {
-    height: 10rem;
+    height: 8rem;
     align-content: center;
 }
 .wrapped-cook-text {
@@ -452,4 +452,17 @@ textarea {
   /* width: 160px;  */
   height: 1.2em; 
   white-space: nowrap;
+}
+.text-profile-name-modal {
+  font-size: 1.3em;
+}
+.text-profile-description-modal {
+  color: grey;
+  font-size: 18px;
+}
+.profile-footer-modal {
+  background-color:#ff7057;
+}
+.profile-header-modal {
+  background-color:#ff7057;
 }
