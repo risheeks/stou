@@ -9,7 +9,7 @@ class FavoriteHomeCooksList extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			favHomecooks: []
+			favhomecooks: []
 		};
 		//console.log(this.props.email)
 	}
@@ -28,34 +28,22 @@ class FavoriteHomeCooksList extends Component {
                     favhomecooks: Array.from(res.data)
                 });
 			});
-		//console.log(this.state.favhomecooks)
+		console.log(this.state.favhomecooks)
 	}
 
 	componentDidMount() {
 		this.getFavHomecooks();
 		return;
 	}
-
-	// getHomecooks = () => {
-    //     axios.get(`${serverURL}/gethomecooks?location=47906`)
-    //         .then(res => {
-    //             console.log(res.data)
-    //             console.log(Array.from(res.data.data))
-    //             this.setState({
-    //                 favHomecooks: Array.from(res.data.data)
-    //             });
-    //         });
-    // }
-
 	render() {
 		return (
 			<Container className="homecook-container">
-					{this.state.favHomecooks.map(item => (
+					{this.state.favhomecooks.map(item => (
 						<FavoriteHomeCook 
-							name={item.name}
+							name={item.cook_name}
 							picture={item.picture}
 							description={item.description}
-							rating={3.5}
+							rating={item.rating}
 						/>
 					))}
 			</Container>
