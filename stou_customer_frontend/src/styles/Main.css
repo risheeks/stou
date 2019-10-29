@@ -442,3 +442,27 @@ textarea {
     /* width: 20rem; */
     object-fit: cover;
 }
+.image-upload-preview-modal {
+    height: 8rem;
+    align-content: center;
+}
+.wrapped-cook-text {
+  text-overflow: ellipsis;
+  overflow: hidden; 
+  /* width: 160px;  */
+  height: 1.2em; 
+  white-space: nowrap;
+}
+.text-profile-name-modal {
+  font-size: 1.3em;
+}
+.text-profile-description-modal {
+  color: grey;
+  font-size: 18px;
+}
+.profile-footer-modal {
+  background-color:#ff7057;
+}
+.profile-header-modal {
+  background-color:#ff7057;
+}

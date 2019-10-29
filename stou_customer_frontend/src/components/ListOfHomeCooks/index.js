@@ -54,6 +54,7 @@ class ListOfHomeCooks extends Component {
 			<Container className="homecook-container">
 					{this.state.homecooks.map(item => (
 						<HomeCook email={this.props.email}
+							openModal={this.props.openModal}
 							name={item.name}
 							cook_email = {item.email}
 							picture={item.profilePicture}

@@ -52,7 +52,7 @@ export class Home extends Component {
                     </Tab>
                     <Tab eventKey="cooks" title="Homecooks">
                         <div className="homec">
-                            <ListOfHomeCooks location={location} email={this.props.email} />
+                            <ListOfHomeCooks location={location} email={this.props.email} openModal={openModal}/>
                         </div>
                     </Tab>
                 </Tabs>
