@@ -555,7 +555,9 @@ app.use('/addfooditem', function(req, res, next){
   // console.log(token)
   // console.log('insert into FoodItems values(\'' + itemName + '\', \'' + loginTokens[token] + '\', \'' + location + '\', \'' + price + '\', \'' + allergens +'\', \'' + cuisine + '\', \'' + calories +'\', \'' + picture + '\', \'' + desc + '\')')
   
+
   con.getConnection(function(err, connection) {
+    console.log(allergens);
     if (err) console.log(err);
     let cuisine_present = false;
     if(cuisine != null) {
@@ -563,28 +565,18 @@ app.use('/addfooditem', function(req, res, next){
       console.log(q);
       connection.query(q, function (err, result) {
         if (err) console.log(err);
-        // console.log(result.length);
         if (result.length === 0) {
           cuisine_present = false;
-          // console.log(cuisine_present);
         }
         else {
           cuisine_present = true;
-          // console.log(cuisine_present);
         }
-        // connection.release();
       });
-    }
-    // console.log(cuisine_present);
-    
+    }    
     if((cuisine_present === false) && (cuisine_present != null)) {
       q = 'INSERT INTO CUISINES (CUISINE) VALUES ("' + cuisine + '");';
       console.log(q);
       connection.query(q, function (err, result) {
-        if (err) {
-          console.log(err);
-        }
-        
           console.log(cuisine_present);
           var columns = "(";
           var values = "(";
@@ -638,10 +630,17 @@ app.use('/addfooditem', function(req, res, next){
               o['message'] = itemName + ' added';
               res.send(o);
             }
-            connection.release();
-          });
-        
-        // connection.release();
+            
+          }); 
+          for(var i=0; i<allergens.length; i++) {
+            var q = 'INSERT INTO FOOD_ALLERGEN (FOOD_ID, ALLERGEN) VALUES ("' + food_id + '", "' + allergens[i] + '");';
+            console.log(q);
+            connection.query(q, function (err, result) {
+              console.log(q);
+              if (err) console.log(err);
+              // connection.release();
+            });
+          }
       });
     }
     
@@ -854,8 +853,9 @@ app.use('/setstatus', function(req, res, next){
         res.send(o);
       }
       console.log(rows[0]);
+      connection.release();
     });
-    connection.release();
+    
   });
 });
 app.use('/setfavoritehomecooks', function(req, res, next){
@@ -882,8 +882,9 @@ app.use('/setfavoritehomecooks', function(req, res, next){
         res.send(o);
       }
       console.log(rows[0]);
+      connection.release();
     });
-    connection.release();
+    
   });
 });
 app.use('/getfavoritehomecooks', function(req, res, next){
@@ -932,8 +933,9 @@ app.use('/getfavoritehomecooks', function(req, res, next){
         res.send(o);
       }
       console.log(rows[0]);
+      connection.release();
     });
-    connection.release();
+    
   });
 });
 
