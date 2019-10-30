@@ -89,7 +89,7 @@ class Main extends Component {
                 <Route path="/addfood" render={() => <AddFoodItem auth_token={auth_token} email={email} />} />
                 <Route path="/profile" render={() => <Profile auth_token={auth_token} email={email} />} />
                 <Route path="/privacyPolicy" render={() => <PrivacyPolicy auth_token={auth_token} email={email} />} />
-                <Route path="/orders" render={() => <Orders auth_token={auth_token} email={email} />} />
+                <Route path="/orders" render={() => <Orders auth_token={auth_token} email={email} openModal={openModal} />} />
                 <MyModal {...modalProps} closeModal={closeModal} />
             </Router>
         );

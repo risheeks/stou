@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { ToggleButtonGroup, ToggleButton, ListGroup, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { serverURL } from '../../config';
+import { ModalKey } from '../../constants/ModalKeys';
 
 class Orders extends Component {
     constructor(props) {
@@ -51,14 +52,18 @@ class Orders extends Component {
         });
     }
 
+    handleOrder = (e, order) => {
+        this.props.openModal(ModalKey.ORDER_STATUS, {order});
+    }
+
     renderInProgress = () => {
         const { orders } = this.state;
         return (
             <ListGroup className="orders-list">
                 {orders.map(order =>
                     <ListGroup.Item>
-                        HELLO THERE EVERYONE
-            <hr></hr>
+                        
+                    <hr></hr>
                         <div className="button-div">
                             <Button className="margined-buttons" variant="success">Order is on the way!</Button>
                         </div>
@@ -88,9 +93,9 @@ class Orders extends Component {
     renderNew = () => {
         const { orders } = this.state;
         return (
-            <ListGroup className="orders-list">
+            <ListGroup className="orders-list" >
                 {orders.map(order =>
-                    <ListGroup.Item>
+                    <ListGroup.Item onClick={e => this.handleOrder(e, order)}>
                         HELLO THERE EVERYONE
                 <hr></hr>
                         <div className="button-div">
