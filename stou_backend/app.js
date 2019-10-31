@@ -1,4 +1,4 @@
-var createError = require('http-errors');
+//var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -93,6 +93,7 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
+
 app.use('/setorderstatus', function(req, res, next){
   const orderId = req.body['data']['orderId'];
   const newOrderStatus = req.body['data']['orderStatus'];
@@ -168,11 +169,12 @@ app.use('/getallorders', function (req, res, next) {
       if (err) throw err;
       if (rows.length === 0) {
         o['code'] = 400;
-        res.status(400)
+        res.status(400);
         o['message'] = 'Invalid Cook';
         res.send(o);
       }
       else {
+
         let obj = [];
         for(let i = 0; i < rows.length; i++){
           let ord = {};
@@ -267,7 +269,7 @@ app.use('/getstatus', function(req, res, next) {
 });
 
 app.use('/placeorder', function (req, res, next) {
-  console.log(req.body)
+  console.log(req.body);
   const orderID = uuidv4();
   const cookEmail = req.body['data']['cookEmail'];
   const customerEmail = req.body['data']['customerEmail'];
@@ -277,14 +279,14 @@ app.use('/placeorder', function (req, res, next) {
   const orderAddress = req.body['data']['orderAddress'];
   const itemList = req.body['data']['itemList'];
   const subTotal = req.body['data']['subTotal'];
-  console.log("cemail: "+itemList[0].foodId);
+  const paymentId = req.body['data']['paymentId'];
 
   var o = {};
 
   console.log(req.body.data);
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'Insert into ORDERS values(\''+ orderID +'\', "' + Date.now() + '", \''+ cookEmail +'\', \''+customerEmail+'\', \''+ instructions +'\', CURRENT_TIMESTAMP, \''+ orderAddress + '\',\'' + orderStatus + '\', \'\');';
+    var q = 'Insert into ORDERS values(\''+ orderID +'\', "' + Date.now() + '", \''+ cookEmail +'\', \''+customerEmail+'\', \''+ instructions +'\', CURRENT_TIMESTAMP, \''+ orderAddress + '\',\'' + orderStatus + '\', \'' + paymentId +' \');';
     console.log('MEssage:' + q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
@@ -368,7 +370,7 @@ app.use('/getlocation', function(req, res, next){
       if (err) throw err;
       if (rows.length === 0) {
         o['code'] = 400;
-        res.status(400)
+        res.status(400);
         o['message'] = 'User does not exist!';
         res.send(o);
       }
@@ -530,7 +532,6 @@ app.use('/getallfood', function(req, res, next){
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         o['data'] = obj;
-        console.log(o);
         if(obj.length !== 0)
           res.send(o);
 
@@ -583,17 +584,15 @@ app.use('/gethomecooks', function(req,res,next){
   // console.log(req.body)
   const email = req.body['data']['email'];
   let location = req.body['data']['location'];
-  console.log("EMAIL123="+email)
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
     var q = 'SELECT PICTURE, FIRST_NAME, LAST_NAME, EMAIL, RATING, ABOUT_ME, EXISTS(SELECT * FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL="' + email +'" AND COOK_EMAIL=EMAIL) as IS_FAVORITE FROM USER, ROLES WHERE online=1 AND USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ' AND ONLINE=1 );';
     connection.query(q, function (err, result) {
-      console.log(result);
       if (err) console.log(err);
       if (result.length === 0) {
         o['code'] = 400;
-        res.status(400)
+        res.status(400);
         o['message'] = 'No Homecooks in this region.. yet!';
         res.send(o);
       }
@@ -834,55 +833,48 @@ app.use('/profile', function(req, res, next) {
   });
 });
 
-app.use('/filter', function(req, res, next){
-  const json = req.body['data'];
-  const cuisines = json['cuisines'];
-  const allergenList = json['allergens']
-  const location = parseInt(json['location'].toString())
-  var o = {};
-  console.log(cuisines+"  "+allergenList)
-  console.log('select * from FoodItems where Cuisine like \'' + cuisines + '\' AND Allergens NOT LIKE \''+ allergenList+'\' AND Location BETWEEN \''+ (location-2) +'\' AND \'' + (location+2) +'\'');
-  const request = new Request('select * from FoodItems where Cuisine like \'' + cuisines + '\' AND Allergens NOT LIKE \''+ allergenList+'\' AND Location BETWEEN \''+ (location-2) +'\' AND \'' + (location+2) +'\'', function(err, rowCount, rows){
-    if(parseInt(rowCount.toString()) === 0) {
-      o['code'] = 400;
-      res.status(400)
-      o['message'] = 'No food items available';
-      console.log(err)
-      res.send(o);
-    }
-  });
-  let obj = [];
-  let ob = {};
-  request.on('row', function(columns){
-    columns.forEach(function(column){
-      if (column.metadata.colName === 'ItemName'){
-        ob['name'] = column.value;
-      } else if(column.metadata.colName === 'Homecook') {
-        ob['homecook'] = column.value;
-      } else if(column.metadata.colName === 'Price') {
-        ob['price'] = column.value;
-      } else if(column.metadata.colName === 'Allergens') {
-        ob['allergens'] = column.value;
-      } else if(column.metadata.colName === 'Cuisine') {
-        ob['cuisine'] = column.value;
-      } else if(column.metadata.colName === 'Calories') {
-        ob['calories'] = column.value;
-      } else if(column.metadata.colName === 'Picture') {
-        ob['picture'] = column.value;
-      }
+app.use('/filter', function(req, res, next) {
+    console.log('in filter')
+    const json = req.body['data'];
+    const cuisines = json['cuisines'];
+    const allergenList = json['allergens'];
+    console.log(json);
+    var o = {};
+    var obj = [];
+    con.getConnection(function (err, connection) {
+        if (err) console.log(err);
+        var q = 'select * from FOOD, FOOD_ALLERGEN where Cuisine like \'' + cuisines + '\' AND Allergen NOT LIKE \'' + allergenList + '\';';
+        console.log(q)
+        connection.query(q, function (err, result) {
+            if (err) console.log(err);
+            if (result.length === 0) {
+                o['code'] = 400;
+                res.status(400);
+                o['message'] = 'No FoodItems available';
+                res.send(o);
+            } else {
+                var row = result[0];
+                for (let i = 0; i < result.length; i++) {
+                    row = result[i];
+                    ob['cook_id'] = row.COOK_ID;
+                    ob['title'] = row.TITLE;
+                    ob['cook_email'] = row.COOK_EMAIL;
+                    ob['price'] = row.PRICE;
+                    ob['allergen'] = row.ALLERGEN;
+                    ob['cuisine'] = row.CUISINE;
+                    ob['calories'] = row.CALORIES;
+                    ob['picture'] = row.PICTURE;
+                    obj.push(JSON.parse(JSON.stringify(ob)));
+                }
+                o['data'] = obj;
+                o['code'] = 200;
+                o['message'] = 'Filter results'
+                res.status(200);
+                res.send(o);
+            }
+        });
+        connection.release();
     });
-    obj.push(JSON.parse(JSON.stringify(ob)));
-  });
-
-  request.on('doneInProc', function (err) {
-    o['data'] = obj;
-    console.log(o);
-    res.status(200)
-    if(obj.length !== 0)
-      res.send(o);
-  });
-  foodConnection.execSql(request);
-
 });
 
 app.use('/forgotpassword', function(req, res, next){
@@ -1268,7 +1260,8 @@ function registerUser(firstName, lastName, email, password, role, cuisines) {
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+res.status(404);
+res.send();
 });
 
 // error handler
