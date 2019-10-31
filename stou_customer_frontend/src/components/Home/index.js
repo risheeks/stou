@@ -33,8 +33,7 @@ export class Home extends Component {
 
     render() {
         const { openModal, addToOrder, location } = this.props;
-        console.log("CHECK ME");
-        console.log(location)
+        //console.log(location)
         return (
             <div className="home">
                 <Tabs defaultActiveKey="food" id="uncontrolled-tab-example">
@@ -52,7 +51,7 @@ export class Home extends Component {
                     </Tab>
                     <Tab eventKey="cooks" title="Homecooks">
                         <div className="homec">
-                            <ListOfHomeCooks location={location} email={this.props.email} openModal={openModal}/>
+                            <ListOfHomeCooks location={location} addToOrder={addToOrder} email={this.props.email} openModal={openModal}/>
                         </div>
                     </Tab>
                 </Tabs>

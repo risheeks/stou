@@ -9,15 +9,6 @@ import { serverURL } from "../../config/index.js"
 import { firebaseConfig } from "../../config/index.js"
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 
-
-const CLIENT = {
-  sandbox: 'AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC',
-  production: 'xxxXXX',
-};
-const ENV = process.env.NODE_ENV === 'production'
-  ? 'production'
-  : 'sandbox';
-
 export default class Profile extends React.Component {
   constructor(props) {
     let v = "sid";
@@ -189,28 +180,8 @@ export default class Profile extends React.Component {
         })
     }
   }
-  onSuccess = (payment) => {
-    console.log("The payment was succeeded!", payment);
-  }
-
-  onCancel = (data) => {
-    console.log('The payment was cancelled!', data);
-  }
-
-  onError = (err) => {
-    console.log("Error!", err);
-  }
 
   render() {
-
-
-    let env = 'sandbox';
-    let currency = 'USD';
-    let total = 1;
-    const client = {
-      sandbox: 'AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC',
-      production: 'YOUR-PRODUCTION-APP-ID',
-    }
     const { avatarURL } = this.state;
     return (
       <div className="container profile bg-profile">        

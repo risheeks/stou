@@ -11,7 +11,8 @@ class HomeCook extends Component {
         super(props);
         this.state = {
             isFavoriteHomeCook : false,
-            cook_email: this.props.cook_email
+            cook_email: this.props.cook_email,
+            fooditems:[]
 		};
     }
 
@@ -26,11 +27,11 @@ class HomeCook extends Component {
         else {
             this.RemoveFavoriteHomeCook() 
         }
-        console.log("status: ", !currentFavHomeCookStatus);
-        console.log(this.props.cook_email);
+        //console.log("status: ", !currentFavHomeCookStatus);
+        //console.log(this.props.cook_email);
     }
     AddFavoriteHomeCook =(e) => {
-        console.log(this.props.email + " " + this.state.cook_email);
+        //console.log(this.props.email + " " + this.state.cook_email);
         axios.post(`${serverURL}/setfavoritehomecooks`, {
             data: {
                 email: this.props.email,
@@ -38,12 +39,12 @@ class HomeCook extends Component {
             }
         })
         .then(res => {
-            console.log(res.data);
+            //console.log(res.data);
         })
     }
 
     RemoveFavoriteHomeCook =(e) => {
-        console.log(this.props.email + " " + this.state.cook_email);
+        //console.log(this.props.email + " " + this.state.cook_email);
         axios.post(`${serverURL}/removefavoritehomecooks`, {
             data: {
                 customerEmail: this.props.email,
@@ -51,14 +52,33 @@ class HomeCook extends Component {
             }
         })
         .then(res => {
-            console.log("Reached remove")
-            console.log(res.data);
+            //console.log("Reached remove")
+            //console.log(res.data);
         })
+    }
+
+    clickMenu = e => {
+        axios.post(`${serverURL}/getfooditems`, { 
+            data: {
+                email:this.state.cook_email,
+            }
+        })
+        .then(res => {
+            console.log(res.data)
+            this.setState({
+                fooditems: Array.from(res.data.data)
+            });
+            const { openModal, addToOrder, name} = this.props;
+            const {fooditems} = this.state
+            
+            openModal(ModalKey.MENU, {fooditems,addToOrder,openModal, name});
+            console.log(this.state.fooditems)   
+        });
     }
 
     clickProfile = e => {
         const { name, description, picture, rating, openModal } = this.props;
-        console.log(this.props);
+        //console.log(this.props);
         openModal(ModalKey.PROFILE, {name, description, picture, rating});
     }
 
@@ -83,7 +103,7 @@ class HomeCook extends Component {
                         {description}
                     </Card.Text>
                     <CustomRating rating={rating} readonly={true} />
-                    <Button  variant="link">View Menu</Button>
+                    <Button  variant="link" onClick={this.clickMenu}>View Menu</Button>
                 </Card.Body>
             </Card>
         );

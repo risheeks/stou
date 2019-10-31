@@ -64,7 +64,7 @@ export class Login extends Component {
         <ResetPassword show={this.props.showModal} closeModal={this.props.closeModal} />
         <form onSubmit={this.handleSubmit}>
           <FormGroup controlId="email">
-            <FormLabel>Email/Username</FormLabel>
+            <FormLabel>Email</FormLabel>
             <FormControl className="email"
               autoFocus
               type="email"

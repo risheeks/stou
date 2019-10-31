@@ -196,6 +196,9 @@ textarea {
 .food-option {
     height: 10rem;
 }
+.food-option-view-menu {
+  height: 8rem;
+}
 
   .vfo-image {
     width: 6.5rem;
@@ -458,11 +461,11 @@ textarea {
 }
 .text-profile-description-modal {
   color: grey;
-  font-size: 18px;
+  font-size: 15.5px;
 }
-.profile-footer-modal {
+/* .profile-footer-modal {
   background-color:#ff7057;
 }
 .profile-header-modal {
   background-color:#ff7057;
-}
+} */

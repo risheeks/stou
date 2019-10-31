@@ -468,7 +468,8 @@ app.use('/getallfood', function(req, res, next){
 });
 
 app.use('/getfooditems', function(req,res,next){
-  const email = req.param('email');
+  const email = req.body['data']['email'];
+  console.log(email)
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
