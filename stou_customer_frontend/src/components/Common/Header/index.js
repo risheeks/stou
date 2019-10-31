@@ -23,7 +23,7 @@ class Header extends Component {
     getNumItems = () => {
         const { baggedItems } = this.props;
         let sum = 0;
-        for(let i = 0; i < baggedItems.length; i++) {
+        for (let i = 0; i < baggedItems.length; i++) {
             sum += baggedItems[i].quantity;
         }
         return sum;
@@ -46,7 +46,9 @@ class Header extends Component {
                         {loggedIn ?
                             <Nav.Link as={Link} className="nav-link" to="/profile">Profile</Nav.Link> : null}
                         {loggedIn ?
-                        <Nav.Link as={Link} className="nav-link" to="/favoriteHomecooks">Favorites</Nav.Link> : null}
+                            <Nav.Link as={Link} className="nav-link" to="/orders">Orders</Nav.Link> : null}
+                        {loggedIn ?
+                            <Nav.Link as={Link} className="nav-link" to="/favoriteHomecooks">Favorites</Nav.Link> : null}
                         {loggedIn ?
                             <Nav.Link as={Link} className="nav-link" to="/" onClick={this.handleSignOut}>Sign Out</Nav.Link> : null}
                         <OverlayTrigger

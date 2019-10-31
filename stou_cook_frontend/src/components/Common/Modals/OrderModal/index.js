@@ -16,7 +16,6 @@ class OrderModal extends Component {
     }
 
     componentDidMount() {
-        console.log(this.props);
         const { order } = this.props;
         this.setState({
             order: order
