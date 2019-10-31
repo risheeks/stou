@@ -426,7 +426,7 @@ app.use('/getallfood', function(req, res, next){
   con.getConnection(function(err, connection) {
     if (err) console.log(err);
     var q = 'SELECT FOOD.PICTURE, FOOD_ID, COOK_EMAIL, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, DELIVERY_TIME, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL AND USER.ROLE=1 AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ');';
-    
+    console.log(q);
     connection.query(q, function (err, result) {
       if (err) {
         o['code'] = 400;
@@ -506,13 +506,14 @@ app.use('/getfooditems', function(req,res,next){
 
 app.use('/gethomecooks', function(req,res,next){
   // console.log(req.body)
+  const email = req.body['data']['email'];
   let location = req.body['data']['location'];
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
     var q = 'SELECT * FROM USER, ROLES WHERE online=1 AND USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ' AND ONLINE=1 );';
     connection.query(q, function (err, result) {
-      console.log(result);
+      // console.log(result);
       if (err) console.log(err);
       if (result.length === 0) {
         o['code'] = 400;
@@ -521,22 +522,37 @@ app.use('/gethomecooks', function(req,res,next){
         res.send(o);
       }
       else {
-        let obj = [];
-        let ob = {};
-        for(var i = 0; i < result.length; i++){
-          var row = result[i];
-          ob['name'] = row.FIRST_NAME + " " + row.LAST_NAME;
-          ob['email'] = row.EMAIL;
-          ob['rating'] = row.RATING;
-          ob['aboutMe'] = row.ABOUT_ME;
-          // ob['cuisines'] = row.CUISINES;
-          ob['profilePicture'] = row.PICTURE;
-          obj.push(JSON.parse(JSON.stringify(ob)));
-        }
-        o['data'] = obj;
-        // console.log(o);
-        if(obj.length !== 0)
-          res.send(o);
+        let result1 = result
+        connection.query(q, function (err, result) {
+
+          let obj = [];
+          let ob = {};
+          let cookEmail;
+          for(var i = 0; i < result.length; i++){
+            var row = result1[i];
+            cookEmail = row.EMAIL;
+            ob['name'] = row.FIRST_NAME + " " + row.LAST_NAME;
+            ob['email'] = row.EMAIL;
+            ob['rating'] = row.RATING;
+            ob['aboutMe'] = row.ABOUT_ME;
+            // ob['cuisines'] = row.CUISINES;
+            ob['profilePicture'] = row.PICTURE;
+            q = 'SELECT * FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL="' + email+ '" AND COOK_EMAIL="' + cookEmail + '";';
+            
+              if (result.length > 0) {
+                ob['isFavorite'] = 'true';
+              } else {
+                ob['isFavorite'] = 'false';
+              }
+            
+            obj.push(JSON.parse(JSON.stringify(ob)));
+          }
+          console.log(obj);
+          o['data'] = obj;
+          // console.log(o);
+          if(obj.length !== 0)
+            res.send(o);
+        });
       }
       connection.release();
     });
