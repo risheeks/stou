@@ -316,7 +316,7 @@ app.use('/placeorder', function (req, res, next) {
   const orderAddress = req.body['data']['orderAddress'];
   const itemList = req.body['data']['itemList'];
   const subTotal = req.body['data']['subTotal'];
-  const paymentId = req.body['data']['paymentId'];
+  const paymentId = req.body['data']['paymentID'];
 
   var o = {};
 
