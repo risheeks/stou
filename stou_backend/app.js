@@ -109,15 +109,13 @@ app.use('/setorderstatus', function(req, res, next){
       } else {
         const currentOrderStatus = rows[0].ORDER_STATUS;
         let update = false;
-        if(newOrderStatus === 'accepted' && currentOrderStatus === 'placed') {
+        if(newOrderStatus === 'in_progress' && currentOrderStatus === 'placed') {
           update = true;
-        } else if (newOrderStatus === 'in progress' && currentOrderStatus === 'accepted'){
+        } else if (newOrderStatus === 'on_the_way' && currentOrderStatus === 'in_progress') {
           update = true;
-        } else if (newOrderStatus === 'on its way' && currentOrderStatus === 'in progress') {
+        } else if (newOrderStatus === 'delivered' && currentOrderStatus === 'on_the_way') {
           update = true;
-        } else if (newOrderStatus === 'delivered' && currentOrderStatus === 'on its way') {
-          update = true;
-        } else if (currentOrderStatus !== 'delivered' && currentOrderStatus !== 'on its way' && newOrderStatus === 'canceled') {
+        } else if (currentOrderStatus !== 'delivered' && currentOrderStatus !== 'on_the_way' && newOrderStatus === 'canceled') {
           update = true;
         } else if (currentOrderStatus === 'placed' && newOrderStatus === 'declined') {
           update = true;
@@ -162,7 +160,7 @@ app.use('/getallorders', function (req, res, next) {
   var o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.CUSTOMER_EMAIL AND COOK_EMAIL="' + cookEmail + '" AND ORDER_STATUS="' + status + '";';
+    var q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.CUSTOMER_EMAIL AND USER.ROLE=2 AND COOK_EMAIL="' + cookEmail + '" AND ORDER_STATUS="' + status + '" ORDER BY ORDERED_AT DESC;';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -172,9 +170,9 @@ app.use('/getallorders', function (req, res, next) {
         res.send(o);
       }
       else {
-        var obj = []
-        var ord = {};
+        let obj = [];
         for(let i = 0; i < rows.length; i++){
+          let ord = {};
           ord['name'] = rows[i].FIRST_NAME + " " + rows[i].LAST_NAME;
           ord['orderId'] = rows[i].ORDER_ID;
           ord['orderedAt'] = rows[i].ORDERED_AT;
@@ -187,6 +185,7 @@ app.use('/getallorders', function (req, res, next) {
           ord['paymentKey'] = rows[i].PAYMENT_KEY;
           obj.push(ord);
         }
+        console.log(rows);
         o = obj;
         o['code'] = 200;
         o['message'] = 'Success';
@@ -283,7 +282,7 @@ app.use('/placeorder', function (req, res, next) {
   console.log(req.body.data);
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'Insert into ORDERS values(\''+ orderID +'\', CURRENT_TIMESTAMP, \''+ cookEmail +'\', \''+customerEmail+'\', \''+ instructions +'\', CURRENT_TIMESTAMP, \''+ orderAddress + '\',\'' + orderStatus + '\', \'\');';
+    var q = 'Insert into ORDERS values(\''+ orderID +'\', "' + Date.now() + '", \''+ cookEmail +'\', \''+customerEmail+'\', \''+ instructions +'\', CURRENT_TIMESTAMP, \''+ orderAddress + '\',\'' + orderStatus + '\', \'\');';
     console.log('MEssage:' + q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
@@ -427,7 +426,7 @@ app.use('/getallfood', function(req, res, next){
   con.getConnection(function(err, connection) {
     if (err) console.log(err);
     var q = 'SELECT FOOD.PICTURE, FOOD_ID, COOK_EMAIL, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, DELIVERY_TIME, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL AND USER.ROLE=1 AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ');';
-    
+    console.log(q);
     connection.query(q, function (err, result) {
       if (err) {
         o['code'] = 400;

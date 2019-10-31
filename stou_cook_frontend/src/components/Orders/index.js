@@ -52,19 +52,42 @@ class Orders extends Component {
     }
 
     handleOrder = (e, order) => {
-        this.props.openModal(ModalKey.ORDER_STATUS, {order});
+        this.props.openModal(ModalKey.ORDER_STATUS, { order });
+    }
+
+    setOrderStatus = (orderStatus, order) => {
+        const data = {
+            orderStatus,
+            orderId: order.orderId
+        }
+        axios.post(`${serverURL}/setorderstatus`, { data })
+            .then(res => {
+                order.orderStatus = orderStatus
+                this.props.openModal(ModalKey.ORDER_STATUS, {order});
+            })
+    }
+
+    renderOrderInfo = order => {
+        const orderTime = new Date(parseInt(order.orderedAt)).toLocaleString('en-US');
+        return (
+            <div>
+                <Button className="order-item-info" variant="link" onClick={e => this.handleOrder(e, order)}>
+                    <div>Order for <b>{order.name}</b></div>
+                    <div>Order placed at <b>{orderTime}</b></div>
+                </Button>
+            </div>
+        );
     }
 
     renderInProgress = () => {
         const { orders } = this.state;
         return (
-            <ListGroup className="orders-list">
+            <ListGroup className="orders-list" >
                 {orders.map(order =>
-                    <ListGroup.Item>
-                        
-                    <hr></hr>
-                        <div className="button-div">
-                            <Button className="margined-buttons" variant="success">Order is on the way!</Button>
+                    <ListGroup.Item className="order-item-div">
+                        {this.renderOrderInfo(order)}
+                        <div className="order-item-button-div">
+                            <Button className="margined-buttons" variant="success" onClick={e => this.setOrderStatus("on_the_way", order)}>Mark on the way</Button>
                         </div>
                     </ListGroup.Item>
                 )}
@@ -75,13 +98,12 @@ class Orders extends Component {
     renderOnTheWay = () => {
         const { orders } = this.state;
         return (
-            <ListGroup className="orders-list">
+            <ListGroup className="orders-list" >
                 {orders.map(order =>
-                    <ListGroup.Item>
-                        HELLO THERE EVERYONE
-                <hr></hr>
-                        <div className="button-div">
-                            <Button className="margined-buttons" variant="success">Mark as delivered!</Button>
+                    <ListGroup.Item className="order-item-div">
+                        {this.renderOrderInfo(order)}
+                        <div className="order-item-button-div">
+                            <Button className="margined-buttons" variant="success" onClick={e => this.setOrderStatus("delivered", order)}>Mark delivered</Button>
                         </div>
                     </ListGroup.Item>
                 )}
@@ -94,12 +116,11 @@ class Orders extends Component {
         return (
             <ListGroup className="orders-list" >
                 {orders.map(order =>
-                    <ListGroup.Item onClick={e => this.handleOrder(e, order)}>
-                        HELLO THERE EVERYONE
-                <hr></hr>
-                        <div className="button-div">
-                            <Button className="margined-buttons" variant="danger">Decline</Button>
-                            <Button className="margined-buttons" variant="success">Accept</Button>
+                    <ListGroup.Item className="order-item-div">
+                        {this.renderOrderInfo(order)}
+                        <div className="order-item-button-div">
+                            <Button className="margined-buttons" variant="danger" onClick={e => this.setOrderStatus("declined", order)}>Decline</Button>
+                            <Button className="margined-buttons" variant="success" onClick={e => this.setOrderStatus("in_progress", order)}>Accept</Button>
                         </div>
                     </ListGroup.Item>
                 )}
@@ -110,11 +131,11 @@ class Orders extends Component {
     renderPast = () => {
         const { orders } = this.state;
         return (
-            <ListGroup className="orders-list">
+            <ListGroup className="orders-list" >
                 {orders.map(order =>
-                    <ListGroup.Item>
-                        HELLO THERE EVERYONE
-            </ListGroup.Item>
+                    <ListGroup.Item className="order-item-div" onClick={e => this.handleOrder(e, order)}>
+                        {this.renderOrderInfo(order)}
+                    </ListGroup.Item>
                 )}
             </ListGroup>
         );
@@ -123,7 +144,7 @@ class Orders extends Component {
     renderOrders = () => {
         const { orders_type } = this.state;
         switch (orders_type) {
-            case "past_orders": {
+            case "delivered": {
                 return this.renderPast();
             }
             case "placed": {
@@ -148,7 +169,7 @@ class Orders extends Component {
             <div className="orders-container">
                 <div className="orders-type-tabs">
                     <ToggleButtonGroup className="multi-checkbox-div" name="orders_type" type="radio" value={orders_type} onChange={this.handleChange}>
-                        <ToggleButton className="single-checkbox" value="past_orders">Past Orders</ToggleButton>
+                        <ToggleButton className="single-checkbox" value="delivered">Past Orders</ToggleButton>
                         <ToggleButton className="single-checkbox" value="placed">New Orders</ToggleButton>
                         <ToggleButton className="single-checkbox" value="in_progress">In Progress</ToggleButton>
                         <ToggleButton className="single-checkbox" value="on_the_way">On The Way</ToggleButton>

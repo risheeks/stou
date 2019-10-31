@@ -26,6 +26,7 @@ class OrderModal extends Component {
 
     render() {
         const { showModal, closeModal, order } = this.props;
+        console.log(order)
 
         return (
             <Modal show={showModal} onHide={() => closeModal()}>
