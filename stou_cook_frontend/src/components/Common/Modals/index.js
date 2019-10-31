@@ -4,6 +4,7 @@ import ZipcodeModal from './ZipcodeModal';
 import FoodModal from './FoodModal';
 import OrderAlert from './OrderAlert';
 import OrderModal from './OrderModal';
+import MenuModal from './MenuModal'
 
 class MyModal extends Component {
     render() {
@@ -18,6 +19,8 @@ class MyModal extends Component {
                 return <OrderAlert {...this.props} />;
             case ModalKey.ORDER_STATUS:
                 return <OrderModal {...this.props} />;
+            case ModalKey.MENU_MODAL:
+                return <MenuModal {...this.props} />;
             default:
                 return null;
         }
