@@ -128,6 +128,7 @@ class Main extends Component {
                     <Profile
                         auth_token={auth_token}
                         email={email}
+                        location={location}
                     />}
                 />
                 <Route path="/orders" render={() =>

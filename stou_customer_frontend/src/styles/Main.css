@@ -559,6 +559,10 @@ textarea {
   color: grey;
   font-size: 15.5px;
 }
+.center-col {
+  height: 200px;
+  overflow-y: scroll;
+}
 /* .profile-footer-modal {
   background-color:#ff7057;
 }
