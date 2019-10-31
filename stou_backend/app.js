@@ -360,7 +360,7 @@ app.use('/placeorder', function (req, res, next) {
   console.log(req.body.data);
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'Insert into ORDERS values(\''+ orderID +'\', "' + Date.now() + '", \''+ cookEmail +'\', \''+customerEmail+'\', \''+ instructions +'\', CURRENT_TIMESTAMP, \''+ orderAddress + '\',\'' + orderStatus + '\', \'' + paymentId +' \');';
+    var q = 'Insert into ORDERS values(\''+ orderID +'\', "' + Date.now() + '", \''+ cookEmail +'\', \''+customerEmail+'\', \''+ instructions +'\', ' + deliveryTime + ', \''+ orderAddress + '\',\'' + orderStatus + '\', \'' + paymentId +' \');';
     // console.log('MEssage:' + q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
@@ -1225,7 +1225,7 @@ app.use('/resetpassword', function (req, res, next) {
 });
 
 
-app.use('/checkLogin', function(req, res, next){
+app.use('/checklogin', function(req, res, next){
   const o = checkLogin(req.body['data']['email'],req.body['data']['token']);
   res.status(401);
   res.send(o);
