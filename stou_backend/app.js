@@ -324,18 +324,18 @@ app.use('/placeorder', function (req, res, next) {
   con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'Insert into ORDERS values(\''+ orderID +'\', "' + Date.now() + '", \''+ cookEmail +'\', \''+customerEmail+'\', \''+ instructions +'\', CURRENT_TIMESTAMP, \''+ orderAddress + '\',\'' + orderStatus + '\', \'' + paymentId +' \');';
-    console.log('MEssage:' + q);
+    // console.log('MEssage:' + q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
 
       else {
         for (let i = 0; i < itemList.length; i++) {
-          console.log('in');
+          // console.log('in');
           con.getConnection(function (err, connection) {
             if (err) throw err;
             console.log(itemList[i]);
             var q = 'Insert into ORDER_FOOD (ORDER_ID, FOOD_ID, QUANTITY, PRICE) values(\'' + orderID + '\', \'' + itemList[i].food_id + '\', ' + itemList[i].quantity + ', ' + itemList[i].price + ');';
-            console.log(q);
+            // console.log(q);
             connection.query(q, function (err, rows) {
               if (err) throw err;
             });
@@ -539,17 +539,17 @@ app.use('/getpastfoodcook', function(req, res, next){
 
 
 app.use('/getpastfood', function(req, res, next){
-  let email = "risheeks@gmail.com";//req.body['data']['email'];
+  let email = req.body['data']['email'];
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) console.log(err);
-    var q = 'SELECT ORDERS.ORDERED_AT, FOOD.PICTURE, FOOD.FOOD_ID, USER1.EMAIL, FOOD.TITLE, FOOD.DESCRIPTION, FOOD.CUISINE, FOOD.PRICE, FOOD.CALORIES, FOOD.DELIVERY_TIME, USER1.FIRST_NAME, USER1.LAST_NAME, EXISTS(SELECT * FROM FAVORITE_FOOD WHERE FAVORITE_FOOD.FOOD_ID=FOOD.FOOD_ID AND FAVORITE_FOOD.EMAIL="' + email + '") AS IS_FAVORITE FROM FOOD, USER AS USER1, ORDERS, ORDER_FOOD WHERE USER1.EMAIL=ORDERS.COOK_EMAIL AND USER1.ROLE=1 AND ORDER_FOOD.ORDER_ID=ORDERS.ORDER_ID AND ORDER_FOOD.FOOD_ID=FOOD.FOOD_ID AND ORDERS.CUSTOMER_EMAIL="' + email + '";';
+    var q = 'SELECT DISTINCT FOOD.PICTURE, FOOD.FOOD_ID, USER1.EMAIL, FOOD.TITLE, FOOD.DESCRIPTION, FOOD.CUISINE, FOOD.PRICE, FOOD.CALORIES, FOOD.DELIVERY_TIME, USER1.FIRST_NAME, USER1.LAST_NAME, EXISTS(SELECT * FROM FAVORITE_FOOD WHERE FAVORITE_FOOD.FOOD_ID=FOOD.FOOD_ID AND FAVORITE_FOOD.EMAIL="' + email + '") AS IS_FAVORITE FROM FOOD, USER AS USER1, ORDERS, ORDER_FOOD WHERE USER1.EMAIL=ORDERS.COOK_EMAIL AND USER1.ROLE=1 AND ORDER_FOOD.ORDER_ID=ORDERS.ORDER_ID AND ORDER_FOOD.FOOD_ID=FOOD.FOOD_ID AND ORDERS.CUSTOMER_EMAIL="' + email + '";';
     console.log(q);
     connection.query(q, function (err, result) {
       if (err) {
         o['code'] = 400;
         res.status(400);
-        o['message'] = 'No food offered now';
+        o['message'] = 'No past food for this user';
         res.send(o);
       }
       else {
