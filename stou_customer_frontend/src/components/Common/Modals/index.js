@@ -5,6 +5,7 @@ import FoodModal from './FoodModal';
 import ProfileModal from './ProfileModal';
 import MenuModal from './MenuModal';
 import OrderModal from './OrderModal';
+import OrderUpdateModal from './OrderUpdateModal';
 
 class MyModal extends Component {
     render() {
@@ -21,6 +22,8 @@ class MyModal extends Component {
                 return <MenuModal {...this.props} />;
             case ModalKey.ORDER_STATUS:
                 return <OrderModal {...this.props} />;
+            case ModalKey.ORDER_UPDATE:
+                return <OrderUpdateModal {...this.props} />;
             default:
                 return null;
         }

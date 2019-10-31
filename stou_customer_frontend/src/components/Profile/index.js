@@ -9,7 +9,6 @@ import { serverURL } from "../../config/index.js"
 import { firebaseConfig } from "../../config/index.js"
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import FavoriteFood from './FavoriteFood';
-import { ScrollArea } from 'react-scrollbar';
 
 export default class Profile extends React.Component {
   constructor(props) {
