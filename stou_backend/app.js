@@ -535,15 +535,9 @@ app.use('/gethomecooks', function(req,res,next){
           ob['email'] = row.EMAIL;
           ob['rating'] = row.RATING;
           ob['aboutMe'] = row.ABOUT_ME;
-          ob['FAVORITE'] = row.IS_FAVORITE;
+          ob['isFavorite'] = row.IS_FAVORITE;
           ob['profilePicture'] = row.PICTURE;
           q = 'SELECT * FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL="' + email+ '" AND COOK_EMAIL="' + cookEmail + '";';
-        
-          if (result.length > 0) {
-            ob['isFavorite'] = 'true';
-          } else {
-            ob['isFavorite'] = 'false';
-          }
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         // console.log(obj);
