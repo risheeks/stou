@@ -18,6 +18,8 @@ class MyModal extends Component {
                 return <OrderAlert {...this.props} />;
             case ModalKey.ORDER_STATUS:
                 return <OrderModal {...this.props} />;
+            case ModalKey.MENU_MODAL:
+                return <OrderModal {...this.props} />;
             default:
                 return null;
         }

@@ -20,6 +20,7 @@ import axios from 'axios';
 import { serverURL } from '../../config';
 import { ROLE } from '../../constants';
 import Orders from '../Orders';
+import Menu from '../Common/Modals/MenuModal.js'
 
 function mapStateToProps(state) {
     return {
@@ -76,6 +77,8 @@ class Main extends Component {
         return location;
     }
 
+    
+
     render() {
         const { signOut, auth_token, email, getToken, openModal, closeModal, showModal, modalKey, modalProps } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
@@ -90,6 +93,7 @@ class Main extends Component {
                 <Route path="/profile" render={() => <Profile auth_token={auth_token} email={email} />} />
                 <Route path="/privacyPolicy" render={() => <PrivacyPolicy auth_token={auth_token} email={email} />} />
                 <Route path="/orders" render={() => <Orders auth_token={auth_token} email={email} openModal={openModal} />} />
+                <Route path="/homecookmenu" render={() => <Menu auth_token={auth_token} email={email} openModal={openModal} />} />
                 <MyModal {...modalProps} closeModal={closeModal} />
             </Router>
         );
