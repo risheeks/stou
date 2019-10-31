@@ -60,6 +60,7 @@ class ListOfHomeCooks extends Component {
 							picture={item.profilePicture}
 							description={item.aboutMe}
 							rating={item.rating}
+							addToOrder={this.props.addToOrder}
 						/>
 					))}
 			</Container>
