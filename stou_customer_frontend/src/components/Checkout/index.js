@@ -165,7 +165,7 @@ class Checkout extends Component {
                             </div>
                         </ListGroup.Item>
                     </ListGroup>
-                    <div style={{visibility: this.validate(this.state.state,this.state.city,this.state.state,this.state.zipcode)}}>
+                    <div className="paypal-button-div" style={{visibility: this.validate(this.state.state,this.state.city,this.state.state,this.state.zipcode)}}>
                     <PaypalExpressBtn
                         // className="paypal-button"
                         env={env}
@@ -175,7 +175,7 @@ class Checkout extends Component {
                         onError={this.onError}
                         onSuccess={this.onSuccess}
                         onCancel={this.onCancel}
-                        style={{layout: "vertical"}}
+                        style={{layout: "vertical", shape: "rect", size: "large"}}
                         
                         
                     />

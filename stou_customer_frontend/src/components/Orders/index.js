@@ -44,18 +44,6 @@ class Orders extends Component {
         this.props.openModal(ModalKey.ORDER_STATUS, { order });
     }
 
-    setOrderStatus = (orderStatus, order) => {
-        const data = {
-            orderStatus,
-            orderId: order.orderId
-        }
-        axios.post(`${serverURL}/setorderstatus`, { data })
-            .then(res => {
-                order.orderStatus = orderStatus
-                this.props.openModal(ModalKey.ORDER_STATUS, {order});
-            })
-    }
-
     renderOrderInfo = order => {
         const orderTime = new Date(parseInt(order.orderedAt)).toLocaleString('en-US');
         return (
@@ -68,56 +56,7 @@ class Orders extends Component {
         );
     }
 
-    renderInProgress = () => {
-        const { orders } = this.state;
-        return (
-            <ListGroup className="orders-list" >
-                {orders.map(order =>
-                    <ListGroup.Item className="order-item-div">
-                        {this.renderOrderInfo(order)}
-                        <div className="order-item-button-div">
-                            <Button className="margined-buttons" variant="success" onClick={e => this.setOrderStatus("on_the_way", order)}>Mark on the way</Button>
-                        </div>
-                    </ListGroup.Item>
-                )}
-            </ListGroup>
-        );
-    }
-
-    renderOnTheWay = () => {
-        const { orders } = this.state;
-        return (
-            <ListGroup className="orders-list" >
-                {orders.map(order =>
-                    <ListGroup.Item className="order-item-div">
-                        {this.renderOrderInfo(order)}
-                        <div className="order-item-button-div">
-                            <Button className="margined-buttons" variant="success" onClick={e => this.setOrderStatus("delivered", order)}>Mark delivered</Button>
-                        </div>
-                    </ListGroup.Item>
-                )}
-            </ListGroup>
-        );
-    }
-
-    renderNew = () => {
-        const { orders } = this.state;
-        return (
-            <ListGroup className="orders-list" >
-                {orders.map(order =>
-                    <ListGroup.Item className="order-item-div">
-                        {this.renderOrderInfo(order)}
-                        <div className="order-item-button-div">
-                            <Button className="margined-buttons" variant="danger" onClick={e => this.setOrderStatus("declined", order)}>Decline</Button>
-                            <Button className="margined-buttons" variant="success" onClick={e => this.setOrderStatus("in_progress", order)}>Accept</Button>
-                        </div>
-                    </ListGroup.Item>
-                )}
-            </ListGroup>
-        );
-    }
-
-    renderPast = () => {
+    renderOrders = () => {
         const { orders } = this.state;
         return (
             <ListGroup className="orders-list" >
