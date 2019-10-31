@@ -62,6 +62,7 @@ class ListOfHomeCooks extends Component {
 							description={item.aboutMe}
 							rating={item.rating}
 							addToOrder={this.props.addToOrder}
+							isFav={item.isFavorite}
 						/>
 					))}
 			</Container>

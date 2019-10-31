@@ -15,6 +15,9 @@ class HomeCook extends Component {
             fooditems:[]
 		};
     }
+    componentDidMount = () => {
+        this.setState({isFavoriteHomeCook : this.props.isFav})
+    }
 
     ChangeSaveFavHomeCookStatus =(e)=> {
         const currentFavHomeCookStatus=this.state.isFavoriteHomeCook;
