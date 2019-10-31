@@ -309,6 +309,10 @@ textarea {
   width: 100%;
 }
 
+.bag-itemlist-container {
+  margin-top: 50px;
+}
+
 .delete-item-button {
   margin-right: 5px;
   margin-left: auto;
@@ -390,6 +394,7 @@ textarea {
   flex-direction: column;
   flex-flow: center;
   justify-content: center;
+  padding-top: 20px;
   }
   
   .orders-list {
@@ -397,6 +402,7 @@ textarea {
   max-height: 500px;
   align-self: center;
   overflow-y: scroll;
+  margin-top: 20px;
   }
   
   .order-item-button-div {
@@ -405,6 +411,7 @@ textarea {
   align-self: center;
   justify-content: center;
   margin-left: auto;
+  color: gray;
   }
   
   .order-item-info {

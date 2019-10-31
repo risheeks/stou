@@ -24,10 +24,9 @@ class Orders extends Component {
 
     setOrders = orders_type => {
         const data = {
-            cookEmail: this.props.email,
-            status: 'all'
+            customerEmail: this.props.email
         }
-        axios.post(`${serverURL}/getallorders`, { data })
+        axios.post(`${serverURL}/getcustomerorders`, { data })
             .then(res => {
                 this.setState({
                     orders: Array.from(res.data)
@@ -49,7 +48,7 @@ class Orders extends Component {
         return (
             <div>
                 <Button className="order-item-info" variant="link" onClick={e => this.handleOrder(e, order)}>
-                    <div>Order for <b>{order.name}</b></div>
+                    <div>Order from <b>{order.name}</b></div>
                     <div>Order placed at <b>{orderTime}</b></div>
                 </Button>
             </div>
@@ -63,6 +62,9 @@ class Orders extends Component {
                 {orders.map(order =>
                     <ListGroup.Item className="order-item-div" onClick={e => this.handleOrder(e, order)}>
                         {this.renderOrderInfo(order)}
+                        <div className="order-item-button-div">
+                            {order.orderStatus}
+                        </div>
                     </ListGroup.Item>
                 )}
             </ListGroup>
@@ -74,6 +76,7 @@ class Orders extends Component {
 
         return (
             <div className="orders-container">
+                <h3>Your Orders</h3>
                 {this.renderOrders()}
             </div>
         );

@@ -6,7 +6,7 @@ var logger = require('morgan');
 //var Map = require('Map');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var cors =  require('cors');
+var cors = require('cors');
 var app = express();
 var http = require('http');
 var querystring = require('querystring');
@@ -34,7 +34,7 @@ var mysql = require('mysql');
 // });
 
 var connString = 'mysql://lSC9ZLcwnc:5SqWHLCVs5@remotemysql.com:3306/lSC9ZLcwnc?charset=utf8_general_ci&timezone=-0700';
- 
+
 var con = mysql.createPool(connString);
 
 
@@ -82,7 +82,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/test', function (req,res) {
+app.use('/test', function (req, res) {
   res.send('testing');
 });
 
@@ -93,15 +93,15 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
-app.use('/setorderstatus', function(req, res, next){
+app.use('/setorderstatus', function (req, res, next) {
   const orderId = req.body['data']['orderId'];
   const newOrderStatus = req.body['data']['orderStatus'];
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT ORDER_STATUS from ORDERS where ORDER_ID=\'' + orderId +'\';';
+    var q = 'SELECT ORDER_STATUS from ORDERS where ORDER_ID=\'' + orderId + '\';';
     connection.query(q, function (err, rows) {
-      if (err) {
+      if (err && rows.length === 0) {
         o['code'] = 400;
         res.status(400);
         o['message'] = 'Invalid Order';
@@ -109,7 +109,7 @@ app.use('/setorderstatus', function(req, res, next){
       } else {
         const currentOrderStatus = rows[0].ORDER_STATUS;
         let update = false;
-        if(newOrderStatus === 'in_progress' && currentOrderStatus === 'placed') {
+        if (newOrderStatus === 'in_progress' && currentOrderStatus === 'placed') {
           update = true;
         } else if (newOrderStatus === 'on_the_way' && currentOrderStatus === 'in_progress') {
           update = true;
@@ -123,7 +123,7 @@ app.use('/setorderstatus', function(req, res, next){
         if (update) {
           con.getConnection(function (err, connection) {
             if (err) throw err;
-            var q = 'UPDATE ORDERS SET ORDER_STATUS=\'' + newOrderStatus + '\' where ORDER_ID=\'' + orderId +'\';';
+            var q = 'UPDATE ORDERS SET ORDER_STATUS=\'' + newOrderStatus + '\' where ORDER_ID=\'' + orderId + '\';';
             console.log(q);
             connection.query(q, function (err, rows) {
               if (err) {
@@ -158,12 +158,9 @@ app.use('/getallorders', function (req, res, next) {
   const cookEmail = req.body['data']['cookEmail'];
   const status = req.body['data']['status'];
   var o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) throw err;
     let q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.CUSTOMER_EMAIL AND USER.ROLE=2 AND COOK_EMAIL="' + cookEmail + '" AND ORDER_STATUS="' + status + '" ORDER BY ORDERED_AT DESC;';
-    if (status === 'all') {
-      q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.CUSTOMER_EMAIL AND USER.ROLE=2 AND COOK_EMAIL="' + cookEmail + '" ORDER BY ORDERED_AT DESC;';
-    }
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -174,7 +171,7 @@ app.use('/getallorders', function (req, res, next) {
       }
       else {
         let obj = [];
-        for(let i = 0; i < rows.length; i++){
+        for (let i = 0; i < rows.length; i++) {
           let ord = {};
           ord['name'] = rows[i].FIRST_NAME + " " + rows[i].LAST_NAME;
           ord['orderId'] = rows[i].ORDER_ID;
@@ -199,7 +196,48 @@ app.use('/getallorders', function (req, res, next) {
   });
 });
 
-app.use('/getfooditemsbyorder', function(req, res, next){
+app.use('/getcustomerorders', function (req, res, next) {
+  const customerEmail = req.body['data']['customerEmail'];
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    let q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.COOK_EMAIL AND USER.ROLE=1 AND CUSTOMER_EMAIL="' + customerEmail + '" ORDER BY ORDERED_AT DESC;';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'Invalid Cook';
+        res.send(o);
+      }
+      else {
+        let obj = [];
+        for (let i = 0; i < rows.length; i++) {
+          let ord = {};
+          ord['name'] = rows[i].FIRST_NAME + " " + rows[i].LAST_NAME;
+          ord['orderId'] = rows[i].ORDER_ID;
+          ord['orderedAt'] = rows[i].ORDERED_AT;
+          ord['cookEmail'] = rows[i].COOK_EMAIL;
+          ord['customerEmail'] = rows[i].CUSTOMER_EMAIL;
+          ord['instructions'] = rows[i].INSTRUCTIONS;
+          ord['deliveryTime'] = rows[i].DELIVERY_TIME;
+          ord['orderAddress'] = rows[i].ORDER_ADDRESS;
+          ord['orderStatus'] = rows[i].ORDER_STATUS;
+          obj.push(ord);
+        }
+        console.log(rows);
+        o = obj;
+        o['code'] = 200;
+        o['message'] = 'Success';
+        res.status(200);
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+app.use('/getfooditemsbyorder', function (req, res, next) {
   const orderId = req.body['data']['orderId'];
   let o = {};
   con.getConnection(function (err, connection) {
@@ -215,7 +253,7 @@ app.use('/getfooditemsbyorder', function(req, res, next){
       } else {
         var obj = []
         var ord = {};
-        for(let i = 0; i < rows.length; i++){
+        for (let i = 0; i < rows.length; i++) {
           ord['title'] = rows[i].TITLE;
           ord['description'] = rows[i].DESCRIPTION;
           ord['quantity'] = rows[i].QUANTITY;
@@ -234,7 +272,7 @@ app.use('/getfooditemsbyorder', function(req, res, next){
   });
 });
 
-app.use('/getstatus', function(req, res, next) {
+app.use('/getstatus', function (req, res, next) {
   const cookEmail = req.body['data']['cookEmail'];
   let role = req.body['data']['role'];
   if (role === 'Homecook') {
@@ -256,7 +294,7 @@ app.use('/getstatus', function(req, res, next) {
       } else {
         o['code'] = 200;
         res.status(200);
-        o['data'] = {'status': rows[0].online};
+        o['data'] = { 'status': rows[0].online };
         o['message'] = 'Success';
         res.send(o);
       }
@@ -277,25 +315,25 @@ app.use('/placeorder', function (req, res, next) {
   const orderAddress = req.body['data']['orderAddress'];
   const itemList = req.body['data']['itemList'];
   const subTotal = req.body['data']['subTotal'];
-  console.log("cemail: "+itemList[0].foodId);
+  console.log("cemail: " + itemList[0].foodId);
 
   var o = {};
 
   console.log(req.body.data);
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'Insert into ORDERS values(\''+ orderID +'\', "' + Date.now() + '", \''+ cookEmail +'\', \''+customerEmail+'\', \''+ instructions +'\', CURRENT_TIMESTAMP, \''+ orderAddress + '\',\'' + orderStatus + '\', \'\');';
+    var q = 'Insert into ORDERS values(\'' + orderID + '\', "' + Date.now() + '", \'' + cookEmail + '\', \'' + customerEmail + '\', \'' + instructions + '\', CURRENT_TIMESTAMP, \'' + orderAddress + '\',\'' + orderStatus + '\', \'\');';
     console.log('MEssage:' + q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
 
       else {
-        for(let i =0; i < itemList.length; i++){
+        for (let i = 0; i < itemList.length; i++) {
           console.log('in');
-          con.getConnection(function(err, connection) {
+          con.getConnection(function (err, connection) {
             if (err) throw err;
             console.log(itemList[i]);
-            var q = 'Insert into ORDER_FOOD (ORDER_ID, FOOD_ID, QUANTITY, PRICE) values(\''+orderID+'\', \''+itemList[i].food_id+'\', '+itemList[i].quantity + ', '+ itemList[i].price + ');';
+            var q = 'Insert into ORDER_FOOD (ORDER_ID, FOOD_ID, QUANTITY, PRICE) values(\'' + orderID + '\', \'' + itemList[i].food_id + '\', ' + itemList[i].quantity + ', ' + itemList[i].price + ');';
             console.log(q);
             connection.query(q, function (err, rows) {
               if (err) throw err;
@@ -305,11 +343,14 @@ app.use('/placeorder', function (req, res, next) {
         }
         pusher.trigger(`cook-${cookEmail}`, 'new-order', {
           "message": "New order placed",
-          "orderId": orderID,
           "items": itemList,
           "customerEmail": customerEmail,
-          "address": orderAddress,
-          "instructions": instructions
+          "order": {
+            "orderId": orderID,
+            "orderAddress": orderAddress,
+            "instructions": instructions,
+            "orderedAt": Date.now()
+          }
         });
         o['code'] = 200;
         res.status(200);
@@ -323,7 +364,7 @@ app.use('/placeorder', function (req, res, next) {
 
 });
 
-app.use('/setlocation', function(req, res, next){
+app.use('/setlocation', function (req, res, next) {
   const email = req.body['data']['email'];
   let role = req.body['data']['role'];
   const location = req.body['data']['location'];
@@ -331,7 +372,7 @@ app.use('/setlocation', function(req, res, next){
     role = 'COOK';
   }
   var o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'UPDATE USER SET LOCATION = ' + location + ' WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
     connection.query(q, function (err, rows) {
@@ -354,14 +395,14 @@ app.use('/setlocation', function(req, res, next){
   });
 });
 
-app.use('/getlocation', function(req, res, next){
+app.use('/getlocation', function (req, res, next) {
   const email = req.body['data']['email'];
   let role = req.body['data']['role'];
   if (role === 'Homecook') {
     role = 'COOK';
   }
   var o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'SELECT * FROM USER WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
     connection.query(q, function (err, rows) {
@@ -373,7 +414,7 @@ app.use('/getlocation', function(req, res, next){
         res.send(o);
       }
       else {
-        o['data'] = {'location': rows[0].LOCATION};
+        o['data'] = { 'location': rows[0].LOCATION };
         o['code'] = 200;
         res.status(200);
         res.send(o);
@@ -384,22 +425,22 @@ app.use('/getlocation', function(req, res, next){
   });
 });
 
-app.use('/logout', function(req, res, next){
+app.use('/logout', function (req, res, next) {
   const token = req.param('token');
   delete revLoginTokens[loginTokens[token]];
   delete loginTokens[token];
   res.status(200);
-  res.send({'code': '200', 'message': 'Logout successful'});
+  res.send({ 'code': '200', 'message': 'Logout successful' });
 });
 
-app.use('/removefavoritehomecooks', function(req, res, next){
+app.use('/removefavoritehomecooks', function (req, res, next) {
   const cookEmail = req.body['data']['cookEmail'];
   const customerEmail = req.body['data']['customerEmail'];
   console.log("Reached remove");
   let o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'DELETE from FAVORITE_HOMECOOKS where COOK_EMAIL=\'' + cookEmail +'\' AND CUSTOMER_EMAIL=\'' + customerEmail + '\';';
+    var q = 'DELETE from FAVORITE_HOMECOOKS where COOK_EMAIL=\'' + cookEmail + '\' AND CUSTOMER_EMAIL=\'' + customerEmail + '\';';
     console.log("Reached remove");
     connection.query(q, function (err, rows) {
       if (err) {
@@ -422,13 +463,13 @@ app.use('/removefavoritehomecooks', function(req, res, next){
 });
 
 
-app.use('/removefavoritefood', function(req, res, next){
+app.use('/removefavoritefood', function (req, res, next) {
   const email = req.body['data']['email'];
   const foodId = req.body['data']['food_id'];
   let o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'DELETE from FAVORITE_FOOD where EMAIL=\'' + email +'\' AND FOOD_ID=\'' + foodId + '\';';
+    var q = 'DELETE from FAVORITE_FOOD where EMAIL=\'' + email + '\' AND FOOD_ID=\'' + foodId + '\';';
     connection.query(q, function (err, rows) {
       if (err) {
         o['code'] = 400;
@@ -448,13 +489,13 @@ app.use('/removefavoritefood', function(req, res, next){
 });
 
 
-app.use('/getallfood', function(req, res, next){
+app.use('/getallfood', function (req, res, next) {
   // let location = req.body['data']['location'];
   let location = '47906';
   let o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) console.log(err);
-    var q = 'SELECT FOOD.PICTURE, FOOD_ID, COOK_EMAIL, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, DELIVERY_TIME, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL AND USER.ROLE=1 AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ');';
+    var q = 'SELECT FOOD.PICTURE, FOOD_ID, COOK_EMAIL, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, DELIVERY_TIME, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL AND USER.ROLE=1 AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) + 2) + ');';
     console.log(q);
     connection.query(q, function (err, result) {
       if (err) {
@@ -466,7 +507,7 @@ app.use('/getallfood', function(req, res, next){
       else {
         let obj = [];
         let ob = {};
-        for(var i = 0; i < result.length; i++){
+        for (var i = 0; i < result.length; i++) {
           var row = result[i];
           // console.log(row);
           ob['name'] = row.TITLE;
@@ -479,14 +520,14 @@ app.use('/getallfood', function(req, res, next){
           ob['picture'] = row.PICTURE;
           ob['food_id'] = row.FOOD_ID;
           ob['delivery_time'] = row.DELIVERY_TIME;
-          if(ob['delivery_time'] === null){
+          if (ob['delivery_time'] === null) {
             ob['delivery_time'] = '2019-10-29 01:47:45';
           }
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         o['data'] = obj;
         console.log(o);
-        if(obj.length !== 0)
+        if (obj.length !== 0)
           res.send(o);
 
       }
@@ -495,11 +536,11 @@ app.use('/getallfood', function(req, res, next){
   });
 });
 
-app.use('/getfooditems', function(req,res,next){
+app.use('/getfooditems', function (req, res, next) {
   const email = req.body['data']['email'];
   console.log(email)
   let o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'SELECT * FROM FOOD WHERE COOK_EMAIL= "' + email + '";';
     connection.query(q, function (err, result) {
@@ -513,7 +554,7 @@ app.use('/getfooditems', function(req,res,next){
       else {
         let obj = [];
         let ob = {};
-        for(var i = 0; i < result.length; i++){
+        for (var i = 0; i < result.length; i++) {
           var row = result[i];
           ob['name'] = row.TITLE;
           ob['price'] = row.PRICE;
@@ -524,7 +565,7 @@ app.use('/getfooditems', function(req,res,next){
         }
         o['data'] = obj;
         console.log(o);
-        if(obj.length !== 0)
+        if (obj.length !== 0)
           res.send(o);
 
       }
@@ -534,15 +575,15 @@ app.use('/getfooditems', function(req,res,next){
 });
 
 
-app.use('/gethomecooks', function(req,res,next){
+app.use('/gethomecooks', function (req, res, next) {
   // console.log(req.body)
   const email = req.body['data']['email'];
   let location = req.body['data']['location'];
-  console.log("EMAIL123="+email)
+  console.log("EMAIL123=" + email)
   let o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT PICTURE, FIRST_NAME, LAST_NAME, EMAIL, RATING, ABOUT_ME, EXISTS(SELECT * FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL="' + email +'" AND COOK_EMAIL=EMAIL) as IS_FAVORITE FROM USER, ROLES WHERE online=1 AND USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ' AND ONLINE=1 );';
+    var q = 'SELECT PICTURE, FIRST_NAME, LAST_NAME, EMAIL, RATING, ABOUT_ME, EXISTS(SELECT * FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL="' + email + '" AND COOK_EMAIL=EMAIL) as IS_FAVORITE FROM USER, ROLES WHERE online=1 AND USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) + 2) + ' AND ONLINE=1 );';
     connection.query(q, function (err, result) {
       console.log(result);
       if (err) console.log(err);
@@ -556,7 +597,7 @@ app.use('/gethomecooks', function(req,res,next){
         let obj = [];
         let ob = {};
         let cookEmail;
-        for(var i = 0; i < result.length; i++){
+        for (var i = 0; i < result.length; i++) {
           var row = result[i];
           cookEmail = row.EMAIL;
           ob['name'] = row.FIRST_NAME + " " + row.LAST_NAME;
@@ -565,13 +606,13 @@ app.use('/gethomecooks', function(req,res,next){
           ob['aboutMe'] = row.ABOUT_ME;
           ob['isFavorite'] = row.IS_FAVORITE;
           ob['profilePicture'] = row.PICTURE;
-          q = 'SELECT * FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL="' + email+ '" AND COOK_EMAIL="' + cookEmail + '";';
+          q = 'SELECT * FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL="' + email + '" AND COOK_EMAIL="' + cookEmail + '";';
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         // console.log(obj);
         o['data'] = obj;
         // console.log(o);
-        if(obj.length !== 0)
+        if (obj.length !== 0)
           res.send(o);
       }
       connection.release();
@@ -580,7 +621,7 @@ app.use('/gethomecooks', function(req,res,next){
 });
 
 
-app.use('/addfooditem', function(req, res, next){
+app.use('/addfooditem', function (req, res, next) {
   const itemName = req.body['data']['itemName'];
   const cook_email = req.body['data']['homecook'];
   const food_id = uuidv4();
@@ -593,16 +634,16 @@ app.use('/addfooditem', function(req, res, next){
   const picture = req.body['data']['picture'];
   const desc = req.body['data']['description'];
   const deliveryTime = req.body['data']['deliveryTime'];
-  let o ={};
+  let o = {};
   // console.log(token)
   // console.log('insert into FoodItems values(\'' + itemName + '\', \'' + loginTokens[token] + '\', \'' + location + '\', \'' + price + '\', \'' + allergens +'\', \'' + cuisine + '\', \'' + calories +'\', \'' + picture + '\', \'' + desc + '\')')
-  
 
-  con.getConnection(function(err, connection) {
+
+  con.getConnection(function (err, connection) {
     console.log(allergens);
     if (err) console.log(err);
     let cuisine_present = false;
-    if(cuisine != null) {
+    if (cuisine != null) {
       var q = 'SELECT * FROM CUISINES WHERE CUISINE="' + cuisine + '";';
       console.log(q);
       connection.query(q, function (err, result) {
@@ -614,85 +655,85 @@ app.use('/addfooditem', function(req, res, next){
           cuisine_present = true;
         }
       });
-    }    
-    if((cuisine_present === false) && (cuisine_present != null)) {
+    }
+    if ((cuisine_present === false) && (cuisine_present != null)) {
       q = 'INSERT INTO CUISINES (CUISINE) VALUES ("' + cuisine + '");';
       console.log(q);
       connection.query(q, function (err, result) {
-          console.log(cuisine_present);
-          var columns = "(";
-          var values = "(";
-          if(itemName != null) {
-            columns += "TITLE, ";
-            values += '"' + itemName + '", ';
-          } 
-          if(price != null) {
-            columns += "PRICE, ";
-            values += price + ", ";
-          }
-          if(cuisine != null) {
-            columns += "CUISINE, ";
-            values += '"' + cuisine + '", ';
-          }
-          if(calories != null) {
-            columns += "CALORIES, ";
-            values += calories + ", ";
-          }
-          if(deliveryTime != null) {
-            columns += "DELIVERY_TIME, ";
-            values += deliveryTime + ", ";
-          }
-          if(picture != null) {
-            columns += "PICTURE, ";
-            values += '"' + picture + '", ';
-          }
-          if(desc != null) {
-            columns += "DESCRIPTION, ";
-            values += '"' + desc + '", ';
-          }
-          columns += "FOOD_ID, VALID, ";
-          values += '"' + food_id + '", "true", ';
+        console.log(cuisine_present);
+        var columns = "(";
+        var values = "(";
+        if (itemName != null) {
+          columns += "TITLE, ";
+          values += '"' + itemName + '", ';
+        }
+        if (price != null) {
+          columns += "PRICE, ";
+          values += price + ", ";
+        }
+        if (cuisine != null) {
+          columns += "CUISINE, ";
+          values += '"' + cuisine + '", ';
+        }
+        if (calories != null) {
+          columns += "CALORIES, ";
+          values += calories + ", ";
+        }
+        if (deliveryTime != null) {
+          columns += "DELIVERY_TIME, ";
+          values += deliveryTime + ", ";
+        }
+        if (picture != null) {
+          columns += "PICTURE, ";
+          values += '"' + picture + '", ';
+        }
+        if (desc != null) {
+          columns += "DESCRIPTION, ";
+          values += '"' + desc + '", ';
+        }
+        columns += "FOOD_ID, VALID, ";
+        values += '"' + food_id + '", "true", ';
 
 
-          columns += "COOK_EMAIL) ";
-          values += '"' + cook_email + '") ';
+        columns += "COOK_EMAIL) ";
+        values += '"' + cook_email + '") ';
 
-          q = 'INSERT INTO FOOD ' + columns + 'VALUES ' + values + ';';
+        q = 'INSERT INTO FOOD ' + columns + 'VALUES ' + values + ';';
+        console.log(q);
+        connection.query(q, function (err, result) {
+          if (err) {
+            o['code'] = 400;
+            res.status(400)
+            o['message'] = 'Failed to add food';
+            res.send(o);
+          }
+          else {
+            o['code'] = 200;
+            res.status(200)
+            o['message'] = itemName + ' added';
+            res.send(o);
+          }
+
+        });
+        for (var i = 0; i < allergens.length; i++) {
+          var q = 'INSERT INTO FOOD_ALLERGEN (FOOD_ID, ALLERGEN) VALUES ("' + food_id + '", "' + allergens[i] + '");';
           console.log(q);
           connection.query(q, function (err, result) {
-            if (err) {
-              o['code'] = 400;
-              res.status(400)
-              o['message'] = 'Failed to add food';
-              res.send(o);
-            }
-            else {
-              o['code'] = 200;
-              res.status(200)
-              o['message'] = itemName + ' added';
-              res.send(o);
-            }
-            
-          }); 
-          for(var i=0; i<allergens.length; i++) {
-            var q = 'INSERT INTO FOOD_ALLERGEN (FOOD_ID, ALLERGEN) VALUES ("' + food_id + '", "' + allergens[i] + '");';
             console.log(q);
-            connection.query(q, function (err, result) {
-              console.log(q);
-              if (err) console.log(err);
-              // connection.release();
-            });
-          }
+            if (err) console.log(err);
+            // connection.release();
+          });
+        }
       });
     }
-    
+
   });
 });
 
 
 
 
-app.use('/editProfile', function(req,res,next){
+app.use('/editProfile', function (req, res, next) {
 
   const email = req.body['data']['email'];
   let role = req.body['data']['role'];
@@ -702,38 +743,38 @@ app.use('/editProfile', function(req,res,next){
   const firstName = name.toString().split(' ')[0];
   const lastName = name.toString().split(' ')[1];
 
-  if(role === 'Homecook') role = 'COOK';
+  if (role === 'Homecook') role = 'COOK';
 
   // console.log(profilePicture);
   // console.log(aboutMe);
   // console.log(lastName);
   // console.log(name);
 
-  if(firstName === null) {
+  if (firstName === null) {
     firstName = '';
   }
-  if(lastName === null) {
+  if (lastName === null) {
     lastName = '';
   }
-  if(aboutMe === null) {
+  if (aboutMe === null) {
     aboutMe = 'None';
   }
-  if(profilePicture === null) {
+  if (profilePicture === null) {
     profilePicture = 'None';
   }
-  if(name === null) {
+  if (name === null) {
     name = 'None';
   }
   console.log(email);
   console.log(role);
   let o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'UPDATE USER SET ABOUT_ME="' + aboutMe + '", FIRST_NAME="' + firstName +'", LAST_NAME="' + lastName + '" , PICTURE="' + profilePicture + '" where EMAIL="' + email + '" AND ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
+    var q = 'UPDATE USER SET ABOUT_ME="' + aboutMe + '", FIRST_NAME="' + firstName + '", LAST_NAME="' + lastName + '" , PICTURE="' + profilePicture + '" where EMAIL="' + email + '" AND ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
     console.log(q);
     connection.query(q, function (err, result) {
       console.log(result);
-      if(err) {
+      if (err) {
         o['code'] = 400;
         res.status(400)
         o['message'] = 'Update failed';
@@ -750,14 +791,14 @@ app.use('/editProfile', function(req,res,next){
   });
 });
 
-app.use('/profile', function(req, res, next) {
+app.use('/profile', function (req, res, next) {
   console.log("profile");
   let email = req.body['data']['email'];
   let role = req.body['data']['role'];
-  if(role === 'Homecook') role = 'COOK';
+  if (role === 'Homecook') role = 'COOK';
   console.log(email);
   let o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) console.log(err);
     var q = 'SELECT * FROM USER WHERE EMAIL= "' + email + '" AND ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
     connection.query(q, function (err, result) {
@@ -772,7 +813,7 @@ app.use('/profile', function(req, res, next) {
         var row = result[0];
         console.log(row);
         o['name'] = row.FIRST_NAME;
-        if(row.LAST_NAME) {
+        if (row.LAST_NAME) {
           o['name'] += " ";
           o['name'] += row.LAST_NAME;
         }
@@ -781,24 +822,24 @@ app.use('/profile', function(req, res, next) {
         o['cuisines'] = 'None';
         o['profilePicture'] = row.PICTURE;
         console.log(o);
-        if(o['code'] !== 404)
-        res.send(o);
+        if (o['code'] !== 404)
+          res.send(o);
       }
       connection.release();
     });
   });
 });
 
-app.use('/filter', function(req, res, next){
+app.use('/filter', function (req, res, next) {
   const json = req.body['data'];
   const cuisines = json['cuisines'];
   const allergenList = json['allergens']
   const location = parseInt(json['location'].toString())
   var o = {};
-  console.log(cuisines+"  "+allergenList)
-  console.log('select * from FoodItems where Cuisine like \'' + cuisines + '\' AND Allergens NOT LIKE \''+ allergenList+'\' AND Location BETWEEN \''+ (location-2) +'\' AND \'' + (location+2) +'\'');
-  const request = new Request('select * from FoodItems where Cuisine like \'' + cuisines + '\' AND Allergens NOT LIKE \''+ allergenList+'\' AND Location BETWEEN \''+ (location-2) +'\' AND \'' + (location+2) +'\'', function(err, rowCount, rows){
-    if(parseInt(rowCount.toString()) === 0) {
+  console.log(cuisines + "  " + allergenList)
+  console.log('select * from FoodItems where Cuisine like \'' + cuisines + '\' AND Allergens NOT LIKE \'' + allergenList + '\' AND Location BETWEEN \'' + (location - 2) + '\' AND \'' + (location + 2) + '\'');
+  const request = new Request('select * from FoodItems where Cuisine like \'' + cuisines + '\' AND Allergens NOT LIKE \'' + allergenList + '\' AND Location BETWEEN \'' + (location - 2) + '\' AND \'' + (location + 2) + '\'', function (err, rowCount, rows) {
+    if (parseInt(rowCount.toString()) === 0) {
       o['code'] = 400;
       res.status(400)
       o['message'] = 'No food items available';
@@ -808,21 +849,21 @@ app.use('/filter', function(req, res, next){
   });
   let obj = [];
   let ob = {};
-  request.on('row', function(columns){
-    columns.forEach(function(column){
-      if (column.metadata.colName === 'ItemName'){
+  request.on('row', function (columns) {
+    columns.forEach(function (column) {
+      if (column.metadata.colName === 'ItemName') {
         ob['name'] = column.value;
-      } else if(column.metadata.colName === 'Homecook') {
+      } else if (column.metadata.colName === 'Homecook') {
         ob['homecook'] = column.value;
-      } else if(column.metadata.colName === 'Price') {
+      } else if (column.metadata.colName === 'Price') {
         ob['price'] = column.value;
-      } else if(column.metadata.colName === 'Allergens') {
+      } else if (column.metadata.colName === 'Allergens') {
         ob['allergens'] = column.value;
-      } else if(column.metadata.colName === 'Cuisine') {
+      } else if (column.metadata.colName === 'Cuisine') {
         ob['cuisine'] = column.value;
-      } else if(column.metadata.colName === 'Calories') {
+      } else if (column.metadata.colName === 'Calories') {
         ob['calories'] = column.value;
-      } else if(column.metadata.colName === 'Picture') {
+      } else if (column.metadata.colName === 'Picture') {
         ob['picture'] = column.value;
       }
     });
@@ -833,21 +874,21 @@ app.use('/filter', function(req, res, next){
     o['data'] = obj;
     console.log(o);
     res.status(200)
-    if(obj.length !== 0)
+    if (obj.length !== 0)
       res.send(o);
   });
   foodConnection.execSql(request);
 
 });
 
-app.use('/forgotpassword', function(req, res, next){
+app.use('/forgotpassword', function (req, res, next) {
   const encEmail = req.body['data']['encEmail'];
   const email = req.body['data']['email'];
   const encPassword = req.body['data']['encPassword'];
   const password = req.body['data']['password'];
   console.log(email);
   var o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'UPDATE USER SET PASSWORD = "' + encPassword + '" WHERE EMAIL="' + encEmail + '";';
     connection.query(q, function (err, rows) {
@@ -869,16 +910,16 @@ app.use('/forgotpassword', function(req, res, next){
     });
   });
 });
-app.use('/setstatus', function(req, res, next){
+app.use('/setstatus', function (req, res, next) {
   console.log("COMES TO STATUS")
   let email = req.body['data']['email'];
   let status = req.body['data']['status'];
   let role = req.body['data']['role'];
-  if(role === "Homecook") role = "COOK"
+  if (role === "Homecook") role = "COOK"
   var o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'UPDATE USER SET ONLINE = ' + status + ' WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';    console.log(q);
+    var q = 'UPDATE USER SET ONLINE = ' + status + ' WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");'; console.log(q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -897,16 +938,16 @@ app.use('/setstatus', function(req, res, next){
       console.log(rows[0]);
       connection.release();
     });
-    
+
   });
 });
-app.use('/setfavoritehomecooks', function(req, res, next){
+app.use('/setfavoritehomecooks', function (req, res, next) {
   const email = req.body['data']['email'];
   const cookemail = req.body['data']['cook_email'];
   var o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'INSERT INTO FAVORITE_HOMECOOKS(COOK_EMAIL, CUSTOMER_EMAIL) VALUES ("'+cookemail+'", "'+email+'");';
+    var q = 'INSERT INTO FAVORITE_HOMECOOKS(COOK_EMAIL, CUSTOMER_EMAIL) VALUES ("' + cookemail + '", "' + email + '");';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -923,18 +964,18 @@ app.use('/setfavoritehomecooks', function(req, res, next){
       }
       connection.release();
     });
-    
+
   });
 });
 
 
-app.use('/setfavoritefood', function(req, res, next){
+app.use('/setfavoritefood', function (req, res, next) {
   const email = req.body['data']['email'];
   const foodId = req.body['data']['food_id'];
   var o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'INSERT INTO FAVORITE_FOOD(FOOD_ID, EMAIL) VALUES ("'+foodId+'", "'+email+'");';
+    var q = 'INSERT INTO FAVORITE_FOOD(FOOD_ID, EMAIL) VALUES ("' + foodId + '", "' + email + '");';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -951,19 +992,19 @@ app.use('/setfavoritefood', function(req, res, next){
       }
       connection.release();
     });
-    
+
   });
 });
 
 
-app.use('/getfavoritehomecooks', function(req, res, next){
-  
+app.use('/getfavoritehomecooks', function (req, res, next) {
+
   const email = req.body['data']['email'];
   console.log(email)
   var o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT * FROM USER A, (SELECT COOK_EMAIL FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL = "'+ email +'") B WHERE A.EMAIL = B.COOK_EMAIL AND A.ROLE = 1';    
+    var q = 'SELECT * FROM USER A, (SELECT COOK_EMAIL FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL = "' + email + '") B WHERE A.EMAIL = B.COOK_EMAIL AND A.ROLE = 1';
     console.log(q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
@@ -976,18 +1017,18 @@ app.use('/getfavoritehomecooks', function(req, res, next){
       else {
         obj = [];
         ob = {};
-        for(var i = 0; i < rows.length; i++){
+        for (var i = 0; i < rows.length; i++) {
           var r = rows[i];
           ob['email'] = r.EMAIL;
-          ob['cook_name'] = r.FIRST_NAME +' '+r.LAST_NAME;
-          if (r.ABOUT_ME !== null){
-            ob['cook_description'] = r.ABOUT_ME;  
+          ob['cook_name'] = r.FIRST_NAME + ' ' + r.LAST_NAME;
+          if (r.ABOUT_ME !== null) {
+            ob['cook_description'] = r.ABOUT_ME;
           }
           else {
             ob['cook_description'] = "";
           }
-          if (r.ABOUT_ME !== null){
-            ob['cook_rating'] = r.ABOUT_ME;  
+          if (r.ABOUT_ME !== null) {
+            ob['cook_rating'] = r.ABOUT_ME;
           }
           else {
             ob['cook_rating'] = 3.5;
@@ -1004,12 +1045,12 @@ app.use('/getfavoritehomecooks', function(req, res, next){
       console.log(rows[0]);
       connection.release();
     });
-    
+
   });
 });
 
 
-function sendEmail(email, password, text){
+function sendEmail(email, password, text) {
   const nodemailer = require('nodemailer');
   var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -1026,7 +1067,7 @@ function sendEmail(email, password, text){
     text: text
   };
 
-  transporter.sendMail(mailOptions, function(error, info){
+  transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
     } else {
@@ -1035,13 +1076,13 @@ function sendEmail(email, password, text){
   });
 
 }
-app.use('/resetpassword', function(req, res, next) {
+app.use('/resetpassword', function (req, res, next) {
   const email = req.param['data']['email'];
   const oldPw = req.param['data']['oldPw'];
   const newPw = req.param['data']['newPw'];
-  var  o = {};
-  
-  con.getConnection(function(err, connection) {
+  var o = {};
+
+  con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'UPDATE USER SET PASSWORD = "' + newPw + '" WHERE EMAIL="' + email + '" AND PASSWORD="' + oldPw + '";';
     connection.query(q, function (err, rows) {
@@ -1061,35 +1102,35 @@ app.use('/resetpassword', function(req, res, next) {
   });
 });
 
-app.use('/checklogin', function(req, res, next){
+app.use('/checklogin', function (req, res, next) {
   const email = req.body['data']['email'];
   const token = req.body['data']['token'];
   var o = {};
   tok = revLoginTokens[email];
-  if(tok === token) {
+  if (tok === token) {
     o['code'] = 200;
     o['message'] = 'Login successful';
     o['token'] = token;
-  } else{
+  } else {
     o['code'] = 400;
     o['message'] = 'Login token does not match';
   }
   res.send(o);
 });
 
-app.use('/login', function(req, res, next){
+app.use('/login', function (req, res, next) {
   const email = req.body['data']['email'];
   const password = req.body['data']['password'];
   let role = req.body['data']['role'];
-  if(role === 'Homecook') role = 'cook';
+  if (role === 'Homecook') role = 'cook';
   var o = {};
-  
-  con.getConnection(function(err, connection) {
+
+  con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'SELECT FIRST_NAME, LAST_NAME FROM USER WHERE EMAIL = "' + email + '" AND PASSWORD = "' + password + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC = "' + role + '");';
     connection.query(q, function (err, rows) {
       if (err) throw err;
-      if(rows.length === 0) {
+      if (rows.length === 0) {
         o['code'] = 400;
         o['message'] = 'Invalid login credentials';
         res.status(400);
@@ -1101,7 +1142,7 @@ app.use('/login', function(req, res, next){
         o['token'] = uuidv4();
         loginTokens[o['token']] = email;
         revLoginTokens[email] = o['token'];
-  
+
         console.log(loginTokens);
         res.status(200);
         res.send(o);
@@ -1113,7 +1154,7 @@ app.use('/login', function(req, res, next){
 
 
 
-app.use('/register', function(req,res,next){
+app.use('/register', function (req, res, next) {
   const firstName = req.body['data']['firstName'];
   const lastName = req.body['data']['lastName'];
   const email = req.body['data']['email'];
@@ -1123,7 +1164,7 @@ app.use('/register', function(req,res,next){
 
   let o = {};
 
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'SELECT FIRST_NAME, LAST_NAME FROM USER WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC = "' + role + '");';
     connection.query(q, function (err, rows) {
@@ -1134,7 +1175,7 @@ app.use('/register', function(req,res,next){
         res.status(400)
         res.send(o);
       }
-      else if(rows.length !== 0) {
+      else if (rows.length !== 0) {
         o['code'] = 400;
         res.status(400);
         o['message'] = 'User already registered';
@@ -1158,62 +1199,62 @@ app.use('/register', function(req,res,next){
 function registerUser(firstName, lastName, email, password, role, cuisines) {
   console.log(role);
   let pic = '';
-  if(role === 'Homecook') role = 'COOK';
-  if(role === 'COOK') {
+  if (role === 'Homecook') role = 'COOK';
+  if (role === 'COOK') {
     pic = 'https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/3.png?alt=media&token=a3fb8d89-3afc-48ea-9b07-bf7c26699ef4';
   } else {
     pic = 'https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/4.png?alt=media&token=47d52479-c8cf-46a1-8116-e5f1bc8765f7';
   }
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'INSERT INTO USER (PICTURE, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, ROLE) values("' + pic + '", "' + firstName + '", "' + lastName + '", "' + email + '", "' + password + '", (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '"));';
     connection.query(q, function (err, rows) {
-      if(err) {
+      if (err) {
         console.log(err);
       }
       else {
         console.log('success');
         let s = 'Privacy Policy\n' +
-            '\n' +
-            'Stou values the privacy of the users who use our web service. And, we want you to be aware\n' +
-            'of how we collect, use, share information of the users. This applies to customers, people\n' +
-            'who want to get food, and home cooks, people who cook the food and are willing to share.\n' +
-            'By using our platform, you, as a user, agree to the terms and conditions of the Privacy\n' +
-            'Policy, which includes future additions and changes. In case, if you do not agree with any of\n' +
-            'the terms and conditions, please do not use the website.\n' +
-            ' \n' +
-            'Information provided by the Users\n' +
-            'We collect information in a variety of circumstances when you use our website.\n' +
-            'Some instances of those circumstances as follows. \n' +
-            ' When you register, you provide us with information regarding email, first name, last\n' +
-            'name, email, etc. After signing up, you are in a position to provide more information\n' +
-            'about you, to us. This information would be stored in our database. However, it will\n' +
-            'be encrypted for your privacy \n' +
-            ' When you use a card to pay, a third-party payment service receives your card\n' +
-            'information. We do not store that information in our database. \n' +
-            ' When you use our website to rate a home cook, we will save it on the database.\n' +
-            'However, it will be protected.   \n' +
-            'When we collect information about, it is to provide a good service for you. For example, we\n' +
-            'use your username and password to uniquely identify you. We also receive information\n' +
-            'when you interact with another user (home cooks or/and customers). We can make a\n' +
-            'promise that all the information we are collecting will be used to enhance the user\n' +
-            'experience. \n' +
-            'Use of information collected from users\n' +
-            'We enhance user experience in multiple ways. However, that requires us to collect\n' +
-            'information. We use the information in the following ways.\n' +
-            ' Improve our service.\n' +
-            ' Promote our application. \n' +
-            ' Communication with users.\n' +
-            ' Prevention of fraud.\n' +
-            'User information shared between customers and home cooks\n' +
-            'We share information about the home cook’s dishes to the customer along with his/her\n' +
-            'public profile. We will also be sharing the location of the user.\n' +
-            'Miscellaneous sharing of information\n' +
-            ' When disclosure of the information is needed to comply with the laws and\n' +
-            'regulations.\n' +
-            ' When there is a government request.\n' +
-            ' Enforce policies\n' +
-            ' With consent, you might be included in the featured home cooks.'
+          '\n' +
+          'Stou values the privacy of the users who use our web service. And, we want you to be aware\n' +
+          'of how we collect, use, share information of the users. This applies to customers, people\n' +
+          'who want to get food, and home cooks, people who cook the food and are willing to share.\n' +
+          'By using our platform, you, as a user, agree to the terms and conditions of the Privacy\n' +
+          'Policy, which includes future additions and changes. In case, if you do not agree with any of\n' +
+          'the terms and conditions, please do not use the website.\n' +
+          ' \n' +
+          'Information provided by the Users\n' +
+          'We collect information in a variety of circumstances when you use our website.\n' +
+          'Some instances of those circumstances as follows. \n' +
+          ' When you register, you provide us with information regarding email, first name, last\n' +
+          'name, email, etc. After signing up, you are in a position to provide more information\n' +
+          'about you, to us. This information would be stored in our database. However, it will\n' +
+          'be encrypted for your privacy \n' +
+          ' When you use a card to pay, a third-party payment service receives your card\n' +
+          'information. We do not store that information in our database. \n' +
+          ' When you use our website to rate a home cook, we will save it on the database.\n' +
+          'However, it will be protected.   \n' +
+          'When we collect information about, it is to provide a good service for you. For example, we\n' +
+          'use your username and password to uniquely identify you. We also receive information\n' +
+          'when you interact with another user (home cooks or/and customers). We can make a\n' +
+          'promise that all the information we are collecting will be used to enhance the user\n' +
+          'experience. \n' +
+          'Use of information collected from users\n' +
+          'We enhance user experience in multiple ways. However, that requires us to collect\n' +
+          'information. We use the information in the following ways.\n' +
+          ' Improve our service.\n' +
+          ' Promote our application. \n' +
+          ' Communication with users.\n' +
+          ' Prevention of fraud.\n' +
+          'User information shared between customers and home cooks\n' +
+          'We share information about the home cook’s dishes to the customer along with his/her\n' +
+          'public profile. We will also be sharing the location of the user.\n' +
+          'Miscellaneous sharing of information\n' +
+          ' When disclosure of the information is needed to comply with the laws and\n' +
+          'regulations.\n' +
+          ' When there is a government request.\n' +
+          ' Enforce policies\n' +
+          ' With consent, you might be included in the featured home cooks.'
         sendEmail('adrianraj1818@gmail.com', password, s)
       }
       connection.release();
@@ -1222,12 +1263,12 @@ function registerUser(firstName, lastName, email, password, role, cuisines) {
 }
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

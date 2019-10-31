@@ -1,40 +1,76 @@
 import React, { Component } from 'react';
-import { Modal, Button, Image } from 'react-bootstrap';
-import NavLink from 'react-bootstrap/NavLink'
+import { Modal, Button, Image, ListGroup } from 'react-bootstrap';
+import NavLink from 'react-bootstrap/NavLink';
+import axios from 'axios';
+import { serverURL } from '../../../config';
+import { ModalKey } from '../../../constants/ModalKeys';
 
 class OrderAlert extends Component {
     constructor(props) {
         super(props);
+    }
 
-        this.state = {
-            reason: ''
-        };
+    getSubtotal = () => {
+        const { items } = this.props;
+        let sum = 0;
+        for (let i = 0; i < items.length; i++) {
+            sum += items[i].price * items[i].quantity;
+        }
+        return sum;
+    }
+
+    setOrderStatus = (orderStatus, order) => {
+        const data = {
+            orderStatus,
+            orderId: order.orderId
+        }
+        axios.post(`${serverURL}/setorderstatus`, { data })
+            .then(res => {
+                this.props.closeModal();
+            })
+    }
+
+    renderOrderInfo = order => {
+        const orderTime = new Date(parseInt(order.orderedAt)).toLocaleString('en-US');
+        return (
+            <div>
+                <div>Order placed at <b>{orderTime}</b></div>
+                <div>Delivery to <b>{order.orderAddress}</b></div>
+            </div>
+        );
     }
 
     render() {
-        const { showModal, closeModal, items } = this.props;
-        console.log(this.props);
+        const { showModal, closeModal, items, order } = this.props;
 
         return (
             <Modal show={showModal} onHide={() => closeModal()}>
                 <Modal.Header closeButton>
-                    You have a new order!
+                    <b>You have a new order!</b>
                 </Modal.Header>
                 <Modal.Body>
-                    {items.map(item =>
-                        <div className="order-item-info">
-                            <div className="order-item-name">
-                                <p>{item.name}</p>
-                            </div>
-                            <div className="order-item-quantity">
-                                <p>x {item.quantity}</p>
-                            </div>
-                        </div>
-                    )}
+                    {this.renderOrderInfo(order)}
+                    <ListGroup className="bag-itemlist-container">
+                        <ListGroup.Item>
+                            <b>Order items</b>
+                        </ListGroup.Item>
+                        {items.map(item =>
+                            <ListGroup.Item className="bag-item-container">
+                                <p className="bag-item-name">{item.title}</p>
+                                <p className="bag-item-price">x {item.quantity}</p>
+                            </ListGroup.Item>
+                        )}
+                        <ListGroup.Item className="bag-item-container">
+                            <p className="bag-item-name"><b>Subtotal:</b></p>
+                            <p className="bag-item-price">${this.getSubtotal()}</p>
+                        </ListGroup.Item>
+                    </ListGroup>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="danger">Decline</Button>
-                    <Button variant="success">Accept</Button>
+                    <div className="order-item-button-div">
+                        <Button className="margined-buttons" variant="danger" onClick={e => this.setOrderStatus("declined", order)}>Decline</Button>
+                        <Button className="margined-buttons" variant="success" onClick={e => this.setOrderStatus("in_progress", order)}>Accept</Button>
+                    </div>
                 </Modal.Footer>
             </Modal>
         );

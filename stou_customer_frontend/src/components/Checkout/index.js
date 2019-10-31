@@ -176,8 +176,6 @@ class Checkout extends Component {
                         onSuccess={this.onSuccess}
                         onCancel={this.onCancel}
                         style={{layout: "vertical", shape: "rect", size: "large"}}
-                        
-                        
                     />
                     </div>
                     <Button onClick={this.placeOrder}>Random</Button>

@@ -39,7 +39,7 @@ class OrderModal extends Component {
         const orderTime = new Date(parseInt(order.orderedAt)).toLocaleString('en-US');
         return (
             <div>
-                <div>Order for <b>{order.name}</b></div>
+                <div>Order from <b>{order.name}</b></div>
                 <div>Order placed at <b>{orderTime}</b></div>
             </div>
         );
@@ -73,10 +73,6 @@ class OrderModal extends Component {
                         </ListGroup.Item>
                     </ListGroup>
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="danger">Decline</Button>
-                    <Button variant="success">Accept</Button>
-                </Modal.Footer>
             </Modal>
         );
     }
