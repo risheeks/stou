@@ -104,7 +104,7 @@ export class AddFoodItem extends Component {
         allergens: chosenAllergens,
         cuisine: chosenCuisines[0],
         picture: fireBaseURL,
-        location: zipcode,
+        deliveryTime: zipcode,
         token: this.props.auth_token
       }
     })
@@ -218,9 +218,7 @@ export class AddFoodItem extends Component {
                 value={this.state.zipcode}
                 // type="number"
                 onChange={this.handleChange}
-                onInput = {(e) =>{
-                  e.target.value = Math.max(0, parseInt(e.target.value) ).toString().slice(0,5)
-              }}/>
+                />
             </FormGroup>
             <div>
               <Card.Title>Allergens</Card.Title>
