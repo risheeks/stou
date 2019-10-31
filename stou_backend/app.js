@@ -725,9 +725,9 @@ app.use('/addfooditem', function(req, res, next){
             connection.query(q, function (err, result) {
               console.log(q);
               if (err) console.log(err);
-              // connection.release();
             });
           }
+          connection.release();
       });
     }
     
