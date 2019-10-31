@@ -47,7 +47,7 @@ class FavoriteHomeCook extends Component {
 
     render() {
         const { name, description, picture, rating } = this.props;
-        console.log(name + " " + rating);
+        // console.log(name + " " + rating);
 
         return (
             <Card className="homecook-card" style={{ width: '18rem' }}>
@@ -63,10 +63,10 @@ class FavoriteHomeCook extends Component {
                     <Card.Title className="wrapped-cook-text"><b>{name}</b></Card.Title>
                     <br/>
                     <Card.Text className="text-about-me-label wrapped-cook-text">
-                        {description}
+                        {description ? description : "No Description"}
                     </Card.Text>
                     <CustomRating rating={rating} readonly={true} />
-                    <Button  variant="link">View Menu</Button>
+                    {/* <Button  variant="link">View Menu</Button> */}
                 </Card.Body>
             </Card>
         );

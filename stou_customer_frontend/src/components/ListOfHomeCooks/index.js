@@ -37,18 +37,7 @@ class ListOfHomeCooks extends Component {
 				console.log(this.state.homecooks)
 			});
 	}
-	
-	// updateFavoriteHomeCooks =(e) => {
-    //     axios.post(`${serverURL}/favoritehomecooks`, {
-    //         data: {
-    //           email: this.props.email,
-    //           cook_email: 
-    //         }
-    //       })
-    //       .then(res => {
-    //         console.log(res.data);
-    //       })
-    // }
+
 
 	render() {
 		return (
