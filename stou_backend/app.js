@@ -449,6 +449,55 @@ app.use('/removefavoritefood', function(req, res, next){
   });
 });
 
+
+
+app.use('/getpastfoodcook', function(req, res, next){
+  let cookEmail = req.body['data']['email'];
+  let o = {};
+  con.getConnection(function(err, connection) {
+    if (err) console.log(err);
+    var q = 'SELECT FOOD.PICTURE, FOOD.FOOD_ID, USER1.EMAIL, FOOD.TITLE, FOOD.DESCRIPTION, FOOD.CUISINE, FOOD.PRICE, FOOD.CALORIES, FOOD.DELIVERY_TIME, USER1.FIRST_NAME, USER1.LAST_NAME FROM FOOD, USER AS USER1, ORDERS, ORDER_FOOD WHERE USER1.EMAIL=ORDERS.COOK_EMAIL AND USER1.ROLE=1 AND ORDER_FOOD.ORDER_ID=ORDERS.ORDER_ID AND ORDER_FOOD.FOOD_ID=FOOD.FOOD_ID AND ORDERS.COOK_EMAIL="' + cookEmail + '";';
+    console.log(q);
+    connection.query(q, function (err, result) {
+      if (err) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'No food offered now';
+        res.send(o);
+      }
+      else {
+        let obj = [];
+        let ob = {};
+        for(var i = 0; i < result.length; i++){
+          var row = result[i];
+          // console.log(row);
+          ob['name'] = row.TITLE;
+          ob['homecook'] = row.FIRST_NAME + " " + row.LAST_NAME;
+          ob['email'] = row.COOK_EMAIL;
+          ob['description'] = row.DESCRIPTION;
+          ob['price'] = row.PRICE;
+          ob['cuisine'] = row.CUISINE;
+          ob['calories'] = row.CALORIES;
+          ob['picture'] = row.PICTURE;
+          ob['food_id'] = row.FOOD_ID;
+          ob['delivery_time'] = row.DELIVERY_TIME;
+          if(ob['delivery_time'] === null){
+            ob['delivery_time'] = '2019-10-29 01:47:45';
+          }
+          obj.push(JSON.parse(JSON.stringify(ob)));
+        }
+        o['data'] = obj;
+        console.log(o);
+        if(obj.length !== 0)
+          res.send(o);
+
+      }
+      connection.release();
+    });
+  });
+});
+
+
 app.use('/getpastfood', function(req, res, next){
   let email = req.body['data']['email'];
   let o = {};
@@ -459,7 +508,7 @@ app.use('/getpastfood', function(req, res, next){
     connection.query(q, function (err, result) {
       if (err) {
         o['code'] = 400;
-        res.status(400)
+        res.status(400);
         o['message'] = 'No food offered now';
         res.send(o);
       }
@@ -609,7 +658,6 @@ app.use('/gethomecooks', function(req,res,next){
           ob['aboutMe'] = row.ABOUT_ME;
           ob['isFavorite'] = row.IS_FAVORITE;
           ob['profilePicture'] = row.PICTURE;
-          q = 'SELECT * FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL="' + email+ '" AND COOK_EMAIL="' + cookEmail + '";';
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         // console.log(obj);
@@ -658,7 +706,7 @@ app.use('/addfooditem', function(req, res, next){
           cuisine_present = true;
         }
       });
-    }    
+    }
     if((cuisine_present === false) && (cuisine_present != null)) {
       q = 'INSERT INTO CUISINES (CUISINE) VALUES ("' + cuisine + '");';
       console.log(q);
@@ -724,9 +772,9 @@ app.use('/addfooditem', function(req, res, next){
             connection.query(q, function (err, result) {
               console.log(q);
               if (err) console.log(err);
-              // connection.release();
             });
           }
+          connection.release();
       });
     }
     
