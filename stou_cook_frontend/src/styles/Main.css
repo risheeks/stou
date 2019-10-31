@@ -154,11 +154,18 @@ align-self: center;
 overflow-y: scroll;
 }
 
-.button-div {
+.order-item-button-div {
 display: flex;
 flex-direction: row;
 align-self: center;
 justify-content: center;
+margin-left: auto;
+}
+
+.order-item-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
 }
 
 .margined-buttons {
@@ -196,6 +203,49 @@ align-self: center;
   border-right: 10px solid transparent;
   border-top: 10px solid black;
   align-self: center;
+}
+
+.order-item-div {
+  display: flex;
+  flex-direction: row;
+}
+
+.custom-control-input.is-invalid:checked~.custom-control-label::before, .was-validated .custom-control-input:invalid:checked~.custom-control-label::before {
+  border-color: white;
+  background-color: #fec0ae;
+}
+
+.online-status-label > p {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  color: white;
+}
+
+.cook-home-image {
+  height: 500px;
+}
+
+.bag-itemlist-container {
+  margin-top: 50px;
+}
+
+.bag-item-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.bag-item-price {
+  width: 40px;
+  margin-left: auto;
+  font-size: 15px;
+}
+
+.bag-item-quantity {
+  margin-right: 15px;
+}
+
+.bag-item-name {
+  width: 100%;
 }
 
 @media all and (min-width: 480px) {

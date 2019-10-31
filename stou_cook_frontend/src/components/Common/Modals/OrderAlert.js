@@ -13,6 +13,7 @@ class OrderAlert extends Component {
 
     render() {
         const { showModal, closeModal, items } = this.props;
+        console.log(this.props);
 
         return (
             <Modal show={showModal} onHide={() => closeModal()}>

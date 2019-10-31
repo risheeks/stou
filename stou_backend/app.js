@@ -110,15 +110,13 @@ app.use('/setorderstatus', function(req, res, next){
       } else {
         const currentOrderStatus = rows[0].ORDER_STATUS;
         let update = false;
-        if(newOrderStatus === 'accepted' && currentOrderStatus === 'placed') {
+        if(newOrderStatus === 'in_progress' && currentOrderStatus === 'placed') {
           update = true;
-        } else if (newOrderStatus === 'in progress' && currentOrderStatus === 'accepted'){
+        } else if (newOrderStatus === 'on_the_way' && currentOrderStatus === 'in_progress') {
           update = true;
-        } else if (newOrderStatus === 'on its way' && currentOrderStatus === 'in progress') {
+        } else if (newOrderStatus === 'delivered' && currentOrderStatus === 'on_the_way') {
           update = true;
-        } else if (newOrderStatus === 'delivered' && currentOrderStatus === 'on its way') {
-          update = true;
-        } else if (currentOrderStatus !== 'delivered' && currentOrderStatus !== 'on its way' && newOrderStatus === 'canceled') {
+        } else if (currentOrderStatus !== 'delivered' && currentOrderStatus !== 'on_the_way' && newOrderStatus === 'canceled') {
           update = true;
         } else if (currentOrderStatus === 'placed' && newOrderStatus === 'declined') {
           update = true;
@@ -163,7 +161,10 @@ app.use('/getallorders', function (req, res, next) {
   var o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.CUSTOMER_EMAIL AND COOK_EMAIL="' + cookEmail + '" AND ORDER_STATUS="' + status + '";';
+    let q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.CUSTOMER_EMAIL AND USER.ROLE=2 AND COOK_EMAIL="' + cookEmail + '" AND ORDER_STATUS="' + status + '" ORDER BY ORDERED_AT DESC;';
+    if (status === 'all') {
+      q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.CUSTOMER_EMAIL AND USER.ROLE=2 AND COOK_EMAIL="' + cookEmail + '" ORDER BY ORDERED_AT DESC;';
+    }
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -173,9 +174,10 @@ app.use('/getallorders', function (req, res, next) {
         res.send(o);
       }
       else {
-        var obj = [];
-        var ord = {};
+
+        let obj = [];
         for(let i = 0; i < rows.length; i++){
+          let ord = {};
           ord['name'] = rows[i].FIRST_NAME + " " + rows[i].LAST_NAME;
           ord['orderId'] = rows[i].ORDER_ID;
           ord['orderedAt'] = rows[i].ORDERED_AT;
@@ -185,9 +187,9 @@ app.use('/getallorders', function (req, res, next) {
           ord['deliveryTime'] = rows[i].DELIVERY_TIME;
           ord['orderAddress'] = rows[i].ORDER_ADDRESS;
           ord['orderStatus'] = rows[i].ORDER_STATUS;
-          ord['paymentKey'] = rows[i].PAYMENT_KEY;
           obj.push(ord);
         }
+        console.log(rows);
         o = obj;
         o['code'] = 200;
         o['message'] = 'Success';
@@ -284,7 +286,7 @@ app.use('/placeorder', function (req, res, next) {
   console.log(req.body.data);
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'Insert into ORDERS values(\''+ orderID +'\', CURRENT_TIMESTAMP, \''+ cookEmail +'\', \''+customerEmail+'\', \''+ instructions +'\', CURRENT_TIMESTAMP, \''+ orderAddress + '\',\'' + orderStatus + '\', \'' + paymentId+ '\');';
+    var q = 'Insert into ORDERS values(\''+ orderID +'\', "' + Date.now() + '", \''+ cookEmail +'\', \''+customerEmail+'\', \''+ instructions +'\', CURRENT_TIMESTAMP, \''+ orderAddress + '\',\'' + orderStatus + '\', \'' + paymentId +' \');';
     console.log('MEssage:' + q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
@@ -368,7 +370,7 @@ app.use('/getlocation', function(req, res, next){
       if (err) throw err;
       if (rows.length === 0) {
         o['code'] = 400;
-        res.status(400)
+        res.status(400);
         o['message'] = 'User does not exist!';
         res.send(o);
       }
@@ -421,9 +423,81 @@ app.use('/removefavoritehomecooks', function(req, res, next){
   });
 });
 
+
+app.use('/removefavoritefood', function(req, res, next){
+  const email = req.body['data']['email'];
+  const foodId = req.body['data']['food_id'];
+  let o = {};
+  con.getConnection(function(err, connection) {
+    if (err) throw err;
+    var q = 'DELETE from FAVORITE_FOOD where EMAIL=\'' + email +'\' AND FOOD_ID=\'' + foodId + '\';';
+    connection.query(q, function (err, rows) {
+      if (err) {
+        o['code'] = 400;
+        res.status(400);
+        o['message'] = 'Remove failed';
+        res.send(o);
+      }
+      else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Removed favorite food';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+app.use('/getpastfood', function(req, res, next){
+  let email = req.body['data']['email'];
+  let o = {};
+  con.getConnection(function(err, connection) {
+    if (err) console.log(err);
+    var q = 'SELECT ORDERS.ORDERED_AT, FOOD.PICTURE, FOOD.FOOD_ID, USER1.EMAIL, FOOD.TITLE, FOOD.DESCRIPTION, FOOD.CUISINE, FOOD.PRICE, FOOD.CALORIES, FOOD.DELIVERY_TIME, USER1.FIRST_NAME, USER1.LAST_NAME FROM FOOD, USER AS USER1, ORDERS, ORDER_FOOD WHERE USER1.EMAIL=ORDERS.COOK_EMAIL AND USER1.ROLE=1 AND ORDER_FOOD.ORDER_ID=ORDERS.ORDER_ID AND ORDER_FOOD.FOOD_ID=FOOD.FOOD_ID AND ORDERS.CUSTOMER_EMAIL="' + email + '";';
+    console.log(q);
+    connection.query(q, function (err, result) {
+      if (err) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'No food offered now';
+        res.send(o);
+      }
+      else {
+        let obj = [];
+        let ob = {};
+        for(var i = 0; i < result.length; i++){
+          var row = result[i];
+          // console.log(row);
+          ob['name'] = row.TITLE;
+          ob['homecook'] = row.FIRST_NAME + " " + row.LAST_NAME;
+          ob['email'] = row.COOK_EMAIL;
+          ob['description'] = row.DESCRIPTION;
+          ob['price'] = row.PRICE;
+          ob['cuisine'] = row.CUISINE;
+          ob['calories'] = row.CALORIES;
+          ob['picture'] = row.PICTURE;
+          ob['food_id'] = row.FOOD_ID;
+          ob['delivery_time'] = row.DELIVERY_TIME;
+          if(ob['delivery_time'] === null){
+            ob['delivery_time'] = '2019-10-29 01:47:45';
+          }
+          obj.push(JSON.parse(JSON.stringify(ob)));
+        }
+        o['data'] = obj;
+        console.log(o);
+        if(obj.length !== 0)
+          res.send(o);
+
+      }
+      connection.release();
+    });
+  });
+});
+
+
 app.use('/getallfood', function(req, res, next){
-  // let location = req.body['data']['location'];
-  let location = '47906';
+  let location = req.body['data']['location'];
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) console.log(err);
@@ -864,14 +938,12 @@ app.use('/setstatus', function(req, res, next){
   });
 });
 app.use('/setfavoritehomecooks', function(req, res, next){
-  console.log("COMES TO setfavoritehomecooks")
   const email = req.body['data']['email'];
   const cookemail = req.body['data']['cook_email'];
-  
   var o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'INSERT INTO FAVORITE_HOMECOOKS(COOK_EMAIL, CUSTOMER_EMAIL) VALUES ("'+cookemail+'", "'+email+'");';    console.log(q);
+    var q = 'INSERT INTO FAVORITE_HOMECOOKS(COOK_EMAIL, CUSTOMER_EMAIL) VALUES ("'+cookemail+'", "'+email+'");';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -886,12 +958,41 @@ app.use('/setfavoritehomecooks', function(req, res, next){
         o['message'] = 'favorite cook added';
         res.send(o);
       }
-      console.log(rows[0]);
       connection.release();
     });
     
   });
 });
+
+
+app.use('/setfavoritefood', function(req, res, next){
+  const email = req.body['data']['email'];
+  const foodId = req.body['data']['food_id'];
+  var o = {};
+  con.getConnection(function(err, connection) {
+    if (err) throw err;
+    var q = 'INSERT INTO FAVORITE_FOOD(FOOD_ID, EMAIL) VALUES ("'+foodId+'", "'+email+'");';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'Invalid food';
+        res.send(o);
+      }
+      else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'favorite food added';
+        res.send(o);
+      }
+      connection.release();
+    });
+    
+  });
+});
+
+
 app.use('/getfavoritehomecooks', function(req, res, next){
   
   const email = req.body['data']['email'];

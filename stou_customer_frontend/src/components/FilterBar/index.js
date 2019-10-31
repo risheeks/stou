@@ -30,10 +30,7 @@ export class FilterBar extends Component {
   onCuisineCheckChange = (e, cuisine) => {
     const { chosenCuisines } = this.state;
     if (e.target.checked) {
-      chosenCuisines.push(cuisine);
-    } else {
-      let index = chosenCuisines.indexOf(cuisine);
-      chosenCuisines.splice(index, 1);
+      chosenCuisines = cuisine;
     }
     this.setState({ chosenCuisines });
   }

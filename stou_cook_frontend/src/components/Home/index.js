@@ -9,11 +9,8 @@ export class Home extends Component {
         const { email, openModal } = this.props;
 
         return (
-            <div>
-                <OnlineStatus
-                    email={this.props.email}
-                    openModal={openModal}
-                />
+            <div className="cook-home">
+                Welcome to your Homecook dashboard!
             </div>
         );
     }

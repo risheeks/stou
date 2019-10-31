@@ -109,7 +109,7 @@ export class OnlineStatus extends Component {
 				<div className="checkbox-div online-status-position">
 					<FormCheck custom type="switch">
 						<Form.Check.Input isInvalid checked={this.state.onlineStatus} />
-						<Form.Check.Label onClick={this.statusToggleHandler}>
+						<Form.Check.Label className="online-status-label" onClick={this.statusToggleHandler}>
 							{content}
 						</Form.Check.Label>
 					</FormCheck>

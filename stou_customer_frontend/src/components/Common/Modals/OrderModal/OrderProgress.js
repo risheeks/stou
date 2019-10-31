@@ -14,12 +14,6 @@ class OrderProgress extends Component {
         this.setCorrectState();
     }
 
-    componentDidUpdate(prevProps) {
-        if(prevProps.status !== this.props.status) {
-            this.setCorrectState();
-        }
-    }
-
     setCorrectState = () => {
         const { status } = this.props;
         let orderStatus = status;
