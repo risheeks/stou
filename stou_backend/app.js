@@ -243,7 +243,8 @@ app.use('/getstatus', function(req, res, next) {
 
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT online from USER where EMAIL=\'' + cookEmail + '\' AND ROLE=\'' + role + '\';';
+    var q = 'SELECT online from USER where EMAIL=\'' + cookEmail + '\' AND ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
+    console.log(q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {

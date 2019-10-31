@@ -33,7 +33,7 @@ class Bag extends Component {
                     </ListGroup.Item>
                     {baggedItems.map(item =>
                         <BagItem
-                            id={item.id}
+                            id={item.food_id}
                             name={item.name}
                             price={item.price}
                             quantity={item.quantity}

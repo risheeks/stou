@@ -23,7 +23,7 @@ const orderReducer = function order(state = initialState, action) {
         case 'REMOVE_FROM_ORDER': {
             state = {
                 ...state,
-                baggedItems: state.baggedItems.filter(item => item.id !== action.itemId)
+                baggedItems: state.baggedItems.filter(item => item.food_id !== action.id)
             }
             if(state.baggedItems.length < 1) {
                 localStorage.removeItem('baggedItems');

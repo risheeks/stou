@@ -27,9 +27,9 @@ export function refresh() {
     }
 }
 
-export function removeFromOrder(item) {
+export function removeFromOrder(id) {
     return {
         type: 'REMOVE_FROM_ORDER',
-        itemId: item
+        id: id
     }
 }

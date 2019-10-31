@@ -15,6 +15,56 @@ export class OnlineStatus extends Component {
 		};
 	}
 
+	componentDidMount() {
+		const { openModal } = this.props;
+
+		const data = {
+			cookEmail: this.props.email,
+			role: ROLE
+		}
+		axios.post(`${serverURL}/getstatus`, { data })
+			.then(res => {
+				const status = Boolean(res.data.data.status);
+				if (status === true) {
+					let channel = pusher.subscribe(`cook-${this.props.email}`);
+					channel.bind('new-order', function (data) {
+						const audio = new Audio(notificationSound);
+						audio.play();
+						openModal(ModalKey.NEW_ORDER, data);
+					});
+				}
+				this.setState({
+					onlineStatus: status
+				});
+			})
+	}
+
+	componentDidUpdate(prevProps) {
+		if (prevProps.email !== this.props.email) {
+			const { openModal } = this.props;
+
+			const data = {
+				cookEmail: this.props.email,
+				role: ROLE
+			}
+			axios.post(`${serverURL}/getstatus`, { data })
+				.then(res => {
+					const status = Boolean(res.data.data.status);
+					if (status === true) {
+						let channel = pusher.subscribe(`cook-${this.props.email}`);
+						channel.bind('new-order', function (data) {
+							const audio = new Audio(notificationSound);
+							audio.play();
+							openModal(ModalKey.NEW_ORDER, data);
+						});
+					}
+					this.setState({
+						onlineStatus: status
+					});
+				})
+		}
+	}
+
 	statusToggleHandler = (e) => {
 		const currentStatus = this.state.onlineStatus;
 		this.setState({
