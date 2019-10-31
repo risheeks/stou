@@ -26,7 +26,7 @@ class ListOfHomeCooks extends Component {
 	}
 
 	getHomecooks = () => {
-		const data = { location: this.props.location }
+		const data = {location: this.props.location, email:this.props.email}
         axios.post(`${serverURL}/gethomecooks`, { data: data})
             .then(res => {
                 console.log(res.data)
