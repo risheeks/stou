@@ -160,7 +160,10 @@ app.use('/getallorders', function (req, res, next) {
   var o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.CUSTOMER_EMAIL AND USER.ROLE=2 AND COOK_EMAIL="' + cookEmail + '" AND ORDER_STATUS="' + status + '" ORDER BY ORDERED_AT DESC;';
+    let q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.CUSTOMER_EMAIL AND USER.ROLE=2 AND COOK_EMAIL="' + cookEmail + '" AND ORDER_STATUS="' + status + '" ORDER BY ORDERED_AT DESC;';
+    if (status === 'all') {
+      q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.CUSTOMER_EMAIL AND USER.ROLE=2 AND COOK_EMAIL="' + cookEmail + '" ORDER BY ORDERED_AT DESC;';
+    }
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -182,7 +185,6 @@ app.use('/getallorders', function (req, res, next) {
           ord['deliveryTime'] = rows[i].DELIVERY_TIME;
           ord['orderAddress'] = rows[i].ORDER_ADDRESS;
           ord['orderStatus'] = rows[i].ORDER_STATUS;
-          ord['paymentKey'] = rows[i].PAYMENT_KEY;
           obj.push(ord);
         }
         console.log(rows);

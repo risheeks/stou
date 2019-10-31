@@ -8,7 +8,6 @@ class Orders extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            orders_type: "placed",
             orders: []
         }
     }
@@ -18,16 +17,15 @@ class Orders extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevState.orders_type !== this.state.orders_type || prevProps.email !== this.props.email) {
+        if (prevProps.email !== this.props.email) {
             this.setOrders();
         }
     }
 
-    setOrders = () => {
-        const { orders_type } = this.state;
+    setOrders = orders_type => {
         const data = {
             cookEmail: this.props.email,
-            status: orders_type
+            status: 'all'
         }
         axios.post(`${serverURL}/getallorders`, { data })
             .then(res => {
@@ -42,15 +40,8 @@ class Orders extends Component {
             })
     }
 
-    handleChange = val => {
-        this.setState({
-            orders_type: val,
-            orders: []
-        });
-    }
-
     handleOrder = (e, order) => {
-        this.props.openModal(ModalKey.ORDER_STATUS, {order, setOrders: this.setOrders});
+        this.props.openModal(ModalKey.ORDER_STATUS, { order });
     }
 
     setOrderStatus = (orderStatus, order) => {
@@ -61,7 +52,7 @@ class Orders extends Component {
         axios.post(`${serverURL}/setorderstatus`, { data })
             .then(res => {
                 order.orderStatus = orderStatus
-                this.props.openModal(ModalKey.ORDER_STATUS, {order, setOrders: this.setOrders});
+                this.props.openModal(ModalKey.ORDER_STATUS, {order});
             })
     }
 
@@ -139,40 +130,11 @@ class Orders extends Component {
         );
     }
 
-    renderOrders = () => {
-        const { orders_type } = this.state;
-        switch (orders_type) {
-            case "delivered": {
-                return this.renderPast();
-            }
-            case "placed": {
-                return this.renderNew();
-            }
-            case "in_progress": {
-                return this.renderInProgress();
-            }
-            case "on_the_way": {
-                return this.renderOnTheWay();
-            }
-            default: {
-                return this.renderNew();
-            }
-        }
-    }
-
     render() {
         const { orders_type } = this.state;
 
         return (
             <div className="orders-container">
-                <div className="orders-type-tabs">
-                    <ToggleButtonGroup className="multi-checkbox-div" name="orders_type" type="radio" value={orders_type} onChange={this.handleChange}>
-                        <ToggleButton className="single-checkbox" value="delivered">Past Orders</ToggleButton>
-                        <ToggleButton className="single-checkbox" value="placed">New Orders</ToggleButton>
-                        <ToggleButton className="single-checkbox" value="in_progress">In Progress</ToggleButton>
-                        <ToggleButton className="single-checkbox" value="on_the_way">On The Way</ToggleButton>
-                    </ToggleButtonGroup>
-                </div>
                 {this.renderOrders()}
             </div>
         );

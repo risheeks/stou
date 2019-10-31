@@ -39,7 +39,7 @@ class ViewFoodOptions extends Component {
           });
         })
     }
-    if ((this.props.allergens.length > 0 || this.props.cuisines.length > 0) && (this.props.allergens !== prevProps.allergens || this.props.cuisines !== prevProps.cuisines)) {
+    if ((this.props.allergens.length > 0 || (this.props.cuisines && this.props.cuisines !== '')) && (this.props.allergens !== prevProps.allergens || this.props.cuisines !== prevProps.cuisines)) {
       const data = {
         allergens: this.props.allergens.toString(),
         cuisines: this.props.cuisines.toString(),

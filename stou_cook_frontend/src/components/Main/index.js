@@ -82,7 +82,7 @@ class Main extends Component {
         console.log(modalProps);
         return (
             <Router>
-                <Header signOut={signOut} loggedIn={loggedIn} />
+                <Header signOut={signOut} loggedIn={loggedIn} openModal={openModal} email={email} />
                 <Route exact path="/" render={() => <Home auth_token={auth_token} email={email} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
                 <Route path="/login" render={() => <Login auth_token={auth_token} email={email} getToken={getToken} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
                 <Route path="/register" render={() => <Register auth_token={auth_token} email={email} getToken={getToken} />} />
