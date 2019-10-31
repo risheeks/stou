@@ -455,11 +455,13 @@ app.use('/getpastfoodcook', function(req, res, next){
   let cookEmail = req.body['data']['email'];
   let o = {};
   con.getConnection(function(err, connection) {
+
     if (err) console.log(err);
     var q = 'SELECT FOOD.PICTURE, FOOD.FOOD_ID, USER1.EMAIL, FOOD.TITLE, FOOD.DESCRIPTION, FOOD.CUISINE, FOOD.PRICE, FOOD.CALORIES, FOOD.DELIVERY_TIME, USER1.FIRST_NAME, USER1.LAST_NAME FROM FOOD, USER AS USER1, ORDERS, ORDER_FOOD WHERE USER1.EMAIL=ORDERS.COOK_EMAIL AND USER1.ROLE=1 AND ORDER_FOOD.ORDER_ID=ORDERS.ORDER_ID AND ORDER_FOOD.FOOD_ID=FOOD.FOOD_ID AND ORDERS.COOK_EMAIL="' + cookEmail + '";';
     console.log(q);
     connection.query(q, function (err, result) {
-      if (err) {
+      console.log("Yo: "+ result)
+      if (err || result.length === 0) {
         o['code'] = 400;
         res.status(400)
         o['message'] = 'No food offered now';

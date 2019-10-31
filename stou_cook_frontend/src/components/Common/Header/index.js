@@ -17,7 +17,7 @@ export class Header extends Component {
     clickMenu = e => {
         e.preventDefault()
         const self = this;
-        axios.post(`${serverURL}/getfooditems`, { 
+        axios.post(`${serverURL}/getpastfoodcook`, { 
             data: {
                 email:this.props.email,
             }
@@ -30,11 +30,11 @@ export class Header extends Component {
             const { openModal, addToOrder, name} = this.props;
             const {fooditems} = this.state
             
-            openModal(ModalKey.MENU, {fooditems,addToOrder,openModal, name});
+            openModal(ModalKey.MENU_MODAL, {fooditems,addToOrder,openModal, name});
             console.log(this.state.fooditems)   
         }).catch(function (error) {
             const { openModal, name} = self.props;
-            openModal(ModalKey.MENU, {openModal, name});
+            openModal(ModalKey.MENU_MODAL, {openModal, name});
         });
     }
 

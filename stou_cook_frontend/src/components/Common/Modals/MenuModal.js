@@ -3,7 +3,7 @@ import { Modal, Button } from "react-bootstrap";
 import { Row, Col, Container, FormGroup, FormControl, FormLabel, Image, ListGroup, Form } from "react-bootstrap";
 import NavLink from 'react-bootstrap/NavLink';
 import { ModalKey } from '../../../constants/ModalKeys';
-class ProfileModal extends Component {
+class MenuModal extends Component {
     constructor(props) {
       super(props);
       this.state = {
@@ -15,7 +15,7 @@ class ProfileModal extends Component {
         // console.log(this.props);
         const { openModal, addToOrder } = this.props;
         e.preventDefault();
-        openModal(ModalKey.FOOD_ITEM, {item: foodItem, addToOrder: this.props.addToOrder});
+        openModal(ModalKey.MENU_MODAL, {item: foodItem, addToOrder: this.props.addToOrder});
     }
 
     render() {
@@ -24,7 +24,7 @@ class ProfileModal extends Component {
         return (
             <Modal show={showModal} onHide={() => closeModal()}>
                 <Modal.Header closeButton className="profile-footer-modal">
-                <Form.Label className='text-profile-modal'><h1 className='text-profile-name-modal'>{this.props.name}'s menu</h1></Form.Label>
+                <Form.Label className='text-profile-modal'><h1 className='text-profile-name-modal'>{this.props.name}Menu</h1></Form.Label>
                 </Modal.Header>
                 <Modal.Body>
                 {this.props.fooditems ? (
@@ -71,4 +71,4 @@ class ProfileModal extends Component {
     }
 }
 
-export default ProfileModal;
+export default MenuModal;
