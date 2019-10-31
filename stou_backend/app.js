@@ -537,11 +537,11 @@ app.use('/getpastfoodcook', function(req, res, next){
 
 
 app.use('/getpastfood', function(req, res, next){
-  let email = req.body['data']['email'];
+  let email = "risheeks@gmail.com";//req.body['data']['email'];
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) console.log(err);
-    var q = 'SELECT ORDERS.ORDERED_AT, FOOD.PICTURE, FOOD.FOOD_ID, USER1.EMAIL, FOOD.TITLE, FOOD.DESCRIPTION, FOOD.CUISINE, FOOD.PRICE, FOOD.CALORIES, FOOD.DELIVERY_TIME, USER1.FIRST_NAME, USER1.LAST_NAME FROM FOOD, USER AS USER1, ORDERS, ORDER_FOOD WHERE USER1.EMAIL=ORDERS.COOK_EMAIL AND USER1.ROLE=1 AND ORDER_FOOD.ORDER_ID=ORDERS.ORDER_ID AND ORDER_FOOD.FOOD_ID=FOOD.FOOD_ID AND ORDERS.CUSTOMER_EMAIL="' + email + '";';
+    var q = 'SELECT ORDERS.ORDERED_AT, FOOD.PICTURE, FOOD.FOOD_ID, USER1.EMAIL, FOOD.TITLE, FOOD.DESCRIPTION, FOOD.CUISINE, FOOD.PRICE, FOOD.CALORIES, FOOD.DELIVERY_TIME, USER1.FIRST_NAME, USER1.LAST_NAME, EXISTS(SELECT * FROM FAVORITE_FOOD WHERE FAVORITE_FOOD.FOOD_ID=FOOD.FOOD_ID AND FAVORITE_FOOD.EMAIL="' + email + '") AS IS_FAVORITE FROM FOOD, USER AS USER1, ORDERS, ORDER_FOOD WHERE USER1.EMAIL=ORDERS.COOK_EMAIL AND USER1.ROLE=1 AND ORDER_FOOD.ORDER_ID=ORDERS.ORDER_ID AND ORDER_FOOD.FOOD_ID=FOOD.FOOD_ID AND ORDERS.CUSTOMER_EMAIL="' + email + '";';
     console.log(q);
     connection.query(q, function (err, result) {
       if (err) {
@@ -563,6 +563,7 @@ app.use('/getpastfood', function(req, res, next){
           ob['price'] = row.PRICE;
           ob['cuisine'] = row.CUISINE;
           ob['calories'] = row.CALORIES;
+          ob['is_favorite'] = row.IS_FAVORITE;
           ob['picture'] = row.PICTURE;
           ob['food_id'] = row.FOOD_ID;
           ob['delivery_time'] = row.DELIVERY_TIME;
