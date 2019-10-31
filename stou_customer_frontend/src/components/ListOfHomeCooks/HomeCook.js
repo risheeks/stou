@@ -58,6 +58,8 @@ class HomeCook extends Component {
     }
 
     clickMenu = e => {
+        e.preventDefault()
+        const self = this;
         axios.post(`${serverURL}/getfooditems`, { 
             data: {
                 email:this.state.cook_email,
@@ -73,6 +75,9 @@ class HomeCook extends Component {
             
             openModal(ModalKey.MENU, {fooditems,addToOrder,openModal, name});
             console.log(this.state.fooditems)   
+        }).catch(function (error) {
+            const { openModal, name} = self.props;
+            openModal(ModalKey.MENU, {openModal, name});
         });
     }
 

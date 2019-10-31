@@ -28,7 +28,8 @@ class ProfileModal extends Component {
                 <Form.Label className='text-profile-modal'><h1 className='text-profile-name-modal'>{this.props.name}'s menu</h1></Form.Label>
                 </Modal.Header>
                 <Modal.Body>
-                <ListGroup>
+                {this.props.fooditems ? (
+                    <ListGroup>
                     {this.props.fooditems.map(item => (
                         <ListGroup.Item className="food-option-view-menu">
                         <div className="food-option-inner">
@@ -58,6 +59,10 @@ class ProfileModal extends Component {
                         </ListGroup.Item>
                     ))}
                 </ListGroup>
+                ) : (
+                    <p>No food to display</p>
+                )}
+                
                 </Modal.Body>
                 {/* <Modal.Footer className="profile-footer-modal">
                     <CustomRating rating="0" readonly={true} />
