@@ -35,7 +35,7 @@ class HomeCook extends Component {
     }
     AddFavoriteHomeCook =(e) => {
         //console.log(this.props.email + " " + this.state.cook_email);
-        axios.post(`${serverURL}/setfavoritehomecooks`, {
+        axios.post(`${serverURL}/setfavoritefood`, {
             data: {
                 email: this.props.email,
                 cook_email: this.state.cook_email
@@ -69,7 +69,7 @@ class HomeCook extends Component {
             }
         })
         .then(res => {
-            console.log(res.data)
+            //console.log(res.data)
             this.setState({
                 fooditems: Array.from(res.data.data)
             });
@@ -77,7 +77,7 @@ class HomeCook extends Component {
             const {fooditems} = this.state
             
             openModal(ModalKey.MENU, {fooditems,addToOrder,openModal, name});
-            console.log(this.state.fooditems)   
+            //console.log(this.state.fooditems)   
         }).catch(function (error) {
             const { openModal, name} = self.props;
             openModal(ModalKey.MENU, {openModal, name});

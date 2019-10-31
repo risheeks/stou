@@ -30,7 +30,7 @@ export class OnlineStatus extends Component {
 					channel.bind('new-order', function (data) {
 						const audio = new Audio(notificationSound);
 						audio.play();
-						openModal(ModalKey.NEW_ORDER, data);
+						openModal(ModalKey.NEW_ORDER, {...data});
 					});
 				}
 				this.setState({
@@ -55,7 +55,7 @@ export class OnlineStatus extends Component {
 						channel.bind('new-order', function (data) {
 							const audio = new Audio(notificationSound);
 							audio.play();
-							openModal(ModalKey.NEW_ORDER, data);
+							openModal(ModalKey.NEW_ORDER, {...data});
 						});
 					}
 					this.setState({
@@ -90,7 +90,7 @@ export class OnlineStatus extends Component {
 					channel.bind('new-order', function (data) {
 						const audio = new Audio(notificationSound);
 						audio.play();
-						openModal(ModalKey.NEW_ORDER, data);
+						openModal(ModalKey.NEW_ORDER, {...data});
 					});
 				}
 			})

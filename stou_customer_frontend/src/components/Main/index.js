@@ -21,6 +21,7 @@ import { ModalKey } from '../../constants/ModalKeys';
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { ROLE } from '../../constants';
+import Orders from '../Orders';
 
 function mapStateToProps(state) {
     return {
@@ -127,6 +128,14 @@ class Main extends Component {
                     <Profile
                         auth_token={auth_token}
                         email={email}
+                        location={location}
+                    />}
+                />
+                <Route path="/orders" render={() =>
+                    <Orders
+                        openModal={openModal}
+                        auth_token={auth_token}
+                        email={email}
                     />}
                 />
                 <Route path="/checkout" render={() =>
@@ -135,6 +144,7 @@ class Main extends Component {
                         email={email}
                         baggedItems={baggedItems}
                         refresh={refresh}
+                        openModal={openModal}
                     />}
                 />
                 <MyModal {...modalProps} closeModal={closeModal} />

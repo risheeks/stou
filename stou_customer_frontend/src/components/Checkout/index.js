@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import ImageOfCook from '../../constants/images/full_white_logo.png';
 import { Row, Col, Container, Button, ListGroup, FormControl, FormLabel, Image, Form } from "react-bootstrap";
 import axios from 'axios';
-import { serverURL } from '../../config';
+import { serverURL, pusher } from '../../config';
 import BagItem from '../Common/Bag/BagItem';
 import PaypalExpressBtn from 'react-paypal-express-checkout';
 import { withRouter } from 'react-router-dom';
+import { ModalKey } from '../../constants/ModalKeys';
+import notificationSound from '../../constants/sounds/notification.mp3';
 
 const CLIENT = {
     sandbox: 'AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC',
@@ -74,7 +76,7 @@ class Checkout extends Component {
 
     placeOrder = (paymentID) => {
         console.log(paymentID)
-        const { baggedItems, email } = this.props;
+        const { baggedItems, email, openModal } = this.props;
         const { instructions, street, city, state, zipcode, subtotal } = this.state;
         console.log(this.state)
         const data = {
@@ -90,7 +92,14 @@ class Checkout extends Component {
 
         axios.post(`${serverURL}/placeorder`, {data: data})
             .then(res => {
-                console.log(res.data)
+                const orderId = res.data.orderId;
+                let channel = pusher.subscribe(`cook-${orderId}`);
+					channel.bind('order-update', function (data) {
+						const audio = new Audio(notificationSound);
+                        audio.play();
+                        console.log(data)
+						openModal(ModalKey.ORDER_UPDATE, {...data});
+					});
             })
     }
 
@@ -165,7 +174,7 @@ class Checkout extends Component {
                             </div>
                         </ListGroup.Item>
                     </ListGroup>
-                    <div style={{visibility: this.validate(this.state.state,this.state.city,this.state.state,this.state.zipcode)}}>
+                    <div className="paypal-button-div" style={{visibility: this.validate(this.state.state,this.state.city,this.state.state,this.state.zipcode)}}>
                     <PaypalExpressBtn
                         // className="paypal-button"
                         env={env}
@@ -175,9 +184,7 @@ class Checkout extends Component {
                         onError={this.onError}
                         onSuccess={this.onSuccess}
                         onCancel={this.onCancel}
-                        style={{layout: "vertical"}}
-                        
-                        
+                        style={{layout: "vertical", shape: "rect", size: "large"}}
                     />
                     </div>
                     <Button onClick={this.placeOrder}>Random</Button>

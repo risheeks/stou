@@ -37,6 +37,7 @@ export default class Profile extends React.Component {
   }
   componentDidMount() {
     this.getProfile();
+    this.getHomecooks();
   }
   handleChangeUsername = event =>
     this.setState({ username: event.target.value });
@@ -182,18 +183,19 @@ export default class Profile extends React.Component {
     }
   }
 
-  // getHomecooks = () => {
-	// 	const data = {email:this.props.email}
-  //   axios.post(`${serverURL}/gethomecooks`, { data: data})
-  //     .then(res => {
-  //         console.log(res.data)
-  //         console.log(Array.from(res.data.data))
-  //         this.setState({
-  //             homecooks: Array.from(res.data.data)
-  //         });
-	// 		console.log(this.state.homecooks)
-	// 	});
-	// }
+  getHomecooks = () => {
+    console.log("LOCATION="+this.props.email)
+		const data = {location:this.props.location,email:this.props.email}
+    axios.post(`${serverURL}/getpastfood`, { data: data})
+      .then(res => {
+          console.log(res.data)
+          //console.log(Array.from(res.data.data))
+          this.setState({
+            pastfood: Array.from(res.data.data)
+          });
+			console.log(this.state.pastfood)
+		});
+	}
 
 
   render() {
@@ -239,22 +241,18 @@ export default class Profile extends React.Component {
               Update
             </Button>
             <br />
-            <div className="form-group">
-              <h5><p className='form-text'>Past Food:</p></h5>
+            <h5><p className='form-text'>Past Food:</p></h5>
+            <div className="center-col">
+            {this.state.pastfood.map(item => (
               <FavoriteFood email={this.props.email}
-              picture="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg"
-              description="Spicy indian food"
-              title="Chicken tikka"
-              food_id="123456"
-              price="10"
+              picture={item.picture}
+              description={item.description}
+              title={item.name}
+              food_id={item.food_id}
+              price={item.price}
+              isfavfood={item.is_favorite}
               />
-              <FavoriteFood email={this.props.email}
-              picture="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg"
-              description="Spicy indian food"
-              title="Chicken tikka"
-              food_id="123456"
-              price="10"
-              />
+            ))}
             </div>
           </Form>
 

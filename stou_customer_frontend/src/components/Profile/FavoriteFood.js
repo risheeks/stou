@@ -3,54 +3,64 @@ import { Row, Col, Container, Button, FormGroup, FormControl, FormLabel, Image, 
 import "../../styles/Main.css";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import NavLink from 'react-bootstrap/NavLink';
+import axios from 'axios';
+import { serverURL } from '../../config';
 export default class FavoriteFood extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-          isFavoriteHomeCook : true,
+          isFavoriteFood : this.props.isfavfood,
         };
     }
+    componentDidMount = () => {
+      console.log("ISFAV=" + this.props.isfavfood)
+      this.setState({isFavoriteFood : this.props.isfavfood})
+    }
 
-    componentDidMount() {
-        console.log(this.props.email + " " + this.props.food_id)
+    AddFavoriteFood =(e) => {
+      console.log(this.props.email + " " + this.props.food_id);
+      axios.post(`${serverURL}/setfavoritefood`, {
+          data: {
+              email: this.props.email,
+              food_id: this.props.food_id
+          }
+      })
+      .then(res => {
+          //console.log(res.data);
+      })
     }
-    ChangeSaveFavHomeCookStatus =(e)=> {
-        const currentFavHomeCookStatus=this.state.isFavoriteHomeCook;
-        this.setState({
-            isFavoriteHomeCook: !currentFavHomeCookStatus
-        })
-        console.log("status: ", !currentFavHomeCookStatus);
+    RemoveFavoriteFood =(e) => {
+      //console.log(this.props.email + " " + this.state.cook_email);
+      axios.post(`${serverURL}/removefavoritefood`, {
+          data: {
+            email: this.props.email,
+            food_id: this.props.food_id
+          }
+      })
+      .then(res => {
+          //console.log("Reached remove")
+          //console.log(res.data);
+      })
     }
+    ChangeSaveFavFoodStatus =(e)=> {
+      const currentFavFoodStatus=this.state.isFavoriteFood;
+      this.setState({
+        isFavoriteFood: !currentFavFoodStatus
+      })
+      if(!currentFavFoodStatus) {
+        console.log("ADDED")
+        this.AddFavoriteFood()
+      }
+      else {
+        console.log("REMOVED")
+        this.RemoveFavoriteFood() 
+      }
+      //console.log("status: ", !currentFavHomeCookStatus);
+      //console.log(this.props.cook_email);
+  }
     render() {
     return (
-    //     <Container className="ViewFood">   
-    //     <ListGroup>
-    //         <ListGroup.Item>
-    //         <Row>
-    //             <Col>
-    //             <img className="vfo-image rounded float-left" src={this.props.picture} alr=""></img>
-    //             </Col>
-    //             <Col>
-    //             <Row onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'none' : 'block' }}>
-    //                 <i><FaRegHeart className="saveOpenHeart"/></i> 
-    //             </Row>
-    //             <Row onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'block' : 'none' }}>
-    //                 <i><FaHeart className="saveHeart"/></i>
-    //             </Row>
-    //             <Row className="vfo-foodname">
-    //                 <p>{this.props.title}</p>
-    //             </Row>
-    //             <Row className="vfo-description">
-    //                 <p>{this.props.description}</p>
-    //             </Row>
-    //             </Col>
-    //             <Col className="vfo-price">
-    //             </Col>
-    //         </Row>
-    //         </ListGroup.Item>
-    //     </ListGroup>
-    //   </Container>
     <Container className="ViewFoodOptions">
         <ListGroup>
             <ListGroup.Item className="food-option-view-menu">
@@ -74,10 +84,10 @@ export default class FavoriteFood extends React.Component {
                   </div>
                 </div>
                 <p className="vfo-price">
-                <Row onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'none' : 'block' }}>
+                <Row onClick={this.ChangeSaveFavFoodStatus} style={{display: this.state.isFavoriteFood ? 'none' : 'block' }}>
                     <i><FaRegHeart className="saveOpenHeart"/></i> 
                 </Row>
-                <Row onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'block' : 'none' }}>
+                <Row onClick={this.ChangeSaveFavFoodStatus} style={{display: this.state.isFavoriteFood ? 'block' : 'none' }}>
                    <i><FaHeart className="saveHeart"/></i>
                 </Row>
                 </p>
