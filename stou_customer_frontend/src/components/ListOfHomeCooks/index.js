@@ -33,8 +33,9 @@ class ListOfHomeCooks extends Component {
                 console.log(Array.from(res.data.data))
                 this.setState({
                     homecooks: Array.from(res.data.data)
-                });
-            });
+				});
+				console.log(this.state.homecooks)
+			});
 	}
 	
 	// updateFavoriteHomeCooks =(e) => {

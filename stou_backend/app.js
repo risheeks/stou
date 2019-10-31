@@ -510,6 +510,7 @@ app.use('/gethomecooks', function(req,res,next){
   // console.log(req.body)
   const email = req.body['data']['email'];
   let location = req.body['data']['location'];
+  console.log("EMAIL123="+email)
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
