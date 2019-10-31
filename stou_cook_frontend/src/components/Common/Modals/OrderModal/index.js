@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Modal, Button, Image } from 'react-bootstrap';
 import OrderProgress from './OrderProgress';
+import axios from 'axios';
+import { serverURL } from '../../../../config';
 
 class OrderModal extends Component {
     constructor(props) {
@@ -9,6 +11,17 @@ class OrderModal extends Component {
         this.state = {
             reason: ''
         };
+    }
+
+    componentDidMount() {
+        const { order } = this.props;
+        const data = {
+            orderId: order.orderId
+        }
+        axios.post(`${serverURL}/getfooditemsbyorder`, { data })
+            .then(res => {
+                console.log(res.data);
+            })
     }
 
     render() {
@@ -21,6 +34,7 @@ class OrderModal extends Component {
                 </Modal.Header>
                 <Modal.Body>
                     <OrderProgress status={order.orderStatus} />
+                    
                     {/*items.map(item =>
                         <div className="order-item-info">
                             <div className="order-item-name">

@@ -18,7 +18,7 @@ class Orders extends Component {
         this.setOrders(orders_type);
     }
 
-    componentDidUpdate(prevState) {
+    componentDidUpdate(prevProps, prevState) {
         if (prevState.orders_type === this.state.orders_type) {
             return;
         }
@@ -45,7 +45,6 @@ class Orders extends Component {
     }
 
     handleChange = val => {
-        console.log(val);
         this.setState({
             orders_type: val,
             orders: []

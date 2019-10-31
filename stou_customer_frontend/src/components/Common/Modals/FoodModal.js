@@ -40,7 +40,7 @@ class FoodModal extends Component {
     }
 
     incrementQuantity = e => {
-        const newQuantity = parseInt(e.target.value) + 1;
+        const newQuantity = parseInt(this.state.quantity) + 1;
         if(newQuantity < 99) {
             this.setState({
                 quantity: newQuantity
@@ -49,7 +49,7 @@ class FoodModal extends Component {
     }
 
     decrementQuantity = e => {
-        const newQuantity = parseInt(e.target.value) - 1;
+        const newQuantity = parseInt(this.state.quantity) - 1;
         if(newQuantity > 0) {
             this.setState({
                 quantity: newQuantity
