@@ -132,6 +132,13 @@ app.use('/setorderstatus', function (req, res, next) {
                 o['message'] = 'Failed to update status';
                 res.send(o);
               } else {
+                pusher.trigger(`cook-${orderId}`, 'order-update', {
+                  "message": "Order status changed",
+                  "order": {
+                    "orderId": orderId,
+                    "orderStatus": newOrderStatus
+                  }
+                });
                 o['code'] = 200;
                 res.status(200);
                 o['message'] = 'Status update successful';
@@ -265,6 +272,36 @@ app.use('/getfooditemsbyorder', function (req, res, next) {
         console.log(o);
         o['code'] = 200;
         o['message'] = 'Success';
+        res.status(200);
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+app.use('/getdetailsbyorder', function (req, res, next) {
+  const orderId = req.body['data']['orderId'];
+  let o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.COOK_EMAIL and USER.ROLE=1 and ORDER_ID=\'' + orderId + '\';';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'Invalid Order';
+        res.send(o);
+      } else {
+        var ord = {};
+          ord['orderedAt'] = rows[0].ORDERED_AT;
+          ord['orderAddress'] = rows[0].ORDER_ADDRESS;
+          ord['cookName'] = rows[0].FIRST_NAME + " " + rows[0].LAST_NAME;
+          ord['orderStatus'] = rows[0].ORDER_STATUS;
+        o['code'] = 200;
+        o['message'] = 'Success';
+        o['data'] = ord
         res.status(200);
         res.send(o);
       }

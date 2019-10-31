@@ -144,6 +144,7 @@ class Main extends Component {
                         email={email}
                         baggedItems={baggedItems}
                         refresh={refresh}
+                        openModal={openModal}
                     />}
                 />
                 <MyModal {...modalProps} closeModal={closeModal} />
