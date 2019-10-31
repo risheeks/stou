@@ -204,7 +204,7 @@ app.use('/getfooditemsbyorder', function(req, res, next){
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT FOOD_ID from ORDER_FOOD where ORDER_ID=\'' + orderId + '\'';
+    var q = 'SELECT TITLE, DESCRIPTION, QUANTITY, FOOD.PRICE AS PRICE from ORDER_FOOD, FOOD where ORDER_ID=\'' + orderId + '\' AND FOOD.FOOD_ID=ORDER_FOOD.FOOD_ID;';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -213,14 +213,20 @@ app.use('/getfooditemsbyorder', function(req, res, next){
         o['message'] = 'Invalid Order';
         res.send(o);
       } else {
-        let l = [];
+        var obj = []
+        var ord = {};
         for(let i = 0; i < rows.length; i++){
-          l.push(rows[i].FOOD_ID);
+          ord['title'] = rows[i].TITLE;
+          ord['description'] = rows[i].DESCRIPTION;
+          ord['quantity'] = rows[i].QUANTITY;
+          ord['price'] = rows[i].PRICE;
+          obj.push(ord);
         }
+        o = obj;
+        console.log(o);
         o['code'] = 200;
-        res.status(200);
-        o['data']['items'].push(l);
         o['message'] = 'Success';
+        res.status(200);
         res.send(o);
       }
     });
