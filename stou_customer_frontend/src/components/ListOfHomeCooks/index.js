@@ -29,12 +29,12 @@ class ListOfHomeCooks extends Component {
 		const data = {location: this.props.location, email:this.props.email}
         axios.post(`${serverURL}/gethomecooks`, { data: data})
             .then(res => {
-                console.log(res.data)
-                console.log(Array.from(res.data.data))
+                //console.log(res.data)
+                //console.log(Array.from(res.data.data))
                 this.setState({
                     homecooks: Array.from(res.data.data)
 				});
-				console.log(this.state.homecooks)
+				//console.log(this.state.homecooks)
 			});
 	}
 
