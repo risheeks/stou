@@ -514,7 +514,7 @@ app.use('/gethomecooks', function(req,res,next){
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'SELECT FIRST_NAME, LAST_NAME, EMAIL, RATING, ABOUT_ME, EXISTS(SELECT * FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL="' + email +'" AND COOK_EMAIL=EMAIL) as IS_FAVORITE FROM USER, ROLES WHERE online=1 AND USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ' AND ONLINE=1 );';
+    var q = 'SELECT PICTURE, FIRST_NAME, LAST_NAME, EMAIL, RATING, ABOUT_ME, EXISTS(SELECT * FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL="' + email +'" AND COOK_EMAIL=EMAIL) as IS_FAVORITE FROM USER, ROLES WHERE online=1 AND USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ' AND ONLINE=1 );';
     connection.query(q, function (err, result) {
       console.log(result);
       if (err) console.log(err);
@@ -529,7 +529,7 @@ app.use('/gethomecooks', function(req,res,next){
         let ob = {};
         let cookEmail;
         for(var i = 0; i < result.length; i++){
-          var row = result1[i];
+          var row = result[i];
           cookEmail = row.EMAIL;
           ob['name'] = row.FIRST_NAME + " " + row.LAST_NAME;
           ob['email'] = row.EMAIL;
