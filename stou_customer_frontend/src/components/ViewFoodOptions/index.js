@@ -106,10 +106,10 @@ class ViewFoodOptions extends Component {
                     <p>{item.description}</p>
                   </div>
                   <div className="vfo-chefname">
-                    <p>by </p><NavLink className="food-link-chef">{item.homecook}</NavLink>
+                    <p className="delivery-time">by </p><NavLink className="food-link-chef delivery-time">{item.homecook}</NavLink>
                   </div>
                   <div className="vfo-estimatedTime">
-                    <p>Estimated time: {item.delivery_time ? item.delivery_time.toString(): "-"}</p>
+                    <p className="delivery-time">Estimated time: {item.delivery_time ? item.delivery_time.toString(): "-"}</p>
                   </div>
                 </div>
                 <p className="vfo-price">${item.price}</p>
