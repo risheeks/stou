@@ -537,7 +537,7 @@ app.use('/getpastfoodcook', function(req, res, next){
 
 
 app.use('/getpastfood', function(req, res, next){
-  let email = "risheeks@gmail.com";//req.body['data']['email'];
+  let email = req.body['data']['email'];
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) console.log(err);

@@ -185,7 +185,7 @@ export default class Profile extends React.Component {
   }
 
   getHomecooks = () => {
-    console.log("LOCATION="+this.props.location)
+    console.log("LOCATION="+this.props.email)
 		const data = {location:this.props.location,email:this.props.email}
     axios.post(`${serverURL}/getpastfood`, { data: data})
       .then(res => {
@@ -251,23 +251,9 @@ export default class Profile extends React.Component {
               title={item.name}
               food_id={item.food_id}
               price={item.price}
+              isfavfood={item.is_favorite}
               />
             ))}
-              
-              {/* <FavoriteFood email={this.props.email}
-              picture="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg"
-              description="Spicy indian food"
-              title="Chicken tikka"
-              food_id="123456"
-              price="10"
-              />
-              <FavoriteFood email={this.props.email}
-              picture="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg"
-              description="Spicy indian food"
-              title="Chicken tikka"
-              food_id="123456"
-              price="10"
-              /> */}
             </div>
           </Form>
 
