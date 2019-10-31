@@ -68,11 +68,12 @@ class Checkout extends Component {
     }
 
     onSuccess = (payment) => {
-        console.log("The payment was succeeded!", payment);
-        this.placeOrder();
+        //console.log("The payment was succeeded!", payment);
+        this.placeOrder(payment.paymentID);
     }
 
-    placeOrder = () => {
+    placeOrder = (paymentID) => {
+        console.log(paymentID)
         const { baggedItems, email } = this.props;
         const { instructions, street, city, state, zipcode, subtotal } = this.state;
         console.log(this.state)
@@ -83,7 +84,8 @@ class Checkout extends Component {
             deliveryTime: 30,
             orderStatus: 'placed',
             orderAddress: `${street}, ${city}, ${state} - ${zipcode}`,
-            itemList: baggedItems
+            itemList: baggedItems,
+            paymentID: paymentID
         };
 
         axios.post(`${serverURL}/placeorder`, {data: data})
@@ -99,6 +101,31 @@ class Checkout extends Component {
     onError = (err) => {
         console.log("Error!", err);
     }
+    handleChange =(e,name) => {
+        console.log(name)
+        if(name === "street") {
+            this.setState({street: e.target.value});
+        }else if(name === "city") {
+            this.setState({city: e.target.value});
+        }else if(name === "state") {
+            this.setState({state: e.target.value});
+        }else if(name === "zipcode") {
+            this.setState({zipcode: e.target.value});
+        }
+    }
+    validate = (street, city, state, zipcode) => {
+        if(street.length === 0) {
+            return "hidden"
+        }else if(street.length === 0){
+            return "hidden" 
+        }else if(street.length === 0) {
+            return "hidden"
+        }else if(zipcode.length === 0) {
+            return "hidden"
+        }
+        return ""
+        
+    }
 
     render() {
         let env = 'sandbox';
@@ -109,7 +136,6 @@ class Checkout extends Component {
         }
         const { baggedItems } = this.props;
         const { instructions, street, city, state, zipcode, subtotal, fees, total } = this.state;
-
         return (
             <div className="checkout-container">
                 <div className="checkout-items">
@@ -139,8 +165,9 @@ class Checkout extends Component {
                             </div>
                         </ListGroup.Item>
                     </ListGroup>
+                    <div style={{visibility: this.validate(this.state.state,this.state.city,this.state.state,this.state.zipcode)}}>
                     <PaypalExpressBtn
-                        className="paypal-button"
+                        // className="paypal-button"
                         env={env}
                         client={client}
                         currency={currency}
@@ -148,8 +175,11 @@ class Checkout extends Component {
                         onError={this.onError}
                         onSuccess={this.onSuccess}
                         onCancel={this.onCancel}
-                        style={style}
+                        style={{layout: "vertical"}}
+                        
+                        
                     />
+                    </div>
                     <Button onClick={this.placeOrder}>Random</Button>
                 </div>
                 <div className="delivery-container">
@@ -159,21 +189,21 @@ class Checkout extends Component {
                             <div className="input-row">
                                 <Form.Group className="address-inputs" controlId="street">
                                     <Form.Label>Street address</Form.Label>
-                                    <Form.Control type="text" placeholder="Address Line 1" value={street} onChange={this.handleChange} />
+                                    <Form.Control type="text" placeholder="Address Line 1" value={street} onChange={(e) => this.handleChange(e, "street")} />
                                 </Form.Group>
                                 <Form.Group className="address-inputs" controlId="city">
                                     <Form.Label>City</Form.Label>
-                                    <Form.Control type="text" placeholder="City" value={city} onChange={this.handleChange} />
+                                    <Form.Control type="text" placeholder="City" value={city} onChange={(e) => this.handleChange(e, "city")} />
                                 </Form.Group>
                             </div>
                             <div className="input-row">
                                 <Form.Group className="address-inputs" controlId="state">
                                     <Form.Label>State</Form.Label>
-                                    <Form.Control type="text" placeholder="State" value={state} onChange={this.handleChange} />
+                                    <Form.Control type="text" placeholder="State" value={state} onChange={(e) => this.handleChange(e, "state")}/>
                                 </Form.Group>
                                 <Form.Group className="address-inputs" controlId="zipcode">
                                     <Form.Label>Zipcode</Form.Label>
-                                    <Form.Control type="number" placeholder="Zipcode" value={zipcode} onChange={this.handleChange} />
+                                    <Form.Control type="number" placeholder="Zipcode" value={zipcode} onChange={(e) => this.handleChange(e, "zipcode")} />
                                 </Form.Group>
                             </div>
                         </Form>

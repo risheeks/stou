@@ -421,6 +421,33 @@ app.use('/removefavoritehomecooks', function(req, res, next){
   });
 });
 
+
+app.use('/removefavoritefood', function(req, res, next){
+  const email = req.body['data']['email'];
+  const foodId = req.body['data']['food_id'];
+  let o = {};
+  con.getConnection(function(err, connection) {
+    if (err) throw err;
+    var q = 'DELETE from FAVORITE_FOOD where EMAIL=\'' + email +'\' AND FOOD_ID=\'' + foodId + '\';';
+    connection.query(q, function (err, rows) {
+      if (err) {
+        o['code'] = 400;
+        res.status(400);
+        o['message'] = 'Remove failed';
+        res.send(o);
+      }
+      else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Removed favorite food';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+
 app.use('/getallfood', function(req, res, next){
   // let location = req.body['data']['location'];
   let location = '47906';
@@ -874,14 +901,12 @@ app.use('/setstatus', function(req, res, next){
   });
 });
 app.use('/setfavoritehomecooks', function(req, res, next){
-  console.log("COMES TO setfavoritehomecooks")
   const email = req.body['data']['email'];
   const cookemail = req.body['data']['cook_email'];
-  
   var o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'INSERT INTO FAVORITE_HOMECOOKS(COOK_EMAIL, CUSTOMER_EMAIL) VALUES ("'+cookemail+'", "'+email+'");';    console.log(q);
+    var q = 'INSERT INTO FAVORITE_HOMECOOKS(COOK_EMAIL, CUSTOMER_EMAIL) VALUES ("'+cookemail+'", "'+email+'");';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -896,12 +921,41 @@ app.use('/setfavoritehomecooks', function(req, res, next){
         o['message'] = 'favorite cook added';
         res.send(o);
       }
-      console.log(rows[0]);
       connection.release();
     });
     
   });
 });
+
+
+app.use('/setfavoritefood', function(req, res, next){
+  const email = req.body['data']['email'];
+  const foodId = req.body['data']['food_id'];
+  var o = {};
+  con.getConnection(function(err, connection) {
+    if (err) throw err;
+    var q = 'INSERT INTO FAVORITE_FOOD(FOOD_ID, EMAIL) VALUES ("'+foodId+'", "'+email+'");';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'Invalid food';
+        res.send(o);
+      }
+      else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'favorite food added';
+        res.send(o);
+      }
+      connection.release();
+    });
+    
+  });
+});
+
+
 app.use('/getfavoritehomecooks', function(req, res, next){
   
   const email = req.body['data']['email'];

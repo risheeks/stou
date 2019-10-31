@@ -8,10 +8,10 @@ import firebase from "firebase";
 import { serverURL } from "../../config/index.js"
 import { firebaseConfig } from "../../config/index.js"
 import { FaHeart, FaRegHeart } from "react-icons/fa";
+import FavoriteFood from './FavoriteFood';
 
 export default class Profile extends React.Component {
   constructor(props) {
-    let v = "sid";
     super(props);
     this.updateProfile = this.updateProfile.bind(this);
     this.getProfile = this.getProfile.bind(this);
@@ -29,6 +29,7 @@ export default class Profile extends React.Component {
       progress: 0,
       avatarURL: '',
       fireBaseURL: '',
+      pastfood : [],
       defaultURL: 'https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/4.png?alt=media&token=47d52479-c8cf-46a1-8116-e5f1bc8765f7'
     };
     // this.getProfile();
@@ -181,6 +182,20 @@ export default class Profile extends React.Component {
     }
   }
 
+  // getHomecooks = () => {
+	// 	const data = {email:this.props.email}
+  //   axios.post(`${serverURL}/gethomecooks`, { data: data})
+  //     .then(res => {
+  //         console.log(res.data)
+  //         console.log(Array.from(res.data.data))
+  //         this.setState({
+  //             homecooks: Array.from(res.data.data)
+  //         });
+	// 		console.log(this.state.homecooks)
+	// 	});
+	// }
+
+
   render() {
     const { avatarURL } = this.state;
     return (
@@ -226,57 +241,20 @@ export default class Profile extends React.Component {
             <br />
             <div className="form-group">
               <h5><p className='form-text'>Past Food:</p></h5>
-              <Container className="ViewFood">
-                <ListGroup>
-                  <ListGroup.Item>
-                    <Row>
-                      <Col>
-                        <img className="vfo-image rounded float-left" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" alr=""></img>
-                      </Col>
-                      <Col>
-                        <Row onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'none' : 'block' }}>
-                          <i><FaRegHeart className="saveOpenHeart"/></i> 
-                        </Row>
-                        <Row onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'block' : 'none' }}>
-                          <i><FaHeart className="saveHeart"/></i>
-                        </Row>
-                        <Row className="vfo-foodname">
-                        
-                          <p>Spicy Pasta</p>
-                        </Row>
-                        <Row className="vfo-description">
-                          <p>tasty italian food</p>
-                        </Row>
-                      </Col>
-                      <Col className="vfo-price">
-                      </Col>
-                    </Row>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <Row>
-                      <Col>
-                        <img className="vfo-image rounded float-left" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" alr=""></img>
-                      </Col>
-                      <Col>
-                        <Row onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'none' : 'block' }}>
-                          <i><FaRegHeart className="saveOpenHeart"/></i> 
-                        </Row>
-                        <Row onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'block' : 'none' }}>
-                          <i><FaHeart className="saveHeart"/></i>
-                        </Row>
-                        <Row className="vfo-foodname">
-                          <p>Chicken Tikka Masala</p>
-                        </Row>
-                        <Row className="vfo-description">
-                          <p>Delicious Indian food!</p>
-                        </Row>
-                      </Col>
-                      <Col className="vfo-price">
-                      </Col>
-                    </Row>
-                  </ListGroup.Item>
-                </ListGroup>
-              </Container>
+              <FavoriteFood email={this.props.email}
+              picture="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg"
+              description="Spicy indian food"
+              title="Chicken tikka"
+              food_id="123456"
+              price="10"
+              />
+              <FavoriteFood email={this.props.email}
+              picture="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg"
+              description="Spicy indian food"
+              title="Chicken tikka"
+              food_id="123456"
+              price="10"
+              />
             </div>
           </Form>
 
