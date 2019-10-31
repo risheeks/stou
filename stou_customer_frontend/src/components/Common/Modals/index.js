@@ -3,6 +3,7 @@ import { ModalKey } from '../../../constants/ModalKeys';
 import ZipcodeModal from './ZipcodeModal';
 import FoodModal from './FoodModal';
 import ProfileModal from './ProfileModal';
+import MenuModal from './MenuModal';
 
 class MyModal extends Component {
     render() {
@@ -15,6 +16,8 @@ class MyModal extends Component {
                 return <FoodModal {...this.props} />;
             case ModalKey.PROFILE:
                 return <ProfileModal {...this.props} />;
+            case ModalKey.MENU:
+                return <MenuModal {...this.props} />;
             default:
                 return null;
         }

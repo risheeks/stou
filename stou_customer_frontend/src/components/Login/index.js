@@ -59,7 +59,7 @@ export class Login extends Component {
         { this.props.auth_token ? this.props.history.push('/') : null}
         <form onSubmit={this.handleSubmit}>
           <FormGroup controlId="email" bsSize="large">
-            <FormLabel>Email/Username</FormLabel>
+            <FormLabel>Email</FormLabel>
             <FormControl className="email"
               autoFocus
               type="email"

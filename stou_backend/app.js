@@ -467,7 +467,8 @@ app.use('/getallfood', function(req, res, next){
 });
 
 app.use('/getfooditems', function(req,res,next){
-  const email = req.param('email');
+  const email = req.body['data']['email'];
+  console.log(email)
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
@@ -506,11 +507,13 @@ app.use('/getfooditems', function(req,res,next){
 
 app.use('/gethomecooks', function(req,res,next){
   // console.log(req.body)
+  const email = req.body['data']['email'];
   let location = req.body['data']['location'];
+  console.log("EMAIL123="+email)
   let o = {};
   con.getConnection(function(err, connection) {
     if (err) throw err;
-    var q = 'SELECT * FROM USER, ROLES WHERE online=1 AND USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ' AND ONLINE=1 );';
+    var q = 'SELECT PICTURE, FIRST_NAME, LAST_NAME, EMAIL, RATING, ABOUT_ME, EXISTS(SELECT * FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL="' + email +'" AND COOK_EMAIL=EMAIL) as IS_FAVORITE FROM USER, ROLES WHERE online=1 AND USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) +2) + ' AND ONLINE=1 );';
     connection.query(q, function (err, result) {
       console.log(result);
       if (err) console.log(err);
@@ -523,16 +526,20 @@ app.use('/gethomecooks', function(req,res,next){
       else {
         let obj = [];
         let ob = {};
+        let cookEmail;
         for(var i = 0; i < result.length; i++){
           var row = result[i];
+          cookEmail = row.EMAIL;
           ob['name'] = row.FIRST_NAME + " " + row.LAST_NAME;
           ob['email'] = row.EMAIL;
           ob['rating'] = row.RATING;
           ob['aboutMe'] = row.ABOUT_ME;
-          // ob['cuisines'] = row.CUISINES;
+          ob['isFavorite'] = row.IS_FAVORITE;
           ob['profilePicture'] = row.PICTURE;
+          q = 'SELECT * FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL="' + email+ '" AND COOK_EMAIL="' + cookEmail + '";';
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
+        // console.log(obj);
         o['data'] = obj;
         // console.log(o);
         if(obj.length !== 0)

@@ -18,8 +18,8 @@ class ViewFoodOptions extends Component {
       const data = { location: this.props.location }
       axios.post(`${serverURL}/getallfood`, { data: data })
         .then(res => {
-          console.log(res.data)
-          console.log(Array.from(res.data.data));
+          // console.log(res.data)
+          // console.log(Array.from(res.data.data));
           this.setState({
             foodoptions: Array.from(res.data.data)
           });
@@ -32,8 +32,8 @@ class ViewFoodOptions extends Component {
       const data = { location: this.props.location }
       axios.post(`${serverURL}/getallfood`, { data: data })
         .then(res => {
-          console.log(res.data)
-          console.log(Array.from(res.data.data));
+          // console.log(res.data)
+          // console.log(Array.from(res.data.data));
           this.setState({
             foodoptions: Array.from(res.data.data)
           });
@@ -47,7 +47,7 @@ class ViewFoodOptions extends Component {
       }
       axios.post(`${serverURL}/filter`, { data: data })
         .then(res => {
-          console.log(Array.from(res.data.data))
+          // console.log(Array.from(res.data.data))
           this.setState({
             foodoptions: Array.from(res.data.data)
           })
@@ -62,8 +62,8 @@ class ViewFoodOptions extends Component {
       const data = { location: this.props.location }
       axios.post(`${serverURL}/getallfood`, { data: data })
         .then(res => {
-          console.log(res.data)
-          console.log(Array.from(res.data.data));
+          // console.log(res.data)
+          // console.log(Array.from(res.data.data));
           this.setState({
             foodoptions: Array.from(res.data.data)
           });
@@ -72,7 +72,7 @@ class ViewFoodOptions extends Component {
   }
 
   handleFoodName = (e, foodItem) => {
-    console.log(this.props);
+    // console.log(this.props);
     const { openModal, addToOrder } = this.props;
     e.preventDefault();
     openModal(ModalKey.FOOD_ITEM, {item: foodItem, addToOrder: addToOrder});
@@ -106,7 +106,7 @@ class ViewFoodOptions extends Component {
                     <p>{item.description}</p>
                   </div>
                   <div className="vfo-chefname">
-                    <p>by </p><NavLink className="food-link-chef" onClick={this.clickProfile}>{item.homecook}</NavLink>
+                    <p>by </p><NavLink className="food-link-chef">{item.homecook}</NavLink>
                   </div>
                   <div className="vfo-estimatedTime">
                     <p>Estimated time: {item.delivery_time ? item.delivery_time.toString(): "-"}</p>
