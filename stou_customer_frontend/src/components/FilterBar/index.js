@@ -28,7 +28,7 @@ export class FilterBar extends Component {
   }
 
   onCuisineCheckChange = (e, cuisine) => {
-    const { chosenCuisines } = this.state;
+    let { chosenCuisines } = this.state;
     if (e.target.checked) {
       chosenCuisines = cuisine;
     }
