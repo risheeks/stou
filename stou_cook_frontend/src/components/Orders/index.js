@@ -85,6 +85,7 @@ class Orders extends Component {
                     <ListGroup.Item className="order-item-div">
                         {this.renderOrderInfo(order)}
                         <div className="order-item-button-div">
+                            <Button className="margined-buttons" variant="danger" onClick={e => this.setOrderStatus("canceled", order)}>Cancel</Button>
                             <Button className="margined-buttons" variant="success" onClick={e => this.setOrderStatus("on_the_way", order)}>Mark on the way</Button>
                         </div>
                     </ListGroup.Item>
@@ -101,6 +102,7 @@ class Orders extends Component {
                     <ListGroup.Item className="order-item-div">
                         {this.renderOrderInfo(order)}
                         <div className="order-item-button-div">
+                            <Button className="margined-buttons" variant="danger" onClick={e => this.setOrderStatus("canceled", order)}>Cancel</Button>
                             <Button className="margined-buttons" variant="success" onClick={e => this.setOrderStatus("delivered", order)}>Mark delivered</Button>
                         </div>
                     </ListGroup.Item>

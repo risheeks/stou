@@ -22,6 +22,19 @@ class Orders extends Component {
         }
     }
 
+    setOrderStatus = (orderStatus, order) => {
+        const data = {
+            orderStatus: orderStatus,
+            orderId: order.orderId
+        }
+        console.log(data);
+        axios.post(`${serverURL}/setorderstatus`, { data })
+            .then(res => {
+                order.orderStatus = orderStatus
+                this.props.openModal(ModalKey.ORDER_STATUS, {order, setOrders: this.setOrders});
+            })
+    }
+
     setOrders = orders_type => {
         const data = {
             customerEmail: this.props.email
@@ -63,6 +76,7 @@ class Orders extends Component {
                     <ListGroup.Item className="order-item-div" onClick={e => this.handleOrder(e, order)}>
                         {this.renderOrderInfo(order)}
                         <div className="order-item-button-div">
+                            <Button className={order.orderStatus === 'delivered' || order.orderStatus === 'canceled' ? 'hidden' : ''} variant="danger" onClick={e => this.setOrderStatus("canceled", order)}>Cancel</Button>
                             {order.orderStatus}
                         </div>
                     </ListGroup.Item>

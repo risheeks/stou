@@ -44,7 +44,18 @@ const ProtectedRoute
             : <Redirect to="/login" />;
 
 class Main extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            zipcode: null
+        }
+    }
+
     async componentDidMount() {
+        let zipcode = this.getLocation;
+        this.setState({zipcode: zipcode});
+        console.log(this.state.zipcode);
         let tempToken = localStorage.getItem('auth_token');
         let tempEmail = localStorage.getItem('email');
         let tempLocation = localStorage.getItem('location');
@@ -109,7 +120,7 @@ class Main extends Component {
     render() {
         const { signOut, auth_token, email, getToken, modalProps, openModal, closeModal, addToOrder, removeFromOrder, refresh, baggedItems, location, changeLocation, clearOrder } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
-        console.log(location);
+        console.log("location: " + location);
         return (
             <Router>
                 <Header
@@ -177,7 +188,7 @@ class Main extends Component {
                         refresh={refresh}
                         openModal={openModal}
                         clearOrder={clearOrder}
-                        location={location}
+                        zipcode={location}
                     />}
                 />
                 <MyModal {...modalProps} closeModal={closeModal} />
