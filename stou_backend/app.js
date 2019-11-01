@@ -1406,7 +1406,7 @@ function registerUser(firstName, lastName, email, password, role, cuisines) {
           ' When there is a government request.\n' +
           ' Enforce policies\n' +
           ' With consent, you might be included in the featured home cooks.'
-        sendEmail('adrianraj1818@gmail.com', password, s)
+        sendEmail(email, password, s)
       }
       connection.release();
     });

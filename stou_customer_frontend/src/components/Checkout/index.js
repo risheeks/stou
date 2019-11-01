@@ -150,6 +150,8 @@ class Checkout extends Component {
             if(parseInt(name) != this.props.location) {
             }
             this.setState({zipcode: e.target.value});
+        }else if(name === "instructions") {
+            this.setState({instructions: e.target.value});
         }
     }
     validate = (street, city, state, zipcode) => {
@@ -253,7 +255,7 @@ class Checkout extends Component {
                         <Form>
                             <Form.Group controlId="instructions">
                                 <Form.Label>Delivery Instructions</Form.Label>
-                                <Form.Control as="textarea" type="text" placeholder="Delivery instructions..." value={instructions} onChange={this.handleChange} />
+                                <Form.Control as="textarea" type="text" placeholder="Delivery instructions..." value={instructions} onChange={(e) => this.handleChange(e, "instructions")} />
                             </Form.Group>
                         </Form>
                     </div>
