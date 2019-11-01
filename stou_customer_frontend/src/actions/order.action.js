@@ -33,3 +33,9 @@ export function removeFromOrder(id) {
         id: id
     }
 }
+
+export function clearOrder() {
+    return {
+        type: 'CLEAR_ORDER'
+    }
+}

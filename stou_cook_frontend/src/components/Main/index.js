@@ -47,7 +47,14 @@ class Main extends Component {
         let tempToken = localStorage.getItem('auth_token');
         let tempEmail = localStorage.getItem('email');
         if(tempToken && tempEmail) {
-            await this.props.getToken(tempToken, tempEmail);
+            const data = {
+                token: tempToken,
+                email: tempEmail
+            }
+            await axios.post(`${serverURL}/checklogin`, {data})
+                .then(res => {
+                    this.props.getToken(tempToken, tempEmail);
+                })
         }
         const { auth_token, email, location } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
@@ -58,6 +65,22 @@ class Main extends Component {
             }
             else {
                 this.props.changeLocation(newLocation);
+            }
+        }
+    }
+
+    async componentDidUpdate(prevProps) {
+        if (prevProps !== this.props) {
+            const { auth_token, email, location } = this.props;
+            const loggedIn = auth_token && auth_token.length > 0;
+            if (loggedIn) {
+                const newLocation = await this.getLocation();
+                if (!newLocation || newLocation === '') {
+                    this.props.openModal(ModalKey.ZIPCODE, { email: email, changeLocation: this.props.changeLocation });
+                }
+                else {
+                    this.props.changeLocation(newLocation);
+                }
             }
         }
     }

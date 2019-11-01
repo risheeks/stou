@@ -19,9 +19,24 @@ class FoodModal extends Component {
     }
 
     addToBag = e => {
-        const { item, addToOrder, closeModal } = this.props;
+        const { item, addToOrder, closeModal, clearOrder, baggedItems } = this.props;
+        if(baggedItems.length > 0 && (item.homecook !== baggedItems[0].homecook)) {
+            clearOrder();
+        }
         addToOrder(item, this.state.quantity);
         closeModal();
+    }
+
+    renderConfirmClear = () => {
+        const { clearOrder, baggedItems, item } = this.props;
+        if(baggedItems.length > 0 && (item.homecook !== baggedItems[0].homecook)) {
+            return (
+                <div>
+                    <p className="clear-order-info">You already have items from other homecooks. Adding this item will clear your existing bag.</p>    
+                </div>
+            );
+        }
+        return null;
     }
 
     handleQuantityChange = e => {
@@ -87,7 +102,9 @@ class FoodModal extends Component {
                         <Form.Control value={this.state.request} placeholder="Special requests..." type="text" onChange={this.handleChange} />
                     </Form.Group>
                 </Modal.Body>
-                <Modal.Footer>
+                <Modal.Footer className="food-modal-footer">
+                    {this.renderConfirmClear()}
+                    <div className="food-modal-add">
                     <InputGroup className="quantity-input-div">
                         <InputGroup.Prepend>
                             <Button variant="outline-secondary" onClick={this.decrementQuantity}>-</Button>
@@ -102,6 +119,7 @@ class FoodModal extends Component {
                         </InputGroup.Append>
                     </InputGroup>
                     <Button variant="success" disabled={quantity === ''} onClick={this.addToBag}>Add to Bag</Button>
+                    </div>
                 </Modal.Footer>
             </Modal>
         );

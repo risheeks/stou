@@ -76,7 +76,7 @@ class HomeCook extends Component {
             const { openModal, addToOrder, name} = this.props;
             const {fooditems} = this.state
             
-            openModal(ModalKey.MENU, {fooditems,addToOrder,openModal, name});
+            openModal(ModalKey.MENU, {fooditems,addToOrder,openModal, name, baggedItems: this.props.baggedItems});
             //console.log(this.state.fooditems)   
         }).catch(function (error) {
             const { openModal, name} = self.props;

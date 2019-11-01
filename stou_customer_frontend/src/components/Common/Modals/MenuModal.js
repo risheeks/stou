@@ -14,9 +14,9 @@ class ProfileModal extends Component {
     }
     handleFoodName = (e, foodItem) => {
         // console.log(this.props);
-        const { openModal, addToOrder } = this.props;
+        const { openModal, addToOrder, baggedItems, clearOrder } = this.props;
         e.preventDefault();
-        openModal(ModalKey.FOOD_ITEM, {item: foodItem, addToOrder: this.props.addToOrder});
+        openModal(ModalKey.FOOD_ITEM, {item: foodItem, addToOrder: this.props.addToOrder, baggedItems, clearOrder});
     }
 
     render() {

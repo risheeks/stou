@@ -40,6 +40,12 @@ const orderReducer = function order(state = initialState, action) {
                 baggedItems: action.baggedItems
             }
         }
+        case 'CLEAR_ORDER': {
+            return state = {
+                ...state,
+                baggedItems: []
+            }
+        }
         default:
             return state;
     }

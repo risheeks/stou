@@ -5,6 +5,9 @@ import stoulogo from '../../../constants/images/stoulogo.png';
 import bag from '../../../constants/images/bag.png';
 import { withRouter } from 'react-router-dom';
 import Bag from '../Bag';
+import axios from 'axios';
+import { serverURL } from '../../../config';
+import { ModalKey } from '../../../constants/ModalKeys';
 
 class Header extends Component {
     componentDidMount() {
@@ -13,7 +16,15 @@ class Header extends Component {
 
     handleSignOut = e => {
         e.preventDefault();
-        this.props.signOut();
+        const { auth_token } = this.props;
+        const data = {
+            token: auth_token
+        }
+        axios.post(`${serverURL}/logout`, {data})
+            .then(res => {
+                this.props.signOut();
+                this.props.history.push('/');
+            })
     }
 
     onBagClick = e => {
@@ -29,6 +40,10 @@ class Header extends Component {
         return sum;
     }
 
+    changeLocation = e => {
+        this.props.openModal(ModalKey.ZIPCODE, {email: this.props.email, changeLocation: this.props.changeLocation})
+    }
+
     render() {
         const { baggedItems, removeFromOrder, refresh, auth_token, email, loggedIn } = this.props;
 
@@ -40,6 +55,8 @@ class Header extends Component {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav variant="pills" defaultActiveKey="/" className="navbar-content ml-auto">
+                        {loggedIn ?
+                            <Nav.Link as={Link} className="nav-link" to="/" onClick={this.changeLocation}>Change location</Nav.Link> : null}
                         <Nav.Link as={Link} className="nav-link" to="/">Home</Nav.Link>
                         {!loggedIn ?
                             <Nav.Link as={Link} className="nav-link" to="/login">Login</Nav.Link> : null}

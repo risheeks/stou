@@ -32,7 +32,7 @@ export class Home extends Component {
     }
 
     render() {
-        const { openModal, addToOrder, location } = this.props;
+        const { openModal, addToOrder, location, baggedItems, clearOrder } = this.props;
         //console.log(location)
         return (
             <div className="home">
@@ -46,12 +46,14 @@ export class Home extends Component {
                                 openModal={openModal}
                                 addToOrder={addToOrder}
                                 location={location}
+                                baggedItems={baggedItems}
+                                clearOrder={clearOrder}
                             />
                         </div>
                     </Tab>
                     <Tab eventKey="cooks" title="Homecooks">
                         <div className="homec">
-                            <ListOfHomeCooks location={location} addToOrder={addToOrder} email={this.props.email} openModal={openModal}/>
+                            <ListOfHomeCooks clearOrder={clearOrder} baggedItems={baggedItems} location={location} addToOrder={addToOrder} email={this.props.email} openModal={openModal}/>
                         </div>
                     </Tab>
                 </Tabs>

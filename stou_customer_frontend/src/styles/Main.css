@@ -467,6 +467,24 @@ textarea {
     display: flex;
   }
 
+.food-modal-footer {
+  display: flex;
+  flex-direction: column;
+}
+
+.clear-order-info {
+  font-size: 12px;
+  color: gray;
+}
+
+.food-modal-add {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: right !important;
+  text-align: right;
+}
+
 @media all and (min-width: 480px) {
     .Register {
       border: 1px solid rgb(202, 202, 202);
