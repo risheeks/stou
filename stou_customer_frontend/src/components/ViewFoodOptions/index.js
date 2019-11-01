@@ -66,17 +66,6 @@ class ViewFoodOptions extends Component {
           });
         })
     }
-    else if ((this.props.allergens !== prevProps.allergens || this.props.cuisines !== prevProps.cuisines) && (this.props.allergens.length <= 0 && this.props.cuisines.length <= 0)) {
-      const data = { location: this.props.location }
-      axios.post(`${serverURL}/getallfood`, { data: data })
-        .then(res => {
-          // console.log(res.data)
-          // console.log(Array.from(res.data.data));
-          this.setState({
-            foodoptions: Array.from(res.data.data)
-          });
-        })
-    }
   }
 
   handleFoodName = (e, foodItem) => {

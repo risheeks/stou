@@ -106,12 +106,12 @@ class Main extends Component {
     
 
     render() {
-        const { signOut, auth_token, email, getToken, openModal, closeModal, showModal, modalKey, modalProps } = this.props;
+        const { signOut, auth_token, email, getToken, openModal, closeModal, showModal, modalKey, modalProps, changeLocation } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
         console.log(modalProps);
         return (
             <Router>
-                <Header signOut={signOut} loggedIn={loggedIn} openModal={openModal} email={email} />
+                <Header signOut={signOut} loggedIn={loggedIn} openModal={openModal} email={email} changeLocation={changeLocation}/>
                 <Route exact path="/" render={() => <Home auth_token={auth_token} email={email} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
                 <Route path="/login" render={() => <Login auth_token={auth_token} email={email} getToken={getToken} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
                 <Route path="/register" render={() => <Register auth_token={auth_token} email={email} getToken={getToken} />} />

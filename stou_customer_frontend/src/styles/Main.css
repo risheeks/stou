@@ -118,6 +118,7 @@ textarea {
 .filterbar-container {
     width: 40%;
     padding: 2% 2%;
+    height: fit-content;
 }
 
 .basic-horizontal-div {
