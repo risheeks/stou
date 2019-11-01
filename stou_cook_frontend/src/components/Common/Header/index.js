@@ -19,7 +19,15 @@ export class Header extends Component {
       }
     handleSignOut = e => {
         e.preventDefault();
-        this.props.signOut();
+        const { auth_token } = this.props;
+        const data = {
+            token: auth_token
+        }
+        axios.post(`${serverURL}/logout`, {data})
+            .then(res => {
+                this.props.signOut();
+                this.props.history.push('/');
+            })
     }
 
     clickMenu = e => {
@@ -46,6 +54,10 @@ export class Header extends Component {
         });
     }
 
+    changeLocation = e => {
+        this.props.openModal(ModalKey.ZIPCODE, {email: this.props.email, changeLocation: this.props.changeLocation})
+    }
+
     render() {
         const { openModal, email } = this.props;
         return (
@@ -56,6 +68,8 @@ export class Header extends Component {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav variant="pills" defaultActiveKey="/" className="navbar-content ml-auto">
+                        {this.props.loggedIn ?
+                            <Nav.Link as={Link} className="nav-link" to="/" onClick={this.changeLocation}>Change location</Nav.Link> : null}
                         {!this.props.loggedIn ?
                             <Nav.Link as={Link} className="nav-link" to="/login">Login</Nav.Link> : null}
                         {this.props.loggedIn ?

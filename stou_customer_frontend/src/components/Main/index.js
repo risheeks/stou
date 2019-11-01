@@ -15,7 +15,7 @@ import MyModal from '../../../../stou_customer_frontend/src/components/Common/Mo
 
 import { getToken, signOut, changeLocation } from '../../actions/login.action';
 import { openModal, closeModal } from '../../actions/modal.action';
-import { addToOrder, removeFromOrder, refresh } from '../../actions/order.action';
+import { addToOrder, removeFromOrder, refresh, clearOrder } from '../../actions/order.action';
 import Checkout from '../Checkout';
 import { ModalKey } from '../../constants/ModalKeys';
 import axios from 'axios';
@@ -34,7 +34,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ getToken, signOut, openModal, closeModal, addToOrder, removeFromOrder, refresh, changeLocation }, dispatch);
+    return bindActionCreators({ getToken, signOut, openModal, closeModal, addToOrder, removeFromOrder, refresh, changeLocation, clearOrder }, dispatch);
 }
 
 const ProtectedRoute
@@ -49,17 +49,40 @@ class Main extends Component {
         let tempEmail = localStorage.getItem('email');
         let tempLocation = localStorage.getItem('location');
         if (tempToken && tempEmail) {
-            await this.props.getToken(tempToken, tempEmail);
+            const data = {
+                token: tempToken,
+                email: tempEmail
+            }
+            await axios.post(`${serverURL}/checklogin`, { data })
+                .then(res => {
+                    this.props.getToken(tempToken, tempEmail);
+                })
         }
         const { auth_token, email, location } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
-        if(loggedIn) {
+        if (loggedIn) {
             const newLocation = await this.getLocation();
-            if(!newLocation || newLocation === '') {
+            if (!newLocation || newLocation === '') {
                 this.props.openModal(ModalKey.ZIPCODE, { email: email, changeLocation: this.props.changeLocation });
             }
             else {
                 this.props.changeLocation(newLocation);
+            }
+        }
+    }
+
+    async componentDidUpdate(prevProps) {
+        if (prevProps !== this.props) {
+            const { auth_token, email, location } = this.props;
+            const loggedIn = auth_token && auth_token.length > 0;
+            if (loggedIn) {
+                const newLocation = await this.getLocation();
+                if (!newLocation || newLocation === '') {
+                    this.props.openModal(ModalKey.ZIPCODE, { email: email, changeLocation: this.props.changeLocation });
+                }
+                else {
+                    this.props.changeLocation(newLocation);
+                }
             }
         }
     }
@@ -80,7 +103,7 @@ class Main extends Component {
     }
 
     render() {
-        const { signOut, auth_token, email, getToken, modalProps, openModal, closeModal, addToOrder, removeFromOrder, refresh, baggedItems, location } = this.props;
+        const { signOut, auth_token, email, getToken, modalProps, openModal, closeModal, addToOrder, removeFromOrder, refresh, baggedItems, location, changeLocation, clearOrder } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
         console.log(location);
         return (
@@ -93,6 +116,8 @@ class Main extends Component {
                     removeFromOrder={removeFromOrder}
                     refresh={refresh}
                     baggedItems={baggedItems}
+                    changeLocation={changeLocation}
+                    openModal={openModal}
                 />
                 <Route exact path="/" render={() =>
                     <Home
@@ -101,6 +126,8 @@ class Main extends Component {
                         openModal={openModal}
                         addToOrder={addToOrder}
                         location={location}
+                        baggedItems={baggedItems}
+                        clearOrder={clearOrder}
                     />}
                 />
                 <Route path="/login" render={() =>
@@ -117,14 +144,14 @@ class Main extends Component {
                         getToken={getToken}
                     />}
                 />
-                <Route path="/favoriteHomecooks" render={() => 
+                <Route path="/favoriteHomecooks" render={() =>
                     <FavoriteHomeCooksList
                         openModal={openModal}
                         auth_token={auth_token}
                         email={email}
                     />}
                 />
-                <Route path="/profile" render={() => 
+                <Route path="/profile" render={() =>
                     <Profile
                         auth_token={auth_token}
                         email={email}
@@ -145,6 +172,7 @@ class Main extends Component {
                         baggedItems={baggedItems}
                         refresh={refresh}
                         openModal={openModal}
+                        clearOrder={clearOrder}
                     />}
                 />
                 <MyModal {...modalProps} closeModal={closeModal} />

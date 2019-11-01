@@ -24,6 +24,11 @@ class ViewFoodOptions extends Component {
             foodoptions: Array.from(res.data.data)
           });
         })
+        .catch(err => {
+          this.setState({
+            foodoptions: []
+          });
+        })
     }
   }
 
@@ -32,10 +37,13 @@ class ViewFoodOptions extends Component {
       const data = { location: this.props.location }
       axios.post(`${serverURL}/getallfood`, { data: data })
         .then(res => {
-          // console.log(res.data)
-          // console.log(Array.from(res.data.data));
           this.setState({
             foodoptions: Array.from(res.data.data)
+          });
+        })
+        .catch(err => {
+          this.setState({
+            foodoptions: []
           });
         })
     }
@@ -73,9 +81,9 @@ class ViewFoodOptions extends Component {
 
   handleFoodName = (e, foodItem) => {
     // console.log(this.props);
-    const { openModal, addToOrder } = this.props;
+    const { openModal, addToOrder, baggedItems, clearOrder } = this.props;
     e.preventDefault();
-    openModal(ModalKey.FOOD_ITEM, {item: foodItem, addToOrder: addToOrder});
+    openModal(ModalKey.FOOD_ITEM, {item: foodItem, addToOrder: addToOrder, baggedItems: baggedItems, clearOrder});
   }
 
   clickProfile = e => {

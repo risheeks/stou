@@ -49,7 +49,7 @@ class Checkout extends Component {
         })
         this.timer = setInterval(() => this.setState({
           time: Date.now() - this.state.start
-        }), 10000);
+        }), 300000);
       }
       stopTimer() {
         this.setState({isOn: false})
@@ -76,6 +76,13 @@ class Checkout extends Component {
         });
     }
 
+    componentDidUpdate = (prevProps, prevState) => {
+        const { clearOrder } = this.props;
+        if(prevState.time !== this.state.time && this.state.time) {
+            clearOrder();
+            this.props.history.push('/');
+        }
+    }
     handleChange = e => {
         this.setState({
             [e.target.id]: e.target.value
@@ -95,6 +102,9 @@ class Checkout extends Component {
 
     onSuccess = (payment) => {
         //console.log("The payment was succeeded!", payment);
+        const { clearOrder } = this.props;
+        clearOrder();
+        this.props.history.push('/');
         this.placeOrder(payment.paymentID);
     }
 
@@ -168,8 +178,9 @@ class Checkout extends Component {
             sandbox: 'AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC',
             production: 'YOUR-PRODUCTION-APP-ID',
         }
-        const { baggedItems } = this.props;
+        const { baggedItems, clearOrder } = this.props;
         const { instructions, street, city, state, zipcode, subtotal, fees, total } = this.state;
+        
         return (
             <div className="checkout-container">
                 <div className="checkout-items">
@@ -214,7 +225,6 @@ class Checkout extends Component {
                         style={{layout: "vertical", shape: "rect", size: "large"}}
                     />
                     </div>
-                    <Button onClick={this.placeOrder}>Random</Button>
                 </div>
                 <div className="delivery-container">
                     <div className="address-div">
