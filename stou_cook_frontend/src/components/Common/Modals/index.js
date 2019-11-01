@@ -5,6 +5,7 @@ import FoodModal from './FoodModal';
 import OrderAlert from './OrderAlert';
 import OrderModal from './OrderModal';
 import MenuModal from './MenuModal'
+import ResetPasswordModal from './ResetPasswordModal';
 
 class MyModal extends Component {
     render() {
@@ -21,6 +22,8 @@ class MyModal extends Component {
                 return <OrderModal {...this.props} />;
             case ModalKey.MENU_MODAL:
                 return <MenuModal {...this.props} />;
+            case ModalKey.RESET_PASSWORD:
+                return <ResetPasswordModal {...this.props} />;
             default:
                 return null;
         }

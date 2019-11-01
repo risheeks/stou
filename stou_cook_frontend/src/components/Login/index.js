@@ -5,6 +5,7 @@ import axios from 'axios';
 import { serverURL } from '../../config';
 import { withRouter } from 'react-router-dom';
 import ResetPassword from '../ResetPassword';
+import { ModalKey } from "../../constants/ModalKeys";
 
 export class Login extends Component {
   constructor(props) {
@@ -54,7 +55,7 @@ export class Login extends Component {
 
   handleReset = e => {
     e.preventDefault();
-    this.props.openModal();
+    this.props.openModal(ModalKey.RESET_PASSWORD, );
   }
 
   render() {
