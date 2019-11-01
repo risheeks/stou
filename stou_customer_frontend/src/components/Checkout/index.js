@@ -33,10 +33,34 @@ class Checkout extends Component {
             state: '',
             zipcode: '',
             instructions: '',
+            time: 0,
+            isOn: false,
+            start: 0
         };
+        this.startTimer = this.startTimer.bind(this)
+        this.stopTimer = this.stopTimer.bind(this)
+        this.resetTimer = this.resetTimer.bind(this)
     }
+    startTimer() {
+        this.setState({
+          isOn: true,
+          time: this.state.time,
+          start: Date.now() - this.state.time
+        })
+        this.timer = setInterval(() => this.setState({
+          time: Date.now() - this.state.start
+        }), 10000);
+      }
+      stopTimer() {
+        this.setState({isOn: false})
+        clearInterval(this.timer)
+      }
+      resetTimer() {
+        this.setState({time: 0, isOn: false})
+      }
 
     async componentDidMount() {
+        this.startTimer()
         const { refresh, auth_token, email } = this.props;
 
         if(!auth_token || auth_token === '') {
@@ -137,6 +161,7 @@ class Checkout extends Component {
     }
 
     render() {
+         //console.log(this.state.time)
         let env = 'sandbox';
         let currency = 'USD';
         const client = {
@@ -148,6 +173,7 @@ class Checkout extends Component {
         return (
             <div className="checkout-container">
                 <div className="checkout-items">
+                    
                     <ListGroup className="checkout-items-list">
                         <ListGroup.Item>
                             <b>Your Order</b>
@@ -168,6 +194,7 @@ class Checkout extends Component {
                                 <p className="bag-item-name">Fees and charges:</p>
                                 <p className="bag-item-price">${fees}</p>
                             </div>
+                            
                             <div className="bag-item-container">
                                 <p className="bag-item-name"><b>Total:</b></p>
                                 <p className="bag-item-price">${total}</p>
