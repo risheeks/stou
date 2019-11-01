@@ -17,7 +17,7 @@ export class FilterBar extends Component {
   }
 
   onAllergenCheckChange = (e, allergen) => {
-    const { chosenAllergens } = this.state;
+    let { chosenAllergens } = this.state;
     if (e.target.checked) {
       chosenAllergens.push(allergen);
     } else {
@@ -30,7 +30,10 @@ export class FilterBar extends Component {
   onCuisineCheckChange = (e, cuisine) => {
     let { chosenCuisines } = this.state;
     if (e.target.checked) {
-      chosenCuisines = cuisine;
+      chosenCuisines.push(cuisine);
+    } else {
+      let index = chosenCuisines.indexOf(cuisine);
+      chosenCuisines.splice(index, 1);
     }
     this.setState({ chosenCuisines });
   }
