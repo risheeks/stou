@@ -172,6 +172,7 @@ class Main extends Component {
                         baggedItems={baggedItems}
                         refresh={refresh}
                         openModal={openModal}
+                        clearOrder={clearOrder}
                     />}
                 />
                 <MyModal {...modalProps} closeModal={closeModal} />
