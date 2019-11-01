@@ -60,6 +60,7 @@ class Checkout extends Component {
       }
 
     async componentDidMount() {
+        console.log(this.props.location)
         this.startTimer()
         const { refresh, auth_token, email } = this.props;
 
@@ -159,13 +160,14 @@ class Checkout extends Component {
     validate = (street, city, state, zipcode) => {
         if(street.length === 0) {
             return "hidden"
-        }else if(street.length === 0){
+        }else if(city.length === 0){
             return "hidden" 
-        }else if(street.length === 0) {
+        }else if(state.length === 0) {
             return "hidden"
-        }else if(zipcode.length === 0) {
+        }else if(zipcode.length === 0 && (parseInt(zipcode) != this.props.location)) {
             return "hidden"
         }
+        console.log(this.props.location)
         return ""
         
     }
@@ -212,7 +214,7 @@ class Checkout extends Component {
                             </div>
                         </ListGroup.Item>
                     </ListGroup>
-                    <div className="paypal-button-div" style={{visibility: this.validate(this.state.state,this.state.city,this.state.state,this.state.zipcode)}}>
+                    <div className="paypal-button-div" style={{visibility: this.validate(this.state.street,this.state.city,this.state.state,this.state.zipcode)}}>
                     <PaypalExpressBtn
                         // className="paypal-button"
                         env={env}
