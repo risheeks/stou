@@ -27,7 +27,7 @@ function mapStateToProps(state) {
         auth_token: state.loginReducer.auth_token,
         email: state.loginReducer.email,
         showModal: state.modalReducer.showModal,
-        location: state.loginReducer.location,
+        zipcode: state.loginReducer.zipcode,
         modalProps: state.modalReducer
     }
 }
@@ -59,7 +59,7 @@ class Main extends Component {
                     this.props.signOut();
                 })
         }
-        const { auth_token, email, location } = this.props;
+        const { auth_token, email, zipcode } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
         if(loggedIn) {
             const newLocation = await this.getLocation();
@@ -74,7 +74,7 @@ class Main extends Component {
 
     async componentDidUpdate(prevProps) {
         if (prevProps !== this.props) {
-            const { auth_token, email, location } = this.props;
+            const { auth_token, email, zipcode } = this.props;
             const loggedIn = auth_token && auth_token.length > 0;
             if (loggedIn) {
                 const newLocation = await this.getLocation();

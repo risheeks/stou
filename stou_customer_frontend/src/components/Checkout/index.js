@@ -7,7 +7,6 @@ import BagItem from '../Common/Bag/BagItem';
 import PaypalExpressBtn from 'react-paypal-express-checkout';
 import { withRouter } from 'react-router-dom';
 import { ModalKey } from '../../constants/ModalKeys';
-import notificationSound from '../../constants/sounds/notification.mp3';
 
 const CLIENT = {
     sandbox: 'AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC',
@@ -105,9 +104,9 @@ class Checkout extends Component {
     onSuccess = (payment) => {
         //console.log("The payment was succeeded!", payment);
         const { clearOrder } = this.props;
+        this.placeOrder(payment.paymentID);
         clearOrder();
         this.props.history.push('/');
-        this.placeOrder(payment.paymentID);
     }
 
     placeOrder = (paymentID) => {
@@ -128,14 +127,7 @@ class Checkout extends Component {
 
         axios.post(`${serverURL}/placeorder`, {data: data})
             .then(res => {
-                const orderId = res.data.orderId;
-                let channel = pusher.subscribe(`cook-${orderId}`);
-					channel.bind('order-update', function (data) {
-						const audio = new Audio(notificationSound);
-                        audio.play();
-                        console.log(data)
-						openModal(ModalKey.ORDER_UPDATE, {...data});
-					});
+                return;
             })
     }
 

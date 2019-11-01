@@ -25,7 +25,7 @@ const loginReducer = function login(state = initialState, action) {
         case 'CHANGE_LOCATION': {
             return state = {
                 ...state,
-                location: action.location
+                zipcode: action.zipcode
             }
         }
         default:

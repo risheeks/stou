@@ -50,7 +50,7 @@ class Orders extends Component {
     }
 
     handleOrder = (e, order) => {
-        this.props.openModal(ModalKey.ORDER_STATUS, {order, setOrders: this.setOrders});
+        this.props.openModal(ModalKey.ORDER_STATUS, { order, setOrders: this.setOrders });
     }
 
     setOrderStatus = (orderStatus, order) => {
@@ -61,7 +61,8 @@ class Orders extends Component {
         axios.post(`${serverURL}/setorderstatus`, { data })
             .then(res => {
                 order.orderStatus = orderStatus
-                this.props.openModal(ModalKey.ORDER_STATUS, {order, setOrders: this.setOrders});
+                this.props.openModal(ModalKey.ORDER_STATUS, { order, setOrders: this.setOrders });
+                this.setOrders();
             })
     }
 
@@ -141,6 +142,23 @@ class Orders extends Component {
         );
     }
 
+    renderRequestCancel = () => {
+        const { orders } = this.state;
+        return (
+            <ListGroup className="orders-list" >
+                {orders.map(order =>
+                    <ListGroup.Item className="order-item-div">
+                        {this.renderOrderInfo(order)}
+                        <div className="order-item-button-div">
+                            <Button className="margined-buttons" variant="danger" onClick={e => this.setOrderStatus("in_progress", order)}>Decline</Button>
+                            <Button className="margined-buttons" variant="success" onClick={e => this.setOrderStatus("cancelled", order)}>Accept</Button>
+                        </div>
+                    </ListGroup.Item>
+                )}
+            </ListGroup>
+        );
+    }
+
     renderOrders = () => {
         const { orders_type } = this.state;
         switch (orders_type) {
@@ -155,6 +173,9 @@ class Orders extends Component {
             }
             case "on_the_way": {
                 return this.renderOnTheWay();
+            }
+            case "request_cancel": {
+                return this.renderRequestCancel();
             }
             default: {
                 return this.renderNew();
@@ -173,6 +194,7 @@ class Orders extends Component {
                         <ToggleButton className="single-checkbox" value="placed">New Orders</ToggleButton>
                         <ToggleButton className="single-checkbox" value="in_progress">In Progress</ToggleButton>
                         <ToggleButton className="single-checkbox" value="on_the_way">On The Way</ToggleButton>
+                        <ToggleButton className="single-checkbox" value="request_cancel">Requested Cancellation</ToggleButton>
                     </ToggleButtonGroup>
                 </div>
                 {this.renderOrders()}

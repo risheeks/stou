@@ -52,6 +52,8 @@ class ListOfHomeCooks extends Component {
 							rating={item.rating}
 							addToOrder={this.props.addToOrder}
 							isFav={item.isFavorite}
+							baggedItems={this.props.baggedItems}
+							clearOrder={this.props.clearOrder}
 						/>
 					))}
 			</Container>

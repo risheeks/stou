@@ -100,7 +100,7 @@ app.use('/setorderstatus', function (req, res, next) {
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT ORDER_STATUS from ORDERS where ORDER_ID=\'' + orderId + '\';';
+    var q = 'SELECT ORDER_STATUS, CUSTOMER_EMAIL from ORDERS where ORDER_ID=\'' + orderId + '\';';
     connection.query(q, function (err, rows) {
       if (err || rows.length === 0) {
         o['code'] = 400;
@@ -109,6 +109,7 @@ app.use('/setorderstatus', function (req, res, next) {
         res.send(o);
       } else {
         const currentOrderStatus = rows[0].ORDER_STATUS;
+        const customerEmail = rows[0].CUSTOMER_EMAIL;
         let update = false;
         if (newOrderStatus === 'in_progress' && currentOrderStatus === 'placed') {
           update = true;
@@ -116,9 +117,12 @@ app.use('/setorderstatus', function (req, res, next) {
           update = true;
         } else if (newOrderStatus === 'delivered' && currentOrderStatus === 'on_the_way') {
           update = true;
-        } else if (currentOrderStatus !== 'delivered' && currentOrderStatus !== 'on_the_way' && newOrderStatus === 'canceled') {
+        } else if (currentOrderStatus !== 'delivered' && newOrderStatus === 'cancelled') {
           update = true;
         } else if (currentOrderStatus === 'placed' && newOrderStatus === 'declined') {
+          update = true;
+        }
+        else if (currentOrderStatus !== 'delivered' && currentOrderStatus !== 'on_the_way' && newOrderStatus === 'request_cancel') {
           update = true;
         }
         if (update) {
@@ -133,7 +137,7 @@ app.use('/setorderstatus', function (req, res, next) {
                 o['message'] = 'Failed to update status';
                 res.send(o);
               } else {
-                pusher.trigger(`cook-${orderId}`, 'order-update', {
+                pusher.trigger(`customer-${customerEmail}`, 'order-update', {
                   "message": "Order status changed",
                   "order": {
                     "orderId": orderId,
@@ -361,7 +365,7 @@ app.use('/placeorder', function (req, res, next) {
   console.log(req.body.data);
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'Insert into ORDERS values(\''+ orderID +'\', "' + Date.now() + '", \''+ cookEmail +'\', \''+customerEmail+'\', \''+ instructions +'\', ' + deliveryTime + ', \''+ orderAddress + '\',\'' + orderStatus + '\', \'' + paymentId +' \');';
+    var q = 'Insert into ORDERS (ORDER_ID, ORDERED_AT, COOK_EMAIL, CUSTOMER_EMAIL, INSTRUCTIONS, DELIVERY_TIME, ORDER_ADDRESS, ORDER_STATUS, PAYMENT_KEY) values("'+ orderID + '", "' + Date.now() + '", "' + cookEmail + '", "' + customerEmail + '", "' + instructions + '", ' + deliveryTime + ', "' + orderAddress + '", "' + orderStatus + '", "' + paymentId + '");';
     // console.log('MEssage:' + q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
@@ -656,7 +660,7 @@ app.use('/getallfood', function(req, res, next){
           ob['food_id'] = row.FOOD_ID;
           ob['delivery_time'] = row.DELIVERY_TIME;
           if (ob['delivery_time'] === null) {
-            ob['delivery_time'] = '2019-10-29 01:47:45';
+            ob['delivery_time'] = '30';
           }
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
@@ -695,6 +699,13 @@ app.use('/getfooditems', function (req, res, next) {
           ob['cuisine'] = row.CUISINE;
           ob['calories'] = row.CALORIES;
           ob['picture'] = row.PICTURE;
+          ob['email'] = row.COOK_EMAIL;
+          ob['description'] = row.DESCRIPTION;
+          ob['food_id'] = row.FOOD_ID;
+          ob['delivery_time'] = row.DELIVERY_TIME;
+          if (ob['delivery_time'] === null) {
+            ob['delivery_time'] = '30';
+          }
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         o['data'] = obj;

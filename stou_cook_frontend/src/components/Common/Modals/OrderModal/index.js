@@ -106,6 +106,18 @@ class OrderModal extends Component {
         );
     }
 
+    renderRequestCancel = () => {
+        const { order } = this.state;
+        return (
+            <Modal.Footer>
+                <div className="order-item-button-div">
+                    <Button className="margined-buttons" variant="danger" onClick={e => this.setOrderStatus("in_progress", order)}>Decline</Button>
+                    <Button className="margined-buttons" variant="success" onClick={e => this.setOrderStatus("cancelled", order)}>Accept</Button>
+                </div>
+            </Modal.Footer>
+        );
+    }
+
     renderOrders = () => {
         const { order } = this.state;
         switch (order.orderStatus) {
@@ -121,6 +133,9 @@ class OrderModal extends Component {
             case "on_the_way": {
                 return this.renderOnTheWay();
             }
+            case "request_cancel": {
+                return this.renderRequestCancel();
+            }
             default: {
                 return this.renderNew();
             }
@@ -134,7 +149,7 @@ class OrderModal extends Component {
         return (
             <Modal show={showModal} onHide={() => closeModal()}>
                 <Modal.Header closeButton>
-                    <b>Order details</b>
+                    <b>{order.orderStatus === 'request_cancel'? order.name + " is requesting order cancellation" : "Order details"}</b>
                 </Modal.Header>
                 <Modal.Body>
                     {this.renderOrderInfo(order)}

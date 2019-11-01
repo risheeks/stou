@@ -15,10 +15,10 @@ export function signOut() {
     }
 }
 
-export function changeLocation(location) {
+export function changeLocation(zipcode) {
     return {
         type: 'CHANGE_LOCATION',
-        location
+        zipcode
     }
 }
 

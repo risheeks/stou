@@ -35,6 +35,7 @@ export function removeFromOrder(id) {
 }
 
 export function clearOrder() {
+    localStorage.setItem('baggedItems', JSON.stringify([]));
     return {
         type: 'CLEAR_ORDER'
     }

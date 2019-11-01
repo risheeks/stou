@@ -19,15 +19,16 @@ import { addToOrder, removeFromOrder, refresh, clearOrder } from '../../actions/
 import Checkout from '../Checkout';
 import { ModalKey } from '../../constants/ModalKeys';
 import axios from 'axios';
-import { serverURL } from '../../config';
+import { serverURL, pusher } from '../../config';
 import { ROLE } from '../../constants';
 import Orders from '../Orders';
+import notificationSound from '../../constants/sounds/notification.mp3';
 
 function mapStateToProps(state) {
     return {
         auth_token: state.loginReducer.auth_token,
         email: state.loginReducer.email,
-        location: state.loginReducer.location,
+        zipcode: state.loginReducer.zipcode,
         modalProps: state.modalReducer,
         baggedItems: state.orderReducer.baggedItems
     }
@@ -53,12 +54,8 @@ class Main extends Component {
     }
 
     async componentDidMount() {
-        let zipcode = this.getLocation;
-        this.setState({zipcode: zipcode});
-        console.log(this.state.zipcode);
         let tempToken = localStorage.getItem('auth_token');
         let tempEmail = localStorage.getItem('email');
-        let tempLocation = localStorage.getItem('location');
         if (tempToken && tempEmail) {
             const data = {
                 token: tempToken,
@@ -73,7 +70,7 @@ class Main extends Component {
                     this.props.signOut();
                 })
         }
-        const { auth_token, email, location } = this.props;
+        const { auth_token, email, zipcode } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
         if (loggedIn) {
             const newLocation = await this.getLocation();
@@ -87,9 +84,16 @@ class Main extends Component {
     }
 
     async componentDidUpdate(prevProps) {
-        if (prevProps !== this.props) {
-            const { auth_token, email, location } = this.props;
+        if (prevProps.zipcode !== this.props.zipcode) {
+            const { auth_token, email, zipcode, openModal } = this.props;
             const loggedIn = auth_token && auth_token.length > 0;
+            let channel = pusher.subscribe(`customer-${email}`);
+            channel.bind('order-update', function (data) {
+                const audio = new Audio(notificationSound);
+                audio.play();
+                console.log(openModal)
+                openModal(ModalKey.ORDER_UPDATE, { ...data });
+            });
             if (loggedIn) {
                 const newLocation = await this.getLocation();
                 if (!newLocation || newLocation === '') {
@@ -118,9 +122,8 @@ class Main extends Component {
     }
 
     render() {
-        const { signOut, auth_token, email, getToken, modalProps, openModal, closeModal, addToOrder, removeFromOrder, refresh, baggedItems, location, changeLocation, clearOrder } = this.props;
+        const { signOut, auth_token, email, getToken, modalProps, openModal, closeModal, addToOrder, removeFromOrder, refresh, baggedItems, zipcode, changeLocation, clearOrder } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
-        console.log("location: " + location);
         return (
             <Router>
                 <Header
@@ -140,7 +143,7 @@ class Main extends Component {
                         email={email}
                         openModal={openModal}
                         addToOrder={addToOrder}
-                        location={location}
+                        location={zipcode}
                         baggedItems={baggedItems}
                         clearOrder={clearOrder}
                     />}
@@ -170,7 +173,7 @@ class Main extends Component {
                     <Profile
                         auth_token={auth_token}
                         email={email}
-                        location={location}
+                        location={zipcode}
                     />}
                 />
                 <Route path="/orders" render={() =>
@@ -188,7 +191,7 @@ class Main extends Component {
                         refresh={refresh}
                         openModal={openModal}
                         clearOrder={clearOrder}
-                        zipcode={location}
+                        zipcode={zipcode}
                     />}
                 />
                 <MyModal {...modalProps} closeModal={closeModal} />

@@ -15,7 +15,7 @@ class OrderProgress extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.status !== this.props.status) {
+        if (prevProps.status !== this.props.status) {
             this.setCorrectState();
         }
     }
@@ -25,8 +25,8 @@ class OrderProgress extends Component {
         let orderStatus = status;
         let newNow = 0;
 
-        switch(status) {
-            case 'placed': 
+        switch (status) {
+            case 'placed':
                 orderStatus = 'Order placed!';
                 newNow = 10;
                 break;
@@ -41,6 +41,18 @@ class OrderProgress extends Component {
             case 'delivered':
                 orderStatus = 'Order delivered!';
                 newNow = 100;
+                break;
+            case 'request_cancel':
+                orderStatus = 'Customer requests cancellation';
+                newNow = 0;
+                break;
+            case 'declined':
+                orderStatus = 'Order declined';
+                newNow = 0;
+                break;
+            case 'cancelled':
+                orderStatus = 'Order Cancelled';
+                newNow = 0;
                 break;
             default:
                 orderStatus = status;
@@ -59,7 +71,7 @@ class OrderProgress extends Component {
 
         return (
             <div>
-                <div className="order-tooltip-outer" style={{marginLeft: `${now}%`, marginRight: `${100-now}%`}}>
+                <div className="order-tooltip-outer" style={{ marginLeft: `${now}%`, marginRight: `${100 - now}%` }}>
                     <div className="order-tooltip">{orderStatus}</div>
                     <div className="arrow-down"></div>
                 </div>

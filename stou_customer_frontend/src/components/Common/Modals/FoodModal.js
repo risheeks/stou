@@ -20,7 +20,7 @@ class FoodModal extends Component {
 
     addToBag = e => {
         const { item, addToOrder, closeModal, clearOrder, baggedItems } = this.props;
-        if(baggedItems.length > 0 && (item.homecook !== baggedItems[0].homecook)) {
+        if(baggedItems.length > 0 && (item.email !== baggedItems[0].email)) {
             clearOrder();
         }
         addToOrder(item, this.state.quantity);
@@ -29,7 +29,7 @@ class FoodModal extends Component {
 
     renderConfirmClear = () => {
         const { clearOrder, baggedItems, item } = this.props;
-        if(baggedItems.length > 0 && (item.homecook !== baggedItems[0].homecook)) {
+        if(baggedItems.length > 0 && (item.email !== baggedItems[0].email)) {
             return (
                 <div>
                     <p className="clear-order-info">You already have items from other homecooks. Adding this item will clear your existing bag.</p>    

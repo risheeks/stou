@@ -60,7 +60,7 @@ class OrderUpdateModal extends Component {
         return (
             <Modal show={showModal} onHide={() => closeModal()}>
                 <Modal.Header closeButton>
-                    <b>Yay! Your order status was updated!</b>
+                    <b>Your order status was updated!</b>
                 </Modal.Header>
                 <Modal.Body>
                     {this.renderOrderInfo(order)}
