@@ -55,6 +55,9 @@ class Main extends Component {
                 .then(res => {
                     this.props.getToken(tempToken, tempEmail);
                 })
+                .catch(err => {
+                    this.props.signOut();
+                })
         }
         const { auth_token, email, location } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;

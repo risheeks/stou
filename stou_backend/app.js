@@ -1228,7 +1228,7 @@ app.use('/resetpassword', function (req, res, next) {
 
 app.use('/checklogin', function(req, res, next){
   const o = checkLogin(req.body['data']['email'],req.body['data']['token']);
-  res.status(401);
+  res.status(o['code']);
   res.send(o);
 });
 
