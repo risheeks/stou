@@ -177,6 +177,7 @@ class Main extends Component {
                         refresh={refresh}
                         openModal={openModal}
                         clearOrder={clearOrder}
+                        location={location}
                     />}
                 />
                 <MyModal {...modalProps} closeModal={closeModal} />
