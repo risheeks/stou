@@ -34,16 +34,16 @@ class MenuModal extends Component {
                         <div className="food-option-inner">
                             <div>
                             <NavLink className="food-link-name" onClick={e => this.handleFoodName(e, item)}>
-                            <Image rounded className="vfo-image" src={item.picture} />
+                            <Image rounded className="vfoc-image" src={item.picture} />
                             </NavLink>
                             </div>
-                            <div className="vfo-info">
-                            <div className="vfo-foodname">
+                            <div className="vfoc-info">
+                            <div className="vfoc-foodname">
                             <NavLink className="food-link-name" onClick={e => this.handleFoodName(e, item)}>
                                 <p>{item.name}</p>
                             </NavLink>
                             </div>
-                            <div className="vfo-description">
+                            <div className="vfoc-description">
                                 <p>Calories: {item.calories}</p>
                             </div>
                             {/* <div className="vfo-chefname">

@@ -367,3 +367,51 @@ align-self: center;
   float: right;
 }
 
+.text-profile-name-modal {
+  font-size: 1.3em;
+}
+.text-profile-description-modal {
+  color: grey;
+  font-size: 15.5px;
+}
+
+.food-option-view-menu {
+  height: 8rem;
+}
+
+.food-option-inner {
+    display: flex;
+    flex-direction: row;
+}
+.food-link-name {
+  padding: 0;
+}
+
+.vfoc-image {
+    width: 6.5rem;
+    height: 6.5rem;
+    object-fit: cover;
+    /* padding-top: 5px; */
+    /* padding-bottom: 5px; */
+    /* padding-right: 0px; */
+
+  }
+  .vfoc-description {
+    /* display: block; */
+    color: rgba(111, 95, 95, 0.67);
+    font-size: 0.75em;
+    margin-top: -1rem;
+    /* margin-top: -9%; */
+    
+  }
+  
+  .vfoc-foodname {
+    padding-top: 5px;
+    font-weight: bold;
+  }
+  
+  .vfoc-info {
+    text-align: left;
+    margin-left: 4%;
+    width: 80%;
+  }

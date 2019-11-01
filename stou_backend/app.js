@@ -360,7 +360,7 @@ app.use('/placeorder', function (req, res, next) {
   console.log(req.body.data);
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'Insert into ORDERS values(\''+ orderID +'\', "' + Date.now() + '", \''+ cookEmail +'\', \''+customerEmail+'\', \''+ instructions +'\', CURRENT_TIMESTAMP, \''+ orderAddress + '\',\'' + orderStatus + '\', \'' + paymentId +' \');';
+    var q = 'Insert into ORDERS values(\''+ orderID +'\', "' + Date.now() + '", \''+ cookEmail +'\', \''+customerEmail+'\', \''+ instructions +'\', ' + deliveryTime + ', \''+ orderAddress + '\',\'' + orderStatus + '\', \'' + paymentId +' \');';
     // console.log('MEssage:' + q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
@@ -1224,23 +1224,29 @@ app.use('/resetpassword', function (req, res, next) {
   });
 });
 
-app.use('/checklogin', function (req, res, next) {
-  const email = req.body['data']['email'];
-  const token = req.body['data']['token'];
-  var o = {};
-  tok = revLoginTokens[email];
-  if (tok === token) {
-    o['code'] = 200;
-    o['message'] = 'Login successful';
-    o['token'] = token;
-  } else {
-    o['code'] = 400;
-    o['message'] = 'Login token does not match';
-  }
+
+app.use('/checklogin', function(req, res, next){
+  const o = checkLogin(req.body['data']['email'],req.body['data']['token']);
+  res.status(401);
   res.send(o);
 });
 
-app.use('/login', function (req, res, next) {
+
+ function checkLogin(email, token) {
+   var o = {};
+   const tok = revLoginTokens[email];
+   if (tok === token) {
+     o['code'] = 200;
+     o['message'] = '';
+     o['token'] = token;
+   } else {
+     o['code'] = 401;
+     o['message'] = 'Unauthorized client error';
+   }
+   return o;
+ }
+
+app.use('/login', function(req, res, next){
   const email = req.body['data']['email'];
   const password = req.body['data']['password'];
   let role = req.body['data']['role'];

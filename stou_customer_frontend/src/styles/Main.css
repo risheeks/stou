@@ -194,7 +194,7 @@ textarea {
   }
 
 .food-option {
-    height: 10rem;
+    height: 9rem;
 }
 .food-option-view-menu {
   height: 8rem;
@@ -581,9 +581,6 @@ textarea {
   height: 200px;
   overflow-y: scroll;
 }
-/* .profile-footer-modal {
-  background-color:#ff7057;
+.delivery-time {
+  font-size: 15.5px;
 }
-.profile-header-modal {
-  background-color:#ff7057;
-} */

@@ -9,6 +9,14 @@ import { serverURL } from '../../../config';
 import { ModalKey } from '../../../constants/ModalKeys';
 
 export class Header extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            fooditems:[]
+        };
+    
+      }
     handleSignOut = e => {
         e.preventDefault();
         const { auth_token } = this.props;

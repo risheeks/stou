@@ -35,7 +35,7 @@ class HomeCook extends Component {
     }
     AddFavoriteHomeCook =(e) => {
         //console.log(this.props.email + " " + this.state.cook_email);
-        axios.post(`${serverURL}/setfavoritefood`, {
+        axios.post(`${serverURL}/setfavoritehomecooks`, {
             data: {
                 email: this.props.email,
                 cook_email: this.state.cook_email
