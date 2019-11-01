@@ -532,7 +532,7 @@ app.use('/getpastfoodcook', function(req, res, next){
   con.getConnection(function(err, connection) {
 
     if (err) console.log(err);
-    var q = 'SELECT FOOD.PICTURE, FOOD.FOOD_ID, USER1.EMAIL, FOOD.TITLE, FOOD.DESCRIPTION, FOOD.CUISINE, FOOD.PRICE, FOOD.CALORIES, FOOD.DELIVERY_TIME, USER1.FIRST_NAME, USER1.LAST_NAME FROM FOOD, USER AS USER1, ORDERS, ORDER_FOOD WHERE USER1.EMAIL=FOOD.COOK_EMAIL AND USER1.ROLE=1 AND FOOD.COOK_EMAIL=\''+ cookEmail +'\' AND valid=\'true\'';
+    var q = 'SELECT FOOD.PICTURE, FOOD.FOOD_ID, USER1.EMAIL, FOOD.TITLE, FOOD.DESCRIPTION, FOOD.CUISINE, FOOD.PRICE, FOOD.CALORIES, FOOD.DELIVERY_TIME, USER1.FIRST_NAME, USER1.LAST_NAME FROM FOOD, USER AS USER1 WHERE USER1.EMAIL=FOOD.COOK_EMAIL AND USER1.ROLE=1 AND FOOD.COOK_EMAIL=\''+cookEmail+'\' AND valid=\'true\'';
 
     console.log(q);
     connection.query(q, function (err, result) {
@@ -1228,7 +1228,7 @@ app.use('/resetpassword', function (req, res, next) {
 
 app.use('/checklogin', function(req, res, next){
   const o = checkLogin(req.body['data']['email'],req.body['data']['token']);
-  res.status(401);
+  res.status(o['code']);
   res.send(o);
 });
 

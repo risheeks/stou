@@ -154,6 +154,8 @@ class Checkout extends Component {
         }else if(name === "state") {
             this.setState({state: e.target.value});
         }else if(name === "zipcode") {
+            if(parseInt(name) != this.props.location) {
+            }
             this.setState({zipcode: e.target.value});
         }
     }
@@ -164,7 +166,7 @@ class Checkout extends Component {
             return "hidden" 
         }else if(state.length === 0) {
             return "hidden"
-        }else if(zipcode.length === 0 && (parseInt(zipcode) != this.props.location)) {
+        }else if(zipcode.length === 0) {
             return "hidden"
         }
         console.log(this.props.location)

@@ -53,9 +53,13 @@ class Main extends Component {
                 token: tempToken,
                 email: tempEmail
             }
+            console.log(tempToken)
             await axios.post(`${serverURL}/checklogin`, { data })
                 .then(res => {
                     this.props.getToken(tempToken, tempEmail);
+                })
+                .catch(err => {
+                    this.props.signOut();
                 })
         }
         const { auth_token, email, location } = this.props;
