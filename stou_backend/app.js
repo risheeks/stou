@@ -669,6 +669,7 @@ app.use('/getallfood', function(req, res, next){
           res.send(o);
 
       }
+      console.log("HOLA AMIGO")
       connection.release();
     });
   });
@@ -859,9 +860,7 @@ app.use('/addfooditem', function (req, res, next) {
         });
         for (var i = 0; i < allergens.length; i++) {
           var q = 'INSERT INTO FOOD_ALLERGEN (FOOD_ID, ALLERGEN) VALUES ("' + food_id + '", "' + allergens[i] + '");';
-          console.log(q);
           connection.query(q, function (err, result) {
-            console.log(q);
               if (err) console.log(err);
             });
           }
@@ -887,11 +886,6 @@ app.use('/editProfile', function (req, res, next) {
 
   if (role === 'Homecook') role = 'COOK';
 
-  // console.log(profilePicture);
-  // console.log(aboutMe);
-  // console.log(lastName);
-  // console.log(name);
-
   if (firstName === null) {
     firstName = '';
   }
@@ -907,15 +901,12 @@ app.use('/editProfile', function (req, res, next) {
   if (name === null) {
     name = 'None';
   }
-  console.log(email);
-  console.log(role);
+
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'UPDATE USER SET ABOUT_ME="' + aboutMe + '", FIRST_NAME="' + firstName + '", LAST_NAME="' + lastName + '" , PICTURE="' + profilePicture + '" where EMAIL="' + email + '" AND ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
-    console.log(q);
     connection.query(q, function (err, result) {
-      console.log(result);
       if (err) {
         o['code'] = 400;
         res.status(400)
@@ -934,11 +925,9 @@ app.use('/editProfile', function (req, res, next) {
 });
 
 app.use('/profile', function (req, res, next) {
-  console.log("profile");
   let email = req.body['data']['email'];
   let role = req.body['data']['role'];
   if (role === 'Homecook') role = 'COOK';
-  console.log(email);
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) console.log(err);
@@ -953,7 +942,6 @@ app.use('/profile', function (req, res, next) {
       }
       else {
         var row = result[0];
-        console.log(row);
         o['name'] = row.FIRST_NAME;
         if (row.LAST_NAME) {
           o['name'] += " ";
@@ -963,7 +951,6 @@ app.use('/profile', function (req, res, next) {
         o['aboutMe'] = row.ABOUT_ME;
         o['cuisines'] = 'None';
         o['profilePicture'] = row.PICTURE;
-        console.log(o);
         if (o['code'] !== 404)
           res.send(o);
       }
@@ -977,14 +964,12 @@ app.use('/filter', function(req, res, next) {
     const json = req.body['data'];
     const cuisines = json['cuisines'];
     const allergenList = json['allergens'];
-    console.log(json);
     var o = {};
     
     con.getConnection(function (err, connection) {
         if (err) console.log(err);
         var q = 'SELECT * FROM FOOD, FOOD_ALLERGEN, USER WHERE USER.EMAIL=FOOD.COOK_EMAIL AND FOOD.FOOD_ID=FOOD_ALLERGEN.FOOD_ID AND INSTR("' + cuisines + '",FOOD.CUISINE)>0 AND INSTR("' + allergenList + '",FOOD_ALLERGEN.ALLERGEN)=0';
         // var q = 'select * from FOOD, FOOD_ALLERGEN where FOOD.CUISNE like \'' + cuisines + '\' AND Allergen NOT LIKE \'' + allergenList + '\';';
-        console.log(q)
         connection.query(q, function (err, result) {
             console.log(result);
             if (err) console.log(err);
