@@ -91,9 +91,10 @@ class Checkout extends Component {
     }
 
     getSubtotal = () => {
-        const { baggedItems } = this.props;
+        const { baggedItems, zipcode } = this.props;
         console.log("CHECK ME OUT");
         console.log(baggedItems)
+        console.log(zipcode);
         let sum = 0;
         for (let i = 0; i < baggedItems.length; i++) {
             sum += baggedItems[i].price * baggedItems[i].quantity;
@@ -166,10 +167,9 @@ class Checkout extends Component {
             return "hidden" 
         }else if(state.length === 0) {
             return "hidden"
-        }else if(zipcode.length === 0) {
+        }else if(parseInt(zipcode) !== parseInt(this.props.zipcode)) {
             return "hidden"
         }
-        console.log(this.props.location)
         return ""
         
     }

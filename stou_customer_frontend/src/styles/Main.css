@@ -584,3 +584,7 @@ textarea {
 .delivery-time {
   font-size: 15.5px;
 }
+
+.hidden { 
+  display:none; 
+}

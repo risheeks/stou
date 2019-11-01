@@ -94,6 +94,7 @@ const uuidv4 = require('uuid/v4');
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
 app.use('/setorderstatus', function (req, res, next) {
+  console.log(req.body.data);
   const orderId = req.body['data']['orderId'];
   const newOrderStatus = req.body['data']['orderStatus'];
   let o = {};
@@ -101,7 +102,7 @@ app.use('/setorderstatus', function (req, res, next) {
     if (err) throw err;
     var q = 'SELECT ORDER_STATUS from ORDERS where ORDER_ID=\'' + orderId + '\';';
     connection.query(q, function (err, rows) {
-      if (err && rows.length === 0) {
+      if (err || rows.length === 0) {
         o['code'] = 400;
         res.status(400);
         o['message'] = 'Invalid Order';
