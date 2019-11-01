@@ -33,7 +33,7 @@ class ViewFoodOptions extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.allergens.length <= 0 && this.props.cuisines.length <= 0 && this.props.location !== prevProps.location) {
+    if (this.props.allergens.length <= 0 && this.props.cuisines.length <= 0 && this.props !== prevProps) {
       const data = { location: this.props.location }
       axios.post(`${serverURL}/getallfood`, { data: data })
         .then(res => {
