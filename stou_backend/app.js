@@ -967,12 +967,14 @@ app.use('/filter', function(req, res, next) {
     const allergenList = json['allergens'];
     console.log(json);
     var o = {};
-    var obj = [];
+    
     con.getConnection(function (err, connection) {
         if (err) console.log(err);
-        var q = 'select * from FOOD, FOOD_ALLERGEN where Cuisine like \'' + cuisines + '\' AND Allergen NOT LIKE \'' + allergenList + '\';';
+        var q = 'SELECT * FROM FOOD, FOOD_ALLERGEN, USER WHERE USER.EMAIL=FOOD.COOK_EMAIL AND FOOD.FOOD_ID=FOOD_ALLERGEN.FOOD_ID AND INSTR("' + cuisines + '",FOOD.CUISINE)>0 AND INSTR("' + allergenList + '",FOOD_ALLERGEN.ALLERGEN)=0';
+        // var q = 'select * from FOOD, FOOD_ALLERGEN where FOOD.CUISNE like \'' + cuisines + '\' AND Allergen NOT LIKE \'' + allergenList + '\';';
         console.log(q)
         connection.query(q, function (err, result) {
+            console.log(result);
             if (err) console.log(err);
             if (result.length === 0) {
                 o['code'] = 400;
@@ -980,19 +982,27 @@ app.use('/filter', function(req, res, next) {
                 o['message'] = 'No FoodItems available';
                 res.send(o);
             } else {
+                var ob = {};
+                var obj = [];
                 var row = result[0];
                 for (let i = 0; i < result.length; i++) {
                     row = result[i];
-                    ob['cook_id'] = row.COOK_ID;
-                    ob['title'] = row.TITLE;
-                    ob['cook_email'] = row.COOK_EMAIL;
+                    ob['name'] = row.TITLE;
+                    ob['homecook'] = row.FIRST_NAME + " " + row.LAST_NAME;
+                    ob['email'] = row.COOK_EMAIL;
+                    ob['description'] = row.DESCRIPTION;
                     ob['price'] = row.PRICE;
-                    ob['allergen'] = row.ALLERGEN;
                     ob['cuisine'] = row.CUISINE;
                     ob['calories'] = row.CALORIES;
                     ob['picture'] = row.PICTURE;
+                    ob['food_id'] = row.FOOD_ID;
+                    ob['delivery_time'] = row.DELIVERY_TIME;
+                    if (ob['delivery_time'] === null) {
+                      ob['delivery_time'] = '2019-10-29 01:47:45';
+                    }
                     obj.push(JSON.parse(JSON.stringify(ob)));
                 }
+                console.log(obj);
                 o['data'] = obj;
                 o['code'] = 200;
                 o['message'] = 'Filter results'
