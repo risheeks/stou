@@ -367,6 +367,9 @@ textarea {
   width: 50%;
   margin: 1%;
 }
+.promo-code {
+  text-align: left;
+}
 
 .address-div {
   margin-bottom: 5%;
