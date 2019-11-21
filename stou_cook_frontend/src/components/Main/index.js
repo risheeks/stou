@@ -10,6 +10,7 @@ import Home from '../Home';
 import Header from '../Common/Header';
 import AddFoodItem from '../AddFoodItem';
 import Profile from '../Profile';
+import Chat from '../Chat';
 import '../../styles/Main.css';
 import MyModal from '../Common/Modals';
 import { getToken, signOut, changeLocation } from '../../actions/login.action';
@@ -110,18 +111,21 @@ class Main extends Component {
         const loggedIn = auth_token && auth_token.length > 0;
         console.log(modalProps);
         return (
-            <Router>
-                <Header signOut={signOut} loggedIn={loggedIn} openModal={openModal} email={email} changeLocation={changeLocation}/>
-                <Route exact path="/" render={() => <Home auth_token={auth_token} email={email} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
-                <Route path="/login" render={() => <Login auth_token={auth_token} email={email} getToken={getToken} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
-                <Route path="/register" render={() => <Register auth_token={auth_token} email={email} getToken={getToken} />} />
-                <Route path="/addfood" render={() => <AddFoodItem auth_token={auth_token} email={email} />} />
-                <Route path="/profile" render={() => <Profile auth_token={auth_token} email={email} />} />
-                <Route path="/privacyPolicy" render={() => <PrivacyPolicy auth_token={auth_token} email={email} />} />
-                <Route path="/orders" render={() => <Orders auth_token={auth_token} email={email} openModal={openModal} />} />
-                <Route path="/homecookmenu" render={() => <MenuModal auth_token={auth_token} email={email} openModal={openModal} />} />
-                <MyModal {...modalProps} closeModal={closeModal} />
-            </Router>
+            <div>
+                <Router>
+                    <Header signOut={signOut} loggedIn={loggedIn} openModal={openModal} email={email} changeLocation={changeLocation}/>
+                    <Route exact path="/" render={() => <Home auth_token={auth_token} email={email} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
+                    <Route path="/login" render={() => <Login auth_token={auth_token} email={email} getToken={getToken} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
+                    <Route path="/register" render={() => <Register auth_token={auth_token} email={email} getToken={getToken} />} />
+                    <Route path="/addfood" render={() => <AddFoodItem auth_token={auth_token} email={email} />} />
+                    <Route path="/profile" render={() => <Profile auth_token={auth_token} email={email} />} />
+                    <Route path="/privacyPolicy" render={() => <PrivacyPolicy auth_token={auth_token} email={email} />} />
+                    <Route path="/orders" render={() => <Orders auth_token={auth_token} email={email} openModal={openModal} />} />
+                    <Route path="/homecookmenu" render={() => <MenuModal auth_token={auth_token} email={email} openModal={openModal} />} />
+                    <MyModal {...modalProps} closeModal={closeModal} />
+                </Router>
+                <Chat/>
+            </div>
         );
     }
 }
