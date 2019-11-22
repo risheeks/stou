@@ -65,7 +65,7 @@ class FavoriteHomeCook extends Component {
                     <Card.Text className="text-about-me-label wrapped-cook-text">
                         {description ? description : "No Description"}
                     </Card.Text>
-                    <CustomRating rating={rating} readonly={true} />
+                    <CustomRating rating={rating} readonly={true} bowlSize="30px"/>
                     {/* <Button  variant="link">View Menu</Button> */}
                 </Card.Body>
             </Card>

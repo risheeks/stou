@@ -152,6 +152,18 @@ textarea {
   margin-right: 20px !important;
 }
 
+.rating-modal-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center !important;
+  margin-bottom: 15px;
+}
+
+.custom-rating {
+  width: fit-content;
+  align-self: center;
+}
+
 @media all and (min-width: 480px) {
     .Login {
       padding: 60px 0;
@@ -484,6 +496,57 @@ textarea {
   flex-direction: row;
   justify-content: right !important;
   text-align: right;
+}
+
+.recent-orders-heading {
+  font-size: 20px;
+}
+
+.recent-order-inner {
+  display: flex;
+  flex-direction: row;
+  width: 20rem;
+}
+
+.recent-order-image {
+  width: 6.5rem;
+  height: 6.5rem;
+  object-fit: cover;
+}
+
+.recent-order-date {
+  color: rgba(111, 95, 95, 0.67);
+  font-size: 0.75em;
+  margin-top: -1rem;
+}
+
+.recent-order-name {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.recent-link-name {
+  text-align: left;
+}
+
+.recent-orders-container > p {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.recent-orders-list {
+  display: flex;
+  flex-direction: row;
+  overflow-x: scroll;
+  margin-bottom: 10px;
+}
+
+.recent-order {
+  margin: 2rem;
+  padding: 10px;
 }
 
 @media all and (min-width: 480px) {
