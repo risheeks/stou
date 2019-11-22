@@ -10,59 +10,40 @@ class RecentOrders extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            recent: [
-                {
-                    picture: defaultpicture,
-                    chef: "Soumil Uppal",
-                    date: "November 06",
-                    total: 40
-                },
-                {
-                    picture: defaultpicture,
-                    chef: "Soumil Uppal",
-                    date: "November 06",
-                    total: 40
-                },
-                {
-                    picture: defaultpicture,
-                    chef: "Soumil Uppal",
-                    date: "November 06",
-                    total: 40
-                },
-                {
-                    picture: defaultpicture,
-                    chef: "Soumil Uppal",
-                    date: "November 06",
-                    total: 40
-                }
-            ],
+            recent: []
         };
     }
 
     componentDidMount() {
-        /*const data = { location: this.props.location }
+        const data = {
+            customerEmail: this.props.email
+        }
         axios.post(`${serverURL}/getrecentorders`, { data: data })
             .then(res => {
-                // console.log(res.data)
+                console.log(res.data)
                 // console.log(Array.from(res.data.data));
                 this.setState({
-                    recent: Array.from(res.data.data)
+                    recent: Array.from(res.data)
                 });
             })
             .catch(err => {
                 this.setState({
                     recent: []
                 });
-            })*/
+            })
     }
 
     componentDidUpdate(prevProps) {
-        /*if (this.props !== prevProps) {
-            const data = { location: this.props.location }
+        if (this.props !== prevProps) {
+            const data = {
+                customerEmail: this.props.email
+            }
             axios.post(`${serverURL}/getrecentorders`, { data: data })
                 .then(res => {
+                    console.log(res.data)
+                    // console.log(Array.from(res.data.data));
                     this.setState({
-                        recent: Array.from(res.data.data)
+                        recent: Array.from(res.data)
                     });
                 })
                 .catch(err => {
@@ -70,45 +51,49 @@ class RecentOrders extends Component {
                         recent: []
                     });
                 })
-        }*/
+        }
     }
 
     handleOrderClick = (e, order) => {
         // console.log(this.props);
         const { openModal } = this.props;
         e.preventDefault();
-        openModal(ModalKey.RATING);
+        this.props.openModal(ModalKey.ORDER_STATUS, { order });
     }
 
     render() {
-
+        if(this.state.recent.length < 1) {
+            return null;
+        }
         return (
             <Container className="recent-orders-container">
                 <p className="recent-orders-heading">Your recent orders</p>
-                <ListGroup className="recent-orders-list" horizontal>
+                <div className="recent-orders-list" horizontal>
                     {this.state.recent.map(item => (
-                        <ListGroup.Item className="recent-order" action onClick={e => this.handleOrderClick(e, item)}>
-                            <div className="recent-order-inner">
-                                <div>
-                                    <NavLink className="recent-link-name" onClick={e => this.handleOrderClick(e, item)}>
-                                        <Image rounded className="recent-order-image" src={item.picture} />
-                                    </NavLink>
-                                </div>
-                                <div className="recent-order-info">
-                                    <div className="recent-order-name">
-                                        Your order from
+                        <ListGroup>
+                            <ListGroup.Item className="recent-order" action onClick={e => this.handleOrderClick(e, item)}>
+                                <div className="recent-order-inner">
+                                    <div>
                                         <NavLink className="recent-link-name" onClick={e => this.handleOrderClick(e, item)}>
-                                            <p>{item.chef}</p>
+                                            <Image rounded className="recent-order-image" src={item.picture} />
                                         </NavLink>
                                     </div>
-                                    <div className="recent-order-date">
-                                        <p>{item.date}</p>
+                                    <div className="recent-order-info">
+                                        <div className="recent-order-name">
+                                            Your order from
+                                        <NavLink className="recent-link-name" onClick={e => this.handleOrderClick(e, item)}>
+                                                <p>{item.name}</p>
+                                            </NavLink>
+                                        </div>
+                                        <div className="recent-order-date">
+                                            <p>{new Date(parseInt(item.orderedAt)).toLocaleString('en-US')}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </ListGroup.Item>
+                            </ListGroup.Item>
+                        </ListGroup>
                     ))}
-                </ListGroup>
+                </div>
             </Container>
         )
     }
