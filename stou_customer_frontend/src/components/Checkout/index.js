@@ -175,6 +175,7 @@ class Checkout extends Component {
         
     }
     applyDiscount = (e) => {
+        //TODO: Server call for promo_code
         let {promo_code,origTotal,total,isApplied} = this.state;
         if(promo_code == '' || !promo_code) {
             this.setState({total: origTotal});
