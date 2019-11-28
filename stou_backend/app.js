@@ -806,6 +806,51 @@ app.use('/gethomecooks', function (req, res, next) {
   });
 });
 
+app.use('/getallusers', function (req, res, next) {
+  const page = parseInt(req.body['data']['page']);
+  let role = req.body['data']['role'];
+  const start = (page - 1) * 10;
+  const end = page * 10;
+  if(role === 'Homecook') {
+    role = 'COOK';
+  }
+  let o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT * FROM USER WHERE ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '") ORDER BY FIRST_NAME, LAST_NAME LIMIT ' + start + ', ' + end + ';';
+    connection.query(q, function (err, result) {
+      if (err) console.log(err);
+      if (result.length === 0) {
+        o['code'] = 400;
+        res.status(400);
+        o['message'] = 'No users found';
+        res.send(o);
+      }
+      else {
+        let obj = [];
+        let ob = {};
+        let cookEmail;
+        for (var i = 0; i < result.length; i++) {
+          var row = result[i];
+          cookEmail = row.EMAIL;
+          ob['name'] = row.FIRST_NAME + " " + row.LAST_NAME;
+          ob['email'] = row.EMAIL;
+          ob['rating'] = row.RATING;
+          ob['aboutMe'] = row.ABOUT_ME;
+          ob['profilePicture'] = row.PICTURE;
+          obj.push(JSON.parse(JSON.stringify(ob)));
+        }
+        // console.log(obj);
+        o['data'] = obj;
+        // console.log(o);
+        if (obj.length !== 0)
+          res.send(o);
+      }
+      connection.release();
+    });
+  });
+});
+
 
 app.use('/addfooditem', function (req, res, next) {
   const itemName = req.body['data']['itemName'];
@@ -1338,8 +1383,9 @@ app.use('/register', function (req, res, next) {
   const lastName = req.body['data']['lastName'];
   const email = req.body['data']['email'];
   const password = req.body['data']['password'];
-  const role = req.body['data']['role'];
+  let role = req.body['data']['role'];
   const cuisines = 'None';
+  if (role === 'Homecook') role = 'COOK';
 
   let o = {};
 
@@ -1347,6 +1393,8 @@ app.use('/register', function (req, res, next) {
     if (err) throw err;
     var q = 'SELECT FIRST_NAME, LAST_NAME FROM USER WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC = "' + role + '");';
     connection.query(q, function (err, rows) {
+      console.log(q);
+      console.log(rows);
       if (err) {
         console.log(err);
         o['code'] = 400;
@@ -1354,7 +1402,7 @@ app.use('/register', function (req, res, next) {
         res.status(400)
         res.send(o);
       }
-      else if (rows.length !== 0) {
+      else if (rows.length > 0) {
         o['code'] = 400;
         res.status(400);
         o['message'] = 'User already registered';
