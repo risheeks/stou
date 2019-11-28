@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ToggleButtonGroup, ToggleButton, ListGroup, Button } from 'react-bootstrap';
+import { ToggleButtonGroup, ToggleButton, ListGroup, Button, Image } from 'react-bootstrap';
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { ModalKey } from '../../constants/ModalKeys';
@@ -41,6 +41,7 @@ class Orders extends Component {
         }
         axios.post(`${serverURL}/getcustomerorders`, { data })
             .then(res => {
+                console.log(res.data)
                 this.setState({
                     orders: Array.from(res.data)
                 });
@@ -59,7 +60,8 @@ class Orders extends Component {
     renderOrderInfo = order => {
         const orderTime = new Date(parseInt(order.orderedAt)).toLocaleString('en-US');
         return (
-            <div>
+            <div className="order-item-holder">
+                <Image rounded className="order-item-image" src={order.picture} />
                 <Button className="order-item-info" variant="link" onClick={e => this.handleOrder(e, order)}>
                     <div>Order from <b>{order.name}</b></div>
                     <div>Order placed at <b>{orderTime}</b></div>
@@ -73,7 +75,7 @@ class Orders extends Component {
         return (
             <ListGroup className="orders-list" >
                 {orders.map(order =>
-                    <ListGroup.Item className="order-item-div" onClick={e => this.handleOrder(e, order)}>
+                    <ListGroup.Item className="order-item-div" action onClick={e => this.handleOrder(e, order)}>
                         {this.renderOrderInfo(order)}
                         <div className="order-item-button-div">
                             <Button className={order.orderStatus === 'delivered' || order.orderStatus === 'cancelled' || order.orderStatus === 'request_cancel' ? 'hidden' : ''} variant="danger" onClick={e => this.setOrderStatus("request_cancel", order)}>Cancel</Button>

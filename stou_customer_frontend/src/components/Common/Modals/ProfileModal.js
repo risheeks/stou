@@ -31,7 +31,7 @@ class ProfileModal extends Component {
                 </Row>
                 </Modal.Body>
                 <Modal.Footer className="profile-footer-modal">
-                    <CustomRating rating="0" readonly={true} />
+                    <CustomRating rating="0" readonly={true} bowlSize="30px"/>
                 </Modal.Footer>
             </Modal>
         );

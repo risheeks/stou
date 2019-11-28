@@ -110,7 +110,7 @@ class HomeCook extends Component {
                     <Card.Text className="text-about-me-label wrapped-cook-text">
                         {description}
                     </Card.Text>
-                    <CustomRating rating={rating} readonly={true} />
+                    <CustomRating rating={rating} readonly={true} bowlSize="30px"/>
                     <Button  variant="link" onClick={this.clickMenu}>View Menu</Button>
                 </Card.Body>
             </Card>

@@ -6,14 +6,16 @@ import { Image } from 'react-bootstrap';
 
 class CustomRating extends Component {
     render() {
-        const { rating, readonly } = this.props;
+        const { rating, readonly, bowlSize, changeRating } = this.props;
 
         return (
             <Rating
+                className="custom-rating"
                 initialRating={rating}
                 readonly={readonly}
-                emptySymbol={<Image style={{width: '30px'}} src={empty_rating} />}
-                fullSymbol={<Image style={{width: '30px'}} src={full_rating} />}
+                emptySymbol={<Image style={{width: bowlSize}} src={empty_rating} />}
+                fullSymbol={<Image style={{width: bowlSize}} src={full_rating} />}
+                onChange={changeRating}
             />
         );
     }
