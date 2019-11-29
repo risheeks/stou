@@ -84,7 +84,7 @@ class Checkout extends Component {
         chatManager.connect()
         .then(currentUser => {
             this.setState({currentUser})
-            this.getRooms()
+            // this.getRooms()
         })
         .catch(err => console.log('error on connecting: ', err))
 
@@ -103,20 +103,20 @@ class Checkout extends Component {
         if(prevState.time !== this.state.time && this.state.time) {
             clearOrder();
             this.props.history.push('/');
-            const chatManager = new ChatManager({
-                instanceLocator: instanceLocator,
-                userId: this.props.email,
-                tokenProvider: new TokenProvider({
-                    url: tokenUrl,
+            // const chatManager = new ChatManager({
+            //     instanceLocator: instanceLocator,
+            //     userId: this.props.email,
+            //     tokenProvider: new TokenProvider({
+            //         url: tokenUrl,
 
-                })
-            })
-            chatManager.connect()
-            .then(currentUser => {
-                this.setState({currentUser})
-                this.getRooms()
-            })
-            .catch(err => console.log('error on connecting: ', err))
+            //     })
+            // })
+            // chatManager.connect()
+            // .then(currentUser => {
+            //     this.setState({currentUser})
+            //     this.getRooms()
+            // })
+            // .catch(err => console.log('error on connecting: ', err))
         }
     }
     handleChange = e => {
@@ -170,20 +170,7 @@ class Checkout extends Component {
         axios.post(`${serverURL}/placeorder`, {data: data})
             .then(res => {
                 console.log(email + "-" + baggedItems[0].email)
-                this.state.currentUser.createRoom({
-                    id: email + "-" + baggedItems[0].email,
-                    name: email + "-" + baggedItems[0].email,
-                    private: true,
-                    addUserIds: [email, baggedItems[0].email]
-                })
-                this.state.currentUser.addUserToRoom({
-                    userId: email,
-                    roomId: email + "-" + baggedItems[0].email
-                })
-                this.state.currentUser.addUserToRoom({
-                    userId: baggedItems[0].email,
-                    roomId: email + "-" + baggedItems[0].email
-                })
+                
             })
     }
 

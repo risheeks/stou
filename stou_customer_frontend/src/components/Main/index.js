@@ -22,6 +22,7 @@ import axios from 'axios';
 import { serverURL, pusher } from '../../config';
 import { ROLE } from '../../constants';
 import Orders from '../Orders';
+import Chat from '../Chat';
 import notificationSound from '../../constants/sounds/notification.mp3';
 
 function mapStateToProps(state) {
@@ -196,6 +197,7 @@ class Main extends Component {
                     />}
                 />
                 <MyModal {...modalProps} closeModal={closeModal} />
+                <Chat auth_token={auth_token} email={email} />
             </Router>
         );
     }
