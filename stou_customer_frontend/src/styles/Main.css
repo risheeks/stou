@@ -685,3 +685,20 @@ textarea {
 .hidden { 
   display:none; 
 }
+
+.profile-footer-modal {  
+  justify-content: space-between;  
+}
+
+.footer-review-top {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.footer-review {
+  display: flex;
+  flex-direction: column;
+  /* width: 50%; */
+}
+

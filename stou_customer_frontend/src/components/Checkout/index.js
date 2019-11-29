@@ -113,6 +113,12 @@ class Checkout extends Component {
         clearOrder();
         this.props.history.push('/');
     }
+    onTest = (e) => {
+        this.placeOrder(101010201201);
+        const { clearOrder } = this.props;
+        clearOrder();
+        this.props.history.push('/');
+    }
 
     placeOrder = (paymentID) => {
         console.log(paymentID)
@@ -251,6 +257,7 @@ class Checkout extends Component {
                         style={{layout: "vertical", shape: "rect", size: "large"}}
                     />
                     </div>
+                    <Button variant="primary" onClick={this.onTest}>Checkout</Button>
                 </div>
                 <div className="delivery-container">
                     <div className="address-div">
