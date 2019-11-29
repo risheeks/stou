@@ -49,13 +49,58 @@ class ProfileModal extends Component {
                             >
                             Review
                         </Button>
+                        
+                        <div className="">
                         <Collapse in={open}>
-                            <div >
-                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus
-                            terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer
-                            labore wes anderson cred nesciunt sapiente ea proident.
+                        <Container className="Review-container">
+                            <ListGroup>
+                            <ListGroup.Item className="food-option-view-menu">
+                            <div className="food-option-inner">
+                                <div className="review-info">
+                                    <div className="reviewer-name">
+                                        <Form.Label>
+                                            <p>Siddhant patel</p>
+                                        </Form.Label>
+                                    </div>
+                                    <div className="vfo-description wrapped-review-text">
+                                        <p>Amazing food. Tasty and healthy
+                                        </p>
+                                    </div>
+                                    <div className="review-bowl">
+                                        <p><b><CustomRating rating="2" readonly={true} bowlSize="20px"/></b></p>
+                                    </div>
+                                </div>
                             </div>
+                            </ListGroup.Item>
+                            </ListGroup>
+                        </Container>
                         </Collapse>
+                        <Collapse in={open}>
+                        <Container className="ViewFoodOptions">
+                            <ListGroup>
+                            <ListGroup.Item className="food-option-view-menu">
+                            <div className="food-option-inner">
+                                <div className="review-info">
+                                    <div className="reviewer-name">
+                                        <Form.Label>
+                                            <p>Siddhant patel</p>
+                                        </Form.Label>
+                                    </div>
+                                    <div className="vfo-description wrapped-review-text">
+                                        <p>Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus
+                                        terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer
+                                        </p>
+                                    </div>
+                                    <div className="review-bowl">
+                                        <p><b><CustomRating rating="2" readonly={true} bowlSize="20px"/></b></p>
+                                    </div>
+                                </div>
+                            </div>
+                            </ListGroup.Item>
+                            </ListGroup>
+                        </Container>
+                        </Collapse>
+                        </div>
                     </div>
                 </div>
                 </Modal.Footer>
