@@ -22,28 +22,49 @@ class Chat extends React.Component {
     } 
     
     componentDidMount() {
-        const chatManager = new ChatManager({
-            instanceLocator: instanceLocator,
-            userId: 'nr',
-            tokenProvider: new TokenProvider({
-                url: tokenUrl,
+        // console.log("props user: " + this.props.email)
+        // const chatManager = new ChatManager({
+        //     instanceLocator: instanceLocator,
+        //     userId: "nr"/*this.props.user*/,
+        //     tokenProvider: new TokenProvider({
+        //         url: tokenUrl,
 
+        //     })
+        // })
+        // chatManager.connect()
+        // .then(currentUser => {
+        //     this.setState({currentUser})
+        //     this.getRooms()
+        // })
+        // .catch(err => console.log('error on connecting: ', err))
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.email !== prevProps.email && this.props.email !== null) {
+            console.log("props user: " + this.props.email)
+            const chatManager = new ChatManager({
+                instanceLocator: instanceLocator,
+                userId: this.props.email,
+                tokenProvider: new TokenProvider({
+                    url: tokenUrl,
+
+                })
             })
-        })
-        chatManager.connect()
-        .then(currentUser => {
-            this.currentUser = currentUser
-            this.getRooms()
-        })
-        .catch(err => console.log('error on connecting: ', err))
+            chatManager.connect()
+            .then(currentUser => {
+                this.setState({currentUser})
+                this.getRooms()
+            })
+            .catch(err => console.log('error on connecting: ', err))
+        }
     }
     
     getRooms() {
-        this.currentUser.getJoinableRooms()
+        this.state.currentUser.getJoinableRooms()
         .then(joinableRooms => {
             this.setState({
                 joinableRooms,
-                joinedRooms: this.currentUser.rooms
+                joinedRooms: this.state.currentUser.rooms
             })
         })
         .catch(err => console.log('error on joinableRooms: ', err))
@@ -51,7 +72,7 @@ class Chat extends React.Component {
     
     subscribeToRoom(roomId) {
         this.setState({ messages: [] })
-        this.currentUser.subscribeToRoom({
+        this.state.currentUser.subscribeToRoom({
             roomId: roomId,
             hooks: {
                 onMessage: message => {
@@ -72,7 +93,7 @@ class Chat extends React.Component {
     }
     
     sendMessage(text) {
-        this.currentUser.sendMessage({
+        this.state.currentUser.sendMessage({
             text,
             roomId: this.state.roomId
         })

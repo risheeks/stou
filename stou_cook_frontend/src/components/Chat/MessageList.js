@@ -21,7 +21,7 @@ class MessageList extends React.Component {
             <div>
                 {this.props.messages.map((message, index) => {
                     return (
-                        <Message username="nr"/*{message.senderId}*/ text={message.text} />
+                        <Message key={index} username={message.senderId} text={message.text} />
                     )
                 })}
             </div>

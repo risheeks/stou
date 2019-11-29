@@ -111,7 +111,6 @@ class Main extends Component {
         const loggedIn = auth_token && auth_token.length > 0;
         console.log(modalProps);
         return (
-            <div>
                 <Router>
                     <Header signOut={signOut} loggedIn={loggedIn} openModal={openModal} email={email} changeLocation={changeLocation}/>
                     <Route exact path="/" render={() => <Home auth_token={auth_token} email={email} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
@@ -123,9 +122,8 @@ class Main extends Component {
                     <Route path="/orders" render={() => <Orders auth_token={auth_token} email={email} openModal={openModal} />} />
                     <Route path="/homecookmenu" render={() => <MenuModal auth_token={auth_token} email={email} openModal={openModal} />} />
                     <MyModal {...modalProps} closeModal={closeModal} />
+                    <Chat auth_token={auth_token} email={email} />
                 </Router>
-                <Chat/>
-            </div>
         );
     }
 }
