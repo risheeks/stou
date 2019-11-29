@@ -8,6 +8,13 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var cors = require('cors');
 var app = express();
+const Chatkit = require('@pusher/chatkit-server');
+const instance_locator_id = 'v1:us1:16fd20fa-20b1-4bc1-9e3a-47adc4e2320b';
+const chatkit_secret = 'f5fa044f-cc78-4874-8973-b4952bfcc68b:4+eZch6kWQ1gtBpqWtW8EpHsTKJ09frIR3ftWScTPes=';
+const chatkit = new Chatkit.default({
+  instanceLocator: instance_locator_id,
+  key: chatkit_secret,
+});
 var http = require('http');
 var querystring = require('querystring');
 const concat = require('concat-stream');
@@ -1425,6 +1432,11 @@ app.use('/register', function (req, res, next) {
 
 function registerUser(firstName, lastName, email, password, role, cuisines) {
   console.log(role);
+  chatkit.createUser({
+    id: email,
+    name: firstName + " " + lastName,
+  })
+
   let pic = '';
   if (role === 'Homecook') role = 'COOK';
   if (role === 'COOK') {
