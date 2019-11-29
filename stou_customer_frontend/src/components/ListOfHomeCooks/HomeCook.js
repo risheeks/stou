@@ -82,9 +82,9 @@ class HomeCook extends Component {
     }
 
     clickProfile = e => {
-        const { name, description, picture, rating, openModal } = this.props;
+        const { name, description, picture, rating, openModal, cook_email} = this.props;
         //console.log(this.props);
-        openModal(ModalKey.PROFILE, {name, description, picture, rating});
+        openModal(ModalKey.PROFILE, {name, description, picture, rating,cook_email});
     }
 
 
