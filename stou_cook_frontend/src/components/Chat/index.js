@@ -50,7 +50,12 @@ class Chat extends React.Component {
 
                 })
             })
-            chatManager.connect()
+            chatManager.connect({
+                onAddedToRoom: room => {
+                    console.log(`Added to room ${room.name}`)
+                    //Edit to fit UI
+                }
+            })
             .then(currentUser => {
                 this.setState({currentUser})
                 this.getRooms()
