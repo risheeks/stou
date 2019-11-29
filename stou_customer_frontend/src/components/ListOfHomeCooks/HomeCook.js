@@ -34,7 +34,6 @@ class HomeCook extends Component {
         //console.log(this.props.cook_email);
     }
     AddFavoriteHomeCook =(e) => {
-        //console.log(this.props.email + " " + this.state.cook_email);
         axios.post(`${serverURL}/setfavoritehomecooks`, {
             data: {
                 email: this.props.email,
@@ -42,12 +41,10 @@ class HomeCook extends Component {
             }
         })
         .then(res => {
-            //console.log(res.data);
         })
     }
 
     RemoveFavoriteHomeCook =(e) => {
-        //console.log(this.props.email + " " + this.state.cook_email);
         axios.post(`${serverURL}/removefavoritehomecooks`, {
             data: {
                 customerEmail: this.props.email,
