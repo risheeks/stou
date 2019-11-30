@@ -11,6 +11,14 @@ textarea {
     max-width: 5rem;
 }
 
+.feedback-button {
+  color: white;
+  
+}
+.feedback-button:hover {
+  color: white;
+}
+
 .navbar {
     background-color: #ff2700;
     padding-left: 2rem;

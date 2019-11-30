@@ -6,4 +6,5 @@ export const ModalKey = {
     ORDER_STATUS: 'ORDER_MODAL',
     ORDER_UPDATE: 'ORDER_UPDATE',
     RATING: 'RATING_MODAL',
+    FEEDBACK:'FEEDBACK_MODAL'
 }
