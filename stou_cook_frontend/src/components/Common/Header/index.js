@@ -83,10 +83,10 @@ export class Header extends Component {
                         {this.props.loggedIn ?
                             <Nav.Link as={Link} className="nav-link" to="/" onClick={this.handleSignOut}>Sign Out</Nav.Link> : null}
                     </Nav>
-                    <OnlineStatus
+                    {this.props.loggedIn ?<OnlineStatus
                             email={email}
                             openModal={openModal}
-                        />
+                        />: null}
                 </Navbar.Collapse>
             </Navbar>
         );
