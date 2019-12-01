@@ -8,6 +8,7 @@ import OrderModal from './OrderModal';
 import OrderUpdateModal from './OrderUpdateModal';
 import RequestModal from './RequestModal';
 import RatingModal from './RatingModal';
+import FeedbackModal from './FeedbackModal';
 
 class MyModal extends Component {
     render() {
@@ -30,6 +31,8 @@ class MyModal extends Component {
                 return <RequestModal {...this.props} />;
             case ModalKey.RATING:
                 return <RatingModal {...this.props} />;
+            case ModalKey.FEEDBACK:
+                return <FeedbackModal {...this.props} />;
             default:
                 return null;
         }
