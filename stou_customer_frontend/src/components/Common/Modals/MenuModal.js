@@ -13,11 +13,19 @@ class ProfileModal extends Component {
         console.log("MENUMODAL=")
         console.log(this.props)
     }
+    
     handleFoodName = (e, foodItem) => {
         console.log(foodItem);
         const { openModal, addToOrder, baggedItems, clearOrder } = this.props;
         e.preventDefault();
         openModal(ModalKey.FOOD_ITEM, { item: foodItem, addToOrder: this.props.addToOrder, baggedItems: baggedItems, clearOrder: clearOrder });
+    }
+
+    handleRequest = (e) => {
+        //console.log(request);
+        const { openModal} = this.props;
+        e.preventDefault();
+        openModal(ModalKey.REQUEST, { });
     }
 
     render() {
@@ -30,6 +38,7 @@ class ProfileModal extends Component {
                 </Modal.Header>
                 <Modal.Body>
                     {this.props.fooditems ? (
+                        <div>
                         <ListGroup>
                             {this.props.fooditems.map(item => (
                                 <ListGroup.Item className="food-option-view-menu">
@@ -60,6 +69,9 @@ class ProfileModal extends Component {
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
+
+                        <Button block bsSize="large" className="submit-button" onClick={e => this.handleRequest(e)}>Request Food</Button>
+                        </div>
                     ) : (
                             <p>No food to display</p>
                         )}

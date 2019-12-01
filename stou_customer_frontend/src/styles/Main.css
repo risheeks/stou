@@ -719,6 +719,16 @@ textarea {
   display:none; 
 }
 
+.request-button {
+  float: right;
+
+}
+
+.request_texts {
+  display: inline-block;
+  float: left;
+  text-align: left;
+}
 .profile-footer-modal {  
   justify-content: space-between;  
 }
