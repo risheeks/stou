@@ -8,6 +8,7 @@ import Login from '../Login';
 import Register from '../Register';
 import Home from '../Home';
 import Header from '../Common/Header';
+import Footer from '../Common/Footer';
 import Profile from '../Profile';
 import FavoriteHomeCooksList from '../FavoriteHomeCooks';
 import '../../styles/Main.css';
@@ -202,6 +203,11 @@ class Main extends Component {
                         clearOrder={clearOrder}
                         zipcode={zipcode}
                     />}
+                />
+                <Footer
+                openModal={openModal}
+                email={email}
+                loggedIn={loggedIn}
                 />
                 <MyModal {...modalProps} closeModal={closeModal} />
             </Router>
