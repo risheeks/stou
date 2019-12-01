@@ -203,8 +203,13 @@ textarea {
 .ViewFoodOptions {
     border-radius: 3px;
     max-width: 100%;
-    
-  }
+}
+
+.Review-container {
+  border-radius: 3px;
+  max-width: 100%;
+  padding-top: 10px;
+}
 
 .food-option {
     height: 9rem;
@@ -228,11 +233,20 @@ textarea {
     font-size: 0.75em;
     margin-top: -1rem;
     /* margin-top: -9%; */
-    
+  }
+
+  .review-bowl {
+    position:absolute;
+    bottom:0;
   }
   
   .vfo-foodname {
     padding-top: 5px;
+    font-weight: bold;
+  }
+
+  .reviewer-name {
+    padding-top: 1px;
     font-weight: bold;
   }
 
@@ -260,6 +274,12 @@ textarea {
     text-align: left;
     margin-left: 4%;
     width: 80%;
+}
+
+.review-info {
+  text-align: left;
+  /* margin-left: 4%; */
+  width: 100%;
 }
 
   .home {
@@ -667,9 +687,22 @@ textarea {
   /* height: 1.2em;  */
   white-space: nowrap;
 }
+
+.wrapped-review-text {
+  display: -webkit-box;
+  max-width:100%;
+  height: 40px;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.625;
+}
+
 .text-profile-name-modal {
   font-size: 1.3em;
 }
+
 .text-profile-description-modal {
   color: grey;
   font-size: 15.5px;
@@ -685,3 +718,30 @@ textarea {
 .hidden { 
   display:none; 
 }
+
+.request-button {
+  float: right;
+
+}
+
+.request_texts {
+  display: inline-block;
+  float: left;
+  text-align: left;
+}
+.profile-footer-modal {  
+  justify-content: space-between;  
+}
+
+.footer-review-top {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.footer-review {
+  display: flex;
+  flex-direction: column;
+  /* width: 50%; */
+}
+

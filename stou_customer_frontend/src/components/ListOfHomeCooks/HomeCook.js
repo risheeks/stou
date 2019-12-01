@@ -34,7 +34,6 @@ class HomeCook extends Component {
         //console.log(this.props.cook_email);
     }
     AddFavoriteHomeCook =(e) => {
-        //console.log(this.props.email + " " + this.state.cook_email);
         axios.post(`${serverURL}/setfavoritehomecooks`, {
             data: {
                 email: this.props.email,
@@ -42,12 +41,10 @@ class HomeCook extends Component {
             }
         })
         .then(res => {
-            //console.log(res.data);
         })
     }
 
     RemoveFavoriteHomeCook =(e) => {
-        //console.log(this.props.email + " " + this.state.cook_email);
         axios.post(`${serverURL}/removefavoritehomecooks`, {
             data: {
                 customerEmail: this.props.email,
@@ -85,9 +82,9 @@ class HomeCook extends Component {
     }
 
     clickProfile = e => {
-        const { name, description, picture, rating, openModal } = this.props;
+        const { name, description, picture, rating, openModal, cook_email} = this.props;
         //console.log(this.props);
-        openModal(ModalKey.PROFILE, {name, description, picture, rating});
+        openModal(ModalKey.PROFILE, {name, description, picture, rating,cook_email});
     }
 
 

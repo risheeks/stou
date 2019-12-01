@@ -7,6 +7,9 @@ import BagItem from '../Common/Bag/BagItem';
 import PaypalExpressBtn from 'react-paypal-express-checkout';
 import { withRouter } from 'react-router-dom';
 import { ModalKey } from '../../constants/ModalKeys';
+import { tokenUrl, instanceLocator } from '../../config'
+import { ChatManager, TokenProvider } from '@pusher/chatkit-client'
+
 
 const CLIENT = {
     sandbox: 'AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC',
@@ -70,6 +73,20 @@ class Checkout extends Component {
         if(!auth_token || auth_token === '') {
             this.props.history.push('/login');
         }
+        const chatManager = new ChatManager({
+            instanceLocator: instanceLocator,
+            userId: this.props.email,
+            tokenProvider: new TokenProvider({
+                url: tokenUrl,
+
+            })
+        })
+        chatManager.connect()
+        .then(currentUser => {
+            this.setState({currentUser})
+            this.getRooms()
+        })
+        .catch(err => console.log('error on connecting: ', err))
 
         await refresh();
         const subtotal = this.getSubtotal();
@@ -86,6 +103,20 @@ class Checkout extends Component {
         if(prevState.time !== this.state.time && this.state.time) {
             clearOrder();
             this.props.history.push('/');
+            const chatManager = new ChatManager({
+                instanceLocator: instanceLocator,
+                userId: this.props.email,
+                tokenProvider: new TokenProvider({
+                    url: tokenUrl,
+
+                })
+            })
+            chatManager.connect()
+            .then(currentUser => {
+                this.setState({currentUser})
+                this.getRooms()
+            })
+            .catch(err => console.log('error on connecting: ', err))
         }
     }
     handleChange = e => {
@@ -113,6 +144,12 @@ class Checkout extends Component {
         clearOrder();
         this.props.history.push('/');
     }
+    onTest = (e) => {
+        this.placeOrder(Date.now());
+        const { clearOrder } = this.props;
+        clearOrder();
+        this.props.history.push('/');
+    }
 
     placeOrder = (paymentID) => {
         console.log(paymentID)
@@ -132,7 +169,21 @@ class Checkout extends Component {
 
         axios.post(`${serverURL}/placeorder`, {data: data})
             .then(res => {
-                return;
+                console.log(email + "-" + baggedItems[0].email)
+                this.state.currentUser.createRoom({
+                    id: email + "-" + baggedItems[0].email,
+                    name: email + "-" + baggedItems[0].email,
+                    private: true,
+                    addUserIds: [email, baggedItems[0].email]
+                })
+                this.state.currentUser.addUserToRoom({
+                    userId: email,
+                    roomId: email + "-" + baggedItems[0].email
+                })
+                this.state.currentUser.addUserToRoom({
+                    userId: baggedItems[0].email,
+                    roomId: email + "-" + baggedItems[0].email
+                })
             })
     }
 
@@ -251,6 +302,7 @@ class Checkout extends Component {
                         style={{layout: "vertical", shape: "rect", size: "large"}}
                     />
                     </div>
+                    <Button variant="primary" onClick={this.onTest}>Checkout</Button>
                 </div>
                 <div className="delivery-container">
                     <div className="address-div">

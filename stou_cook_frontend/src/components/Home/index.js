@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Login from '../Login';
+import Chat from '../Chat'
 import Register from '../Register';
 import OnlineStatus from '../OnlineStatus'
 

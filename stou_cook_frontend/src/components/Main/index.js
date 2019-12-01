@@ -10,6 +10,7 @@ import Home from '../Home';
 import Header from '../Common/Header';
 import AddFoodItem from '../AddFoodItem';
 import Profile from '../Profile';
+import Chat from '../Chat';
 import '../../styles/Main.css';
 import MyModal from '../Common/Modals';
 import { getToken, signOut, changeLocation } from '../../actions/login.action';
@@ -20,6 +21,7 @@ import axios from 'axios';
 import { serverURL } from '../../config';
 import { ROLE } from '../../constants';
 import Orders from '../Orders';
+import Requests from '../Requests';
 import MenuModal from '../Common/Modals/MenuModal.js'
 
 function mapStateToProps(state) {
@@ -120,9 +122,11 @@ class Main extends Component {
                 <Route path="/privacyPolicy" render={() => <PrivacyPolicy auth_token={auth_token} email={email} />} />
                 <Route path="/orders" render={() => <Orders auth_token={auth_token} email={email} openModal={openModal} />} />
                 <Route path="/homecookmenu" render={() => <MenuModal auth_token={auth_token} email={email} openModal={openModal} />} />
+                <Route path="/homecookrequest" render={() => <Requests auth_token={auth_token} email={email} />} />
                 <MyModal {...modalProps} closeModal={closeModal} />
+                 <Chat auth_token={auth_token} email={email} />
             </Router>
-        );
+
     }
 }
 
