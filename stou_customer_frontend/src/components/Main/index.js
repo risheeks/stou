@@ -23,6 +23,7 @@ import { serverURL, pusher } from '../../config';
 import { ROLE } from '../../constants';
 import Orders from '../Orders';
 import notificationSound from '../../constants/sounds/notification.mp3';
+import Requests from '../Requests'
 
 function mapStateToProps(state) {
     return {
@@ -164,6 +165,13 @@ class Main extends Component {
                 />
                 <Route path="/favoriteHomecooks" render={() =>
                     <FavoriteHomeCooksList
+                        openModal={openModal}
+                        auth_token={auth_token}
+                        email={email}
+                    />}
+                />
+                <Route path="/requests" render={() =>
+                    <Requests
                         openModal={openModal}
                         auth_token={auth_token}
                         email={email}
