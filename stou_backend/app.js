@@ -397,11 +397,13 @@ app.use('/getrecentorders', function (req, res, next) {
 });
 
 app.use('/getdetailsbyorder', function (req, res, next) {
+  // console.log(req.body['data'])
   const orderId = req.body['data']['orderId'];
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.COOK_EMAIL and USER.ROLE=1 and ORDER_ID=\'' + orderId + '\';';
+    // console.log(q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -410,9 +412,12 @@ app.use('/getdetailsbyorder', function (req, res, next) {
         o['message'] = 'Invalid Order';
         res.send(o);
       } else {
+        // console.log(rows[0]);
         var ord = {};
           ord['orderedAt'] = rows[0].ORDERED_AT;
           ord['orderAddress'] = rows[0].ORDER_ADDRESS;
+          ord['cookEmail'] = rows[0].COOK_EMAIL;
+          ord['customerEmail'] = rows[0].CUSTOMER_EMAIL;
           ord['cookName'] = rows[0].FIRST_NAME + " " + rows[0].LAST_NAME;
           ord['orderStatus'] = rows[0].ORDER_STATUS;
         o['code'] = 200;

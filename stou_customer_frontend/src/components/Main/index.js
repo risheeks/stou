@@ -23,6 +23,7 @@ import axios from 'axios';
 import { serverURL, pusher } from '../../config';
 import { ROLE } from '../../constants';
 import Orders from '../Orders';
+import Chat from '../Chat';
 import notificationSound from '../../constants/sounds/notification.mp3';
 import Requests from '../Requests'
 
@@ -209,6 +210,7 @@ class Main extends Component {
                 loggedIn={loggedIn}
                 />
                 <MyModal {...modalProps} closeModal={closeModal} />
+                <Chat auth_token={auth_token} email={email} />
             </Router>
         );
     }

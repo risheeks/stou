@@ -79,6 +79,16 @@ class Checkout extends Component {
         //     tokenProvider: new TokenProvider({
         //         url: tokenUrl,
 
+<<<<<<< HEAD
+            })
+        })
+        chatManager.connect()
+        .then(currentUser => {
+            this.setState({currentUser})
+            // this.getRooms()
+        })
+        .catch(err => console.log('error on connecting: ', err))
+=======
         //     })
         // })
         // chatManager.connect()
@@ -87,6 +97,7 @@ class Checkout extends Component {
         //     this.getRooms()
         // })
         // .catch(err => console.log('error on connecting: ', err))
+>>>>>>> 0803ae6be6b2cce9677e748c8385cff66421d784
 
         await refresh();
         const subtotal = this.getSubtotal();
@@ -103,20 +114,20 @@ class Checkout extends Component {
         if(prevState.time !== this.state.time && this.state.time) {
             clearOrder();
             this.props.history.push('/');
-            const chatManager = new ChatManager({
-                instanceLocator: instanceLocator,
-                userId: this.props.email,
-                tokenProvider: new TokenProvider({
-                    url: tokenUrl,
+            // const chatManager = new ChatManager({
+            //     instanceLocator: instanceLocator,
+            //     userId: this.props.email,
+            //     tokenProvider: new TokenProvider({
+            //         url: tokenUrl,
 
-                })
-            })
-            chatManager.connect()
-            .then(currentUser => {
-                this.setState({currentUser})
-                this.getRooms()
-            })
-            .catch(err => console.log('error on connecting: ', err))
+            //     })
+            // })
+            // chatManager.connect()
+            // .then(currentUser => {
+            //     this.setState({currentUser})
+            //     this.getRooms()
+            // })
+            // .catch(err => console.log('error on connecting: ', err))
         }
     }
     handleChange = e => {
@@ -170,20 +181,7 @@ class Checkout extends Component {
         axios.post(`${serverURL}/placeorder`, {data: data})
             .then(res => {
                 console.log(email + "-" + baggedItems[0].email)
-                this.state.currentUser.createRoom({
-                    id: email + "-" + baggedItems[0].email,
-                    name: email + "-" + baggedItems[0].email,
-                    private: true,
-                    addUserIds: [email, baggedItems[0].email]
-                })
-                this.state.currentUser.addUserToRoom({
-                    userId: email,
-                    roomId: email + "-" + baggedItems[0].email
-                })
-                this.state.currentUser.addUserToRoom({
-                    userId: baggedItems[0].email,
-                    roomId: email + "-" + baggedItems[0].email
-                })
+                
             })
     }
 

@@ -364,7 +364,7 @@ align-self: center;
 }
 
 .online-status-position {
-  float: right;
+  text-align: right;
 }
 
 .text-profile-name-modal {
