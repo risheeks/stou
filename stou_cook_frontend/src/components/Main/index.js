@@ -126,7 +126,7 @@ class Main extends Component {
                 <MyModal {...modalProps} closeModal={closeModal} />
                  <Chat auth_token={auth_token} email={email} />
             </Router>
-
+        );
     }
 }
 

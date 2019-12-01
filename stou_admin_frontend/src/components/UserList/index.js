@@ -11,17 +11,10 @@ class UserList extends Component {
     super(props);
 
     this.state = {
-<<<<<<< HEAD
       search: '',
       page: 1,
       users: [],
       userRole: 'COOK',
-=======
-      search: "",
-      page: 1,
-      users: [],
-      userRole: "COOK",
->>>>>>> 58034890039a131656866c53e93a454d9251277c
       pages: [],
       lastPage: 1
     }
@@ -29,12 +22,8 @@ class UserList extends Component {
 
   componentDidMount() {
     let data = {
-<<<<<<< HEAD
       role: this.state.userRole,
       searchQuery: this.state.search
-=======
-      role: this.state.userRole
->>>>>>> 58034890039a131656866c53e93a454d9251277c
     }
     axios.post(`${serverURL}/getnumberofusers`, { data })
       .then(res => {
@@ -45,12 +34,8 @@ class UserList extends Component {
       })
     data = {
       role: this.state.userRole,
-<<<<<<< HEAD
       page: 1,
       searchQuery: this.state.search
-=======
-      page: 1
->>>>>>> 58034890039a131656866c53e93a454d9251277c
     }
     axios.post(`${serverURL}/getallusers`, { data })
       .then(res => {
@@ -63,12 +48,8 @@ class UserList extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevState.userRole !== this.state.userRole) {
       let data = {
-<<<<<<< HEAD
         role: this.state.userRole,
         searchQuery: this.state.search
-=======
-        role: this.state.userRole
->>>>>>> 58034890039a131656866c53e93a454d9251277c
       }
       axios.post(`${serverURL}/getnumberofusers`, { data })
         .then(res => {
@@ -79,12 +60,8 @@ class UserList extends Component {
         })
       data = {
         role: this.state.userRole,
-<<<<<<< HEAD
         page: this.state.page,
         searchQuery: this.state.search
-=======
-        page: this.state.page
->>>>>>> 58034890039a131656866c53e93a454d9251277c
       }
       axios.post(`${serverURL}/getallusers`, { data })
         .then(res => {
@@ -96,12 +73,8 @@ class UserList extends Component {
     else if(prevState.page !== this.state.page) {
       const data = {
         role: this.state.userRole,
-<<<<<<< HEAD
         page: this.state.page,
         searchQuery: this.state.search
-=======
-        page: this.state.page
->>>>>>> 58034890039a131656866c53e93a454d9251277c
       }
       axios.post(`${serverURL}/getallusers`, { data })
         .then(res => {
@@ -118,7 +91,6 @@ class UserList extends Component {
     })
   }
 
-<<<<<<< HEAD
   handleSearchSubmit = e => {
     let data = {
       role: this.state.userRole,
@@ -144,8 +116,6 @@ class UserList extends Component {
         })
   }
 
-=======
->>>>>>> 58034890039a131656866c53e93a454d9251277c
   handleRoleChange = e => {
     this.setState({
       userRole: e
