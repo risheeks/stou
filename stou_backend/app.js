@@ -8,6 +8,13 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var cors = require('cors');
 var app = express();
+const Chatkit = require('@pusher/chatkit-server');
+const instance_locator_id = 'v1:us1:16fd20fa-20b1-4bc1-9e3a-47adc4e2320b';
+const chatkit_secret = 'f5fa044f-cc78-4874-8973-b4952bfcc68b:4+eZch6kWQ1gtBpqWtW8EpHsTKJ09frIR3ftWScTPes=';
+const chatkit = new Chatkit.default({
+  instanceLocator: instance_locator_id,
+  key: chatkit_secret,
+});
 var http = require('http');
 var querystring = require('querystring');
 const concat = require('concat-stream');
@@ -209,6 +216,41 @@ app.use('/getallorders', function (req, res, next) {
   });
 });
 
+app.use('/getfooditemsbyorder', function (req, res, next) {
+  const orderId = req.body['data']['orderId'];
+  let o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT TITLE, DESCRIPTION, QUANTITY, FOOD.PRICE AS PRICE from ORDER_FOOD, FOOD where ORDER_ID=\'' + orderId + '\' AND FOOD.FOOD_ID=ORDER_FOOD.FOOD_ID;';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 400;
+        res.status(400)
+        o['message'] = 'Invalid Order';
+        res.send(o);
+      } else {
+        var obj = []
+        var ord = {};
+        for (let i = 0; i < rows.length; i++) {
+          ord['title'] = rows[i].TITLE;
+          ord['description'] = rows[i].DESCRIPTION;
+          ord['quantity'] = rows[i].QUANTITY;
+          ord['price'] = rows[i].PRICE;
+          obj.push(ord);
+        }
+        o = obj;
+        console.log(o);
+        o['code'] = 200;
+        o['message'] = 'Success';
+        res.status(200);
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
 app.use('/getcustomerorders', function (req, res, next) {
   const customerEmail = req.body['data']['customerEmail'];
   var o = {};
@@ -236,6 +278,7 @@ app.use('/getcustomerorders', function (req, res, next) {
           ord['deliveryTime'] = rows[i].DELIVERY_TIME;
           ord['orderAddress'] = rows[i].ORDER_ADDRESS;
           ord['orderStatus'] = rows[i].ORDER_STATUS;
+          ord['picture'] = rows[i].PICTURE;
           obj.push(ord);
         }
         console.log(rows);
@@ -250,31 +293,38 @@ app.use('/getcustomerorders', function (req, res, next) {
   });
 });
 
-app.use('/getfooditemsbyorder', function (req, res, next) {
-  const orderId = req.body['data']['orderId'];
+app.use('/getrecentorders', function (req, res, next) {
+  const customerEmail = req.body['data']['customerEmail'];
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT TITLE, DESCRIPTION, QUANTITY, FOOD.PRICE AS PRICE from ORDER_FOOD, FOOD where ORDER_ID=\'' + orderId + '\' AND FOOD.FOOD_ID=ORDER_FOOD.FOOD_ID;';
+    let q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.COOK_EMAIL AND USER.ROLE=1 AND CUSTOMER_EMAIL="' + customerEmail + '" AND ORDERED_AT > "' + (Date.now() - 2419200000) + '" ORDER BY ORDERED_AT DESC;';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
         o['code'] = 400;
         res.status(400)
-        o['message'] = 'Invalid Order';
+        o['message'] = 'Invalid Cook';
         res.send(o);
-      } else {
-        var obj = []
-        var ord = {};
+      }
+      else {
+        let obj = [];
         for (let i = 0; i < rows.length; i++) {
-          ord['title'] = rows[i].TITLE;
-          ord['description'] = rows[i].DESCRIPTION;
-          ord['quantity'] = rows[i].QUANTITY;
-          ord['price'] = rows[i].PRICE;
+          let ord = {};
+          ord['name'] = rows[i].FIRST_NAME + " " + rows[i].LAST_NAME;
+          ord['orderId'] = rows[i].ORDER_ID;
+          ord['orderedAt'] = rows[i].ORDERED_AT;
+          ord['cookEmail'] = rows[i].COOK_EMAIL;
+          ord['customerEmail'] = rows[i].CUSTOMER_EMAIL;
+          ord['instructions'] = rows[i].INSTRUCTIONS;
+          ord['deliveryTime'] = rows[i].DELIVERY_TIME;
+          ord['orderAddress'] = rows[i].ORDER_ADDRESS;
+          ord['orderStatus'] = rows[i].ORDER_STATUS;
+          ord['picture'] = rows[i].PICTURE;
           obj.push(ord);
         }
+        console.log(rows);
         o = obj;
-        console.log(o);
         o['code'] = 200;
         o['message'] = 'Success';
         res.status(200);
@@ -756,6 +806,84 @@ app.use('/gethomecooks', function (req, res, next) {
         o['data'] = obj;
         // console.log(o);
         if (obj.length !== 0)
+          res.send(o);
+      }
+      connection.release();
+    });
+  });
+});
+
+app.use('/getallusers', function (req, res, next) {
+  const page = parseInt(req.body['data']['page']);
+  let role = req.body['data']['role'];
+  const start = (page - 1) * 10;
+  const end = page * 10;
+  if(role === 'Homecook') {
+    role = 'COOK';
+  }
+  let o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT * FROM USER WHERE ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '") ORDER BY FIRST_NAME, LAST_NAME LIMIT ' + start + ', ' + end + ';';
+    connection.query(q, function (err, result) {
+      if (err) console.log(err);
+      if (result.length === 0) {
+        o['code'] = 400;
+        res.status(400);
+        o['message'] = 'No users found';
+        res.send(o);
+      }
+      else {
+        let obj = [];
+        let ob = {};
+        let cookEmail;
+        for (var i = 0; i < result.length; i++) {
+          var row = result[i];
+          cookEmail = row.EMAIL;
+          ob['name'] = row.FIRST_NAME + " " + row.LAST_NAME;
+          ob['email'] = row.EMAIL;
+          ob['rating'] = row.RATING;
+          ob['aboutMe'] = row.ABOUT_ME;
+          ob['picture'] = row.PICTURE;
+          obj.push(JSON.parse(JSON.stringify(ob)));
+        }
+        // console.log(obj);
+        o['data'] = obj;
+        // console.log(o);
+        if (obj.length !== 0)
+          res.send(o);
+      }
+      connection.release();
+    });
+  });
+});
+
+app.use('/getnumberofusers', function (req, res, next) {
+  let role = req.body['data']['role'];
+  if(role === 'Homecook') {
+    role = 'COOK';
+  }
+  let o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT COUNT(*) AS numusers FROM USER WHERE ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
+    connection.query(q, function (err, result) {
+      if (err) console.log(err);
+      if (result.length === 0) {
+        o['code'] = 400;
+        res.status(400);
+        o['message'] = 'No users found';
+        res.send(o);
+      }
+      else {
+        let obj = [];
+        let ob = {};
+        let cookEmail;
+        ob['numUsers'] = Math.ceil(result[0].numusers/10);
+        // console.log(obj);
+        o['data'] = JSON.parse(JSON.stringify(ob));
+        // console.log(o);
+        if (ob)
           res.send(o);
       }
       connection.release();
@@ -1295,8 +1423,9 @@ app.use('/register', function (req, res, next) {
   const lastName = req.body['data']['lastName'];
   const email = req.body['data']['email'];
   const password = req.body['data']['password'];
-  const role = req.body['data']['role'];
+  let role = req.body['data']['role'];
   const cuisines = 'None';
+  if (role === 'Homecook') role = 'COOK';
 
   let o = {};
 
@@ -1304,6 +1433,8 @@ app.use('/register', function (req, res, next) {
     if (err) throw err;
     var q = 'SELECT FIRST_NAME, LAST_NAME FROM USER WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC = "' + role + '");';
     connection.query(q, function (err, rows) {
+      console.log(q);
+      console.log(rows);
       if (err) {
         console.log(err);
         o['code'] = 400;
@@ -1311,7 +1442,7 @@ app.use('/register', function (req, res, next) {
         res.status(400)
         res.send(o);
       }
-      else if (rows.length !== 0) {
+      else if (rows.length > 0) {
         o['code'] = 400;
         res.status(400);
         o['message'] = 'User already registered';
@@ -1334,6 +1465,11 @@ app.use('/register', function (req, res, next) {
 
 function registerUser(firstName, lastName, email, password, role, cuisines) {
   console.log(role);
+  chatkit.createUser({
+    id: email,
+    name: firstName + " " + lastName,
+  })
+
   let pic = '';
   if (role === 'Homecook') role = 'COOK';
   if (role === 'COOK') {

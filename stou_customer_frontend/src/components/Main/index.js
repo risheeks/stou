@@ -73,6 +73,7 @@ class Main extends Component {
         }
         const { auth_token, email, zipcode } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
+        this.props.openModal(ModalKey.RATING)
         if (loggedIn) {
             const newLocation = await this.getLocation();
             if (!newLocation || newLocation === '') {

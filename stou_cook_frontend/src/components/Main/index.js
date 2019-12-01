@@ -10,6 +10,7 @@ import Home from '../Home';
 import Header from '../Common/Header';
 import AddFoodItem from '../AddFoodItem';
 import Profile from '../Profile';
+import Chat from '../Chat';
 import '../../styles/Main.css';
 import MyModal from '../Common/Modals';
 import { getToken, signOut, changeLocation } from '../../actions/login.action';
@@ -123,8 +124,9 @@ class Main extends Component {
                 <Route path="/homecookmenu" render={() => <MenuModal auth_token={auth_token} email={email} openModal={openModal} />} />
                 <Route path="/homecookrequest" render={() => <Requests auth_token={auth_token} email={email} />} />
                 <MyModal {...modalProps} closeModal={closeModal} />
+                 <Chat auth_token={auth_token} email={email} />
             </Router>
-        );
+
     }
 }
 

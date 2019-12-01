@@ -7,6 +7,9 @@ import BagItem from '../Common/Bag/BagItem';
 import PaypalExpressBtn from 'react-paypal-express-checkout';
 import { withRouter } from 'react-router-dom';
 import { ModalKey } from '../../constants/ModalKeys';
+import { tokenUrl, instanceLocator } from '../../config'
+import { ChatManager, TokenProvider } from '@pusher/chatkit-client'
+
 
 const CLIENT = {
     sandbox: 'AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC',
@@ -17,7 +20,8 @@ const style = {
     color: 'gold',
     shape: 'rect',
     label: 'checkout',
-    tagline: 'true'
+    tagline: 'true',
+    promo_code: ''
 };
 
 class Checkout extends Component {
@@ -27,6 +31,9 @@ class Checkout extends Component {
             subtotal: 0,
             fees: 0,
             total: 0,
+            origTotal:0,
+            discount: 0,
+            isApplied: false,
             street: '',
             city: '',
             state: '',
@@ -66,6 +73,20 @@ class Checkout extends Component {
         if(!auth_token || auth_token === '') {
             this.props.history.push('/login');
         }
+        const chatManager = new ChatManager({
+            instanceLocator: instanceLocator,
+            userId: this.props.email,
+            tokenProvider: new TokenProvider({
+                url: tokenUrl,
+
+            })
+        })
+        chatManager.connect()
+        .then(currentUser => {
+            this.setState({currentUser})
+            this.getRooms()
+        })
+        .catch(err => console.log('error on connecting: ', err))
 
         await refresh();
         const subtotal = this.getSubtotal();
@@ -73,6 +94,7 @@ class Checkout extends Component {
             subtotal: subtotal,
             fees: (subtotal * 0.15).toFixed(2),
             total: (subtotal * 1.15).toFixed(2),
+            origTotal: (subtotal * 1.15).toFixed(2)
         });
     }
 
@@ -81,6 +103,20 @@ class Checkout extends Component {
         if(prevState.time !== this.state.time && this.state.time) {
             clearOrder();
             this.props.history.push('/');
+            const chatManager = new ChatManager({
+                instanceLocator: instanceLocator,
+                userId: this.props.email,
+                tokenProvider: new TokenProvider({
+                    url: tokenUrl,
+
+                })
+            })
+            chatManager.connect()
+            .then(currentUser => {
+                this.setState({currentUser})
+                this.getRooms()
+            })
+            .catch(err => console.log('error on connecting: ', err))
         }
     }
     handleChange = e => {
@@ -108,6 +144,12 @@ class Checkout extends Component {
         clearOrder();
         this.props.history.push('/');
     }
+    onTest = (e) => {
+        this.placeOrder(Date.now());
+        const { clearOrder } = this.props;
+        clearOrder();
+        this.props.history.push('/');
+    }
 
     placeOrder = (paymentID) => {
         console.log(paymentID)
@@ -127,7 +169,21 @@ class Checkout extends Component {
 
         axios.post(`${serverURL}/placeorder`, {data: data})
             .then(res => {
-                return;
+                console.log(email + "-" + baggedItems[0].email)
+                this.state.currentUser.createRoom({
+                    id: email + "-" + baggedItems[0].email,
+                    name: email + "-" + baggedItems[0].email,
+                    private: true,
+                    addUserIds: [email, baggedItems[0].email]
+                })
+                this.state.currentUser.addUserToRoom({
+                    userId: email,
+                    roomId: email + "-" + baggedItems[0].email
+                })
+                this.state.currentUser.addUserToRoom({
+                    userId: baggedItems[0].email,
+                    roomId: email + "-" + baggedItems[0].email
+                })
             })
     }
 
@@ -152,6 +208,8 @@ class Checkout extends Component {
             this.setState({zipcode: e.target.value});
         }else if(name === "instructions") {
             this.setState({instructions: e.target.value});
+        }else if(name === "promo-code") {
+            this.setState({promo_code: e.target.value});
         }
     }
     validate = (street, city, state, zipcode) => {
@@ -167,6 +225,23 @@ class Checkout extends Component {
         return ""
         
     }
+    applyDiscount = (e) => {
+        //TODO: Server call for promo_code
+        let {promo_code,origTotal,total,isApplied} = this.state;
+        if(promo_code == '' || !promo_code) {
+            this.setState({total: origTotal});
+            this.setState({discount: 0});
+            this.setState({isApplied: false});
+            return;
+        }
+        console.log(promo_code)
+        if(!isApplied) {
+            this.setState({discount: "-"+(total/10).toFixed(2)});
+            let newTotal = (total - total/10).toFixed(2);
+            this.setState({total: newTotal});
+            this.setState({isApplied: true});
+        }
+    }
 
     render() {
          //console.log(this.state.time)
@@ -177,7 +252,7 @@ class Checkout extends Component {
             production: 'YOUR-PRODUCTION-APP-ID',
         }
         const { baggedItems, clearOrder } = this.props;
-        const { instructions, street, city, state, zipcode, subtotal, fees, total } = this.state;
+        const { instructions, street, city, state, zipcode, subtotal, fees, total, discount, promo_code} = this.state;
         
         return (
             <div className="checkout-container">
@@ -203,6 +278,10 @@ class Checkout extends Component {
                                 <p className="bag-item-name">Fees and charges:</p>
                                 <p className="bag-item-price">${fees}</p>
                             </div>
+                            <div className="bag-item-container">
+                                <p className="bag-item-name">Discount:</p>
+                                <p className="bag-item-price"><b>${discount}</b></p>
+                            </div>
                             
                             <div className="bag-item-container">
                                 <p className="bag-item-name"><b>Total:</b></p>
@@ -223,6 +302,7 @@ class Checkout extends Component {
                         style={{layout: "vertical", shape: "rect", size: "large"}}
                     />
                     </div>
+                    <Button variant="primary" onClick={this.onTest}>Checkout</Button>
                 </div>
                 <div className="delivery-container">
                     <div className="address-div">
@@ -259,6 +339,21 @@ class Checkout extends Component {
                             </Form.Group>
                         </Form>
                     </div>
+                    {/* <div className="input-row"> */}
+                    <Form>
+                        <Form.Group className="promo-code" controlId="promo-code">
+                        <Form.Label>Promo-code:</Form.Label>
+                            <Row>
+                                <Col>
+                                    <Form.Control type="text" placeholder="Enter code" value={promo_code} onChange={(e) => this.handleChange(e, "promo-code")}/>
+                                </Col>
+                                <Col>
+                                    <Button variant="primary" onClick={(e) => this.applyDiscount(e)}>Enter</Button>
+                                </Col>
+                            </Row>
+                        </Form.Group>
+                    </Form>
+                    {/* </div> */}
                 </div>
             </div>
         );

@@ -10,6 +10,7 @@ import { serverURL } from '../../config';
 import { Container, ListGroup, Form, Button, Modal, Tabs, Tab } from 'react-bootstrap';
 import { ModalKey } from '../../constants/ModalKeys';
 import { ROLE } from '../../constants';
+import RecentOrders from '../RecentOrders';
 
 export class Home extends Component {
 
@@ -32,10 +33,11 @@ export class Home extends Component {
     }
 
     render() {
-        const { openModal, addToOrder, location, baggedItems, clearOrder } = this.props;
+        const { openModal, addToOrder, location, baggedItems, clearOrder, email } = this.props;
         //console.log(location)
         return (
             <div className="home">
+                <RecentOrders openModal={openModal} email={email} />
                 <Tabs defaultActiveKey="food" id="uncontrolled-tab-example">
                     <Tab eventKey="food" title="Food">
                         <div className="homec">

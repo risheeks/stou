@@ -152,6 +152,18 @@ textarea {
   margin-right: 20px !important;
 }
 
+.rating-modal-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center !important;
+  margin-bottom: 15px;
+}
+
+.custom-rating {
+  width: fit-content;
+  align-self: center;
+}
+
 @media all and (min-width: 480px) {
     .Login {
       padding: 60px 0;
@@ -191,8 +203,13 @@ textarea {
 .ViewFoodOptions {
     border-radius: 3px;
     max-width: 100%;
-    
-  }
+}
+
+.Review-container {
+  border-radius: 3px;
+  max-width: 100%;
+  padding-top: 10px;
+}
 
 .food-option {
     height: 9rem;
@@ -216,11 +233,20 @@ textarea {
     font-size: 0.75em;
     margin-top: -1rem;
     /* margin-top: -9%; */
-    
+  }
+
+  .review-bowl {
+    position:absolute;
+    bottom:0;
   }
   
   .vfo-foodname {
     padding-top: 5px;
+    font-weight: bold;
+  }
+
+  .reviewer-name {
+    padding-top: 1px;
     font-weight: bold;
   }
 
@@ -248,6 +274,12 @@ textarea {
     text-align: left;
     margin-left: 4%;
     width: 80%;
+}
+
+.review-info {
+  text-align: left;
+  /* margin-left: 4%; */
+  width: 100%;
 }
 
   .home {
@@ -366,6 +398,9 @@ textarea {
 .address-inputs {
   width: 50%;
   margin: 1%;
+}
+.promo-code {
+  text-align: left;
 }
 
 .address-div {
@@ -486,6 +521,87 @@ textarea {
   text-align: right;
 }
 
+.recent-orders-heading {
+  font-size: 20px;
+}
+
+.recent-order-inner {
+  display: flex;
+  flex-direction: row;
+  width: 20rem;
+}
+
+.recent-order-image {
+  width: 6.5rem;
+  height: 6.5rem;
+  object-fit: cover;
+}
+
+.recent-order-date {
+  color: rgba(111, 95, 95, 0.67);
+  font-size: 0.75em;
+  margin-top: -1rem;
+}
+
+.recent-order-name {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.recent-link-name {
+  text-align: left;
+}
+
+.recent-orders-container > p {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.recent-orders-list {
+  display: flex;
+  flex-direction: row;
+  overflow-x: scroll;
+  margin-bottom: 10px;
+  padding-bottom: 20px;
+}
+
+.recent-order {
+  margin: 2rem;
+  padding: 10px;
+  width: fit-content !important;
+}
+
+.order-item-holder {
+  display: flex;
+  flex-direction: row;
+}
+
+.order-item-image {
+  width: 4rem;
+  height: 4rem;
+  object-fit: cover;
+}
+
+.rate-orders-heading {
+  margin-top: 15px;
+  font-size: 20px;
+}
+
+.rate-submit-div {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.rate-submit {
+  width: 100%;
+  align-self: center;
+}
+
 @media all and (min-width: 480px) {
     .Register {
       border: 1px solid rgb(202, 202, 202);
@@ -571,9 +687,22 @@ textarea {
   /* height: 1.2em;  */
   white-space: nowrap;
 }
+
+.wrapped-review-text {
+  display: -webkit-box;
+  max-width:100%;
+  height: 40px;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.625;
+}
+
 .text-profile-name-modal {
   font-size: 1.3em;
 }
+
 .text-profile-description-modal {
   color: grey;
   font-size: 15.5px;
@@ -600,3 +729,19 @@ textarea {
   float: left;
   text-align: left;
 }
+.profile-footer-modal {  
+  justify-content: space-between;  
+}
+
+.footer-review-top {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.footer-review {
+  display: flex;
+  flex-direction: column;
+  /* width: 50%; */
+}
+
