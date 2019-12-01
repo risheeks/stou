@@ -6,7 +6,9 @@ import ProfileModal from './ProfileModal';
 import MenuModal from './MenuModal';
 import OrderModal from './OrderModal';
 import OrderUpdateModal from './OrderUpdateModal';
+import RequestModal from './RequestModal';
 import RatingModal from './RatingModal';
+import FeedbackModal from './FeedbackModal';
 
 class MyModal extends Component {
     render() {
@@ -25,8 +27,12 @@ class MyModal extends Component {
                 return <OrderModal {...this.props} />;
             case ModalKey.ORDER_UPDATE:
                 return <OrderUpdateModal {...this.props} />;
+            case ModalKey.REQUEST:
+                return <RequestModal {...this.props} />;
             case ModalKey.RATING:
                 return <RatingModal {...this.props} />;
+            case ModalKey.FEEDBACK:
+                return <FeedbackModal {...this.props} />;
             default:
                 return null;
         }

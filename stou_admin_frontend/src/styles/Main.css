@@ -1,0 +1,101 @@
+.navbar-logo {
+  max-width: 5rem;
+}
+
+.navbar {
+  background-color: white;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.navbar-content {
+  align-self: right;
+}
+
+.navbar-content > .nav-link {
+  color: black !important;
+}
+
+.navbar-content > .active {
+  color: grey !important;
+  background-color: white !important;
+}
+
+.submit-button {
+  background-color: #ff2700 !important;
+}
+
+body {
+  background-color: #454d55;
+}
+
+.userlist-container {
+  margin: 5%;
+}
+
+.searchbar-container {
+  margin: 10px 0;
+  display: flex;
+  flex-direction: row;
+}
+
+.searchbar-button {
+  background-color: #6c757d;
+  color: white;
+}
+
+.single-checkbox {
+  background-color: #6c757d;
+  color: white;
+  border-color: #6c757d;
+  height: fit-content;
+}
+
+.searchbar-input {
+  margin-right: 5%;
+}
+
+.text-profile-name-modal {
+  font-size: 1.3em;
+  margin-bottom: 0 !important;
+}
+
+.text-profile-description-modal {
+  color: grey;
+  font-size: 15.5px;
+}
+
+.text-profile-email-modal {
+  color: grey;
+  font-size: 15px;
+}
+
+.text-profile-flex {
+  display: flex;
+  flex-direction: column;
+}
+
+.feedback-page {
+  margin: 5% 10%;
+}
+
+.feedback-card {
+  border-color: #454d55;
+}
+
+.feedback-card-header-text {
+  text-align: left;
+}
+
+.feedback-card-header {
+  text-align: left;
+  background-color: #343a40;
+  border-color: #343a40;
+}
+
+.feedback-card-body {
+  text-align: left;
+  background-color: #6c757d;
+  color: white;
+
+}

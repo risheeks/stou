@@ -73,12 +73,13 @@ class Checkout extends Component {
         if(!auth_token || auth_token === '') {
             this.props.history.push('/login');
         }
-        const chatManager = new ChatManager({
-            instanceLocator: instanceLocator,
-            userId: this.props.email,
-            tokenProvider: new TokenProvider({
-                url: tokenUrl,
+        // const chatManager = new ChatManager({
+        //     instanceLocator: instanceLocator,
+        //     userId: this.props.email,
+        //     tokenProvider: new TokenProvider({
+        //         url: tokenUrl,
 
+<<<<<<< HEAD
             })
         })
         chatManager.connect()
@@ -87,6 +88,16 @@ class Checkout extends Component {
             // this.getRooms()
         })
         .catch(err => console.log('error on connecting: ', err))
+=======
+        //     })
+        // })
+        // chatManager.connect()
+        // .then(currentUser => {
+        //     this.setState({currentUser})
+        //     this.getRooms()
+        // })
+        // .catch(err => console.log('error on connecting: ', err))
+>>>>>>> 0803ae6be6b2cce9677e748c8385cff66421d784
 
         await refresh();
         const subtotal = this.getSubtotal();

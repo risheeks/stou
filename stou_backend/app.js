@@ -821,6 +821,7 @@ app.use('/gethomecooks', function (req, res, next) {
 app.use('/getallusers', function (req, res, next) {
   const page = parseInt(req.body['data']['page']);
   let role = req.body['data']['role'];
+  const searchQuery = req.body['data']['searchQuery'];
   const start = (page - 1) * 10;
   const end = page * 10;
   if(role === 'Homecook') {
@@ -829,7 +830,7 @@ app.use('/getallusers', function (req, res, next) {
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT * FROM USER WHERE ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '") ORDER BY FIRST_NAME, LAST_NAME LIMIT ' + start + ', ' + end + ';';
+    var q = 'SELECT * FROM USER WHERE ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '") AND (FIRST_NAME LIKE "%'+ searchQuery + '%" OR EMAIL LIKE "%'+ searchQuery + '%" OR LAST_NAME LIKE "%'+ searchQuery + '%") ORDER BY FIRST_NAME, LAST_NAME LIMIT ' + start + ', ' + end + ';';
     connection.query(q, function (err, result) {
       if (err) console.log(err);
       if (result.length === 0) {
@@ -849,13 +850,47 @@ app.use('/getallusers', function (req, res, next) {
           ob['email'] = row.EMAIL;
           ob['rating'] = row.RATING;
           ob['aboutMe'] = row.ABOUT_ME;
-          ob['profilePicture'] = row.PICTURE;
+          ob['picture'] = row.PICTURE;
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         // console.log(obj);
         o['data'] = obj;
         // console.log(o);
         if (obj.length !== 0)
+          res.send(o);
+      }
+      connection.release();
+    });
+  });
+});
+
+app.use('/getnumberofusers', function (req, res, next) {
+  let role = req.body['data']['role'];
+  const searchQuery = req.body['data']['searchQuery'];
+  if(role === 'Homecook') {
+    role = 'COOK';
+  }
+  let o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT COUNT(*) AS numusers FROM USER WHERE ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '") AND (FIRST_NAME LIKE "%'+ searchQuery + '%" OR EMAIL LIKE "%'+ searchQuery + '%" OR LAST_NAME LIKE "%'+ searchQuery + '%");';
+    connection.query(q, function (err, result) {
+      if (err) console.log(err);
+      if (result.length === 0) {
+        o['code'] = 400;
+        res.status(400);
+        o['message'] = 'No users found';
+        res.send(o);
+      }
+      else {
+        let obj = [];
+        let ob = {};
+        let cookEmail;
+        ob['numUsers'] = Math.ceil(result[0].numusers/10);
+        // console.log(obj);
+        o['data'] = JSON.parse(JSON.stringify(ob));
+        // console.log(o);
+        if (ob)
           res.send(o);
       }
       connection.release();
