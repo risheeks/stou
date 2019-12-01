@@ -190,6 +190,7 @@ class Chat extends React.Component {
                 joinableRooms,
                 joinedRooms: this.state.currentUser.rooms
             })
+            console.log("joined rooms" + this.state.joinedRooms)
         })
         .catch(err => console.log('error on joinableRooms: ', err))
     }
