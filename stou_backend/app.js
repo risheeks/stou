@@ -100,6 +100,67 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
+
+app.use('/setfeeedback', function (req, res, next) {
+  const email = req.body['data']['email'];
+  let feedback = req.body['data']['feedback'];
+
+  let o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'INSERT INTO FEEDBACK VALUES (\'' + email + '\', \'' + feedback + '\');';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 500;
+        res.status(500);
+        o['message'] = 'Internal Server Error';
+        res.send(o);
+      }
+      else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Feedback added';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+app.use('/getfeedback', function (req, res, next) {
+
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT * FROM FEEDBACK';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'No feedback found';
+        res.send(o);
+      }
+      else {
+        let obList = [];
+        var ob = {};
+        for(i = 0; i < rows.length; i++) {
+          ob = { 'email' : rows[i].EMAIL, 'feedback' : rows[i].FEEDBACK};
+          obList.push(ob);
+          ob = {};
+        }
+        o['data'] = obList;
+        o['code'] = 200;
+        console.log(o);
+        res.status(200);
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
 app.use('/setorderstatus', function (req, res, next) {
   console.log(req.body.data);
   const orderId = req.body['data']['orderId'];
