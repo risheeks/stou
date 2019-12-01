@@ -196,11 +196,7 @@ class UserList extends Component {
           <InputGroup className="mb-3" className="searchbar-input">
             <FormControl type="text" placeholder="Search" onChange={this.handleSearchChange} value={search} />
             <InputGroup.Append>
-<<<<<<< HEAD
               <Button className="searchbar-button" variant="outline-secondary" onClick={this.handleSearchSubmit}>Search</Button>
-=======
-              <Button className="searchbar-button" variant="outline-secondary">Search</Button>
->>>>>>> 58034890039a131656866c53e93a454d9251277c
             </InputGroup.Append>
           </InputGroup>
           <ToggleButtonGroup defaultValue="COOK" className="multi-checkbox-div" name="user_role" type="radio" value={userRole} onChange={this.handleRoleChange}>
