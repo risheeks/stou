@@ -2,9 +2,26 @@ import React, { Component } from "react";
 import { Modal, Button, Form, Col, Row, Image } from "react-bootstrap";
 import { ModalKey } from '../../../constants/ModalKeys';
 import CustomRating from "../CustomRating";
+import axios from 'axios';
+import { serverURL } from "../../../config";
+
 class BanProfileModal extends Component {
     constructor(props) {
       super(props);
+    }
+
+    changeBanStatus = e => {
+        const data = {
+            email: this.props.email,
+            role: this.props.role,
+            status: !this.props.banStatus
+        }
+        axios.post(`${serverURL}/changebanstatus`, { data })
+            .then(res => {
+                console.log(res.data);
+                this.props.reloadAfterBan();
+                this.props.closeModal();
+            })
     }
 
     render() {
@@ -31,7 +48,7 @@ class BanProfileModal extends Component {
                 </Modal.Body>
                 <Modal.Footer className="profile-footer-modal">
                     <Button>View Chat History</Button>
-                    <Button variant="danger">Ban User</Button>
+                    <Button variant={this.props.banStatus ? "success" : "danger"} onClick={this.changeBanStatus}>{this.props.banStatus ? 'Un' : ''}Ban User</Button>
                 </Modal.Footer>
             </Modal>
         );

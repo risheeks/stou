@@ -776,3 +776,10 @@ textarea {
   /* width: 50%; */
 }
 
+.alert-fixed {
+  position: fixed; 
+  top: 60px; 
+  left: 25%;
+  z-index: 9999; 
+  width: 50%;
+}

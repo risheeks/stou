@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { withRouter } from 'react-router-dom';
+import { ModalKey } from '../../constants/ModalKeys';
 
 export class Login extends Component {
   constructor(props) {
@@ -49,7 +50,9 @@ export class Login extends Component {
         this.props.history.push('/');
       })
       .catch(err => {
-        console.log(err);
+        if(err.response.data.code === 401) {
+          this.props.openModal(ModalKey.ERROR_MODAL, {...err.response.data})
+        }
       })
   }
 

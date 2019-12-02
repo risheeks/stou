@@ -156,6 +156,7 @@ class Main extends Component {
                         auth_token={auth_token}
                         email={email}
                         getToken={getToken}
+                        openModal={openModal}
                     />}
                 />
                 <Route path="/register" render={() =>
@@ -163,6 +164,7 @@ class Main extends Component {
                         auth_token={auth_token}
                         email={email}
                         getToken={getToken}
+                        openModal={openModal}
                     />}
                 />
                 <Route path="/favoriteHomecooks" render={() =>

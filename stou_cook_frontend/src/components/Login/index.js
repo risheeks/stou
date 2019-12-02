@@ -48,7 +48,9 @@ export class Login extends Component {
         this.props.getToken(res.data['token'], email);
       })
       .catch(err => {
-        console.log(err);
+        if(err.response.data.code === 401) {
+          this.props.openModal(ModalKey.ERROR_MODAL, {...err.response.data})
+        }
       })
   }
 
@@ -61,7 +63,6 @@ export class Login extends Component {
     return (
       <div className="Login container">
         { this.props.auth_token ? this.props.history.push('/') : null}
-        <ResetPassword show={this.props.showModal} closeModal={this.props.closeModal} />
         <form onSubmit={this.handleSubmit}>
           <FormGroup controlId="email">
             <FormLabel>Email</FormLabel>

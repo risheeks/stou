@@ -182,7 +182,7 @@ app.use('/changebanstatus', function (req, res, next) {
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'UPDATE USER SET BANNED=' + status + ' WHERE EMAIL=\'' + email + ' AND ROLE=' + role + ';';
+    var q = 'UPDATE USER SET BANNED=' + status + ' WHERE EMAIL="' + email + '" AND ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -1272,6 +1272,7 @@ app.use('/getallusers', function (req, res, next) {
           ob['rating'] = row.RATING;
           ob['aboutMe'] = row.ABOUT_ME;
           ob['picture'] = row.PICTURE;
+          ob['banStatus'] = row.BANNED;
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         // console.log(obj);
@@ -1825,16 +1826,23 @@ app.use('/login', function(req, res, next){
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT FIRST_NAME, LAST_NAME FROM USER WHERE EMAIL = "' + email + '" AND PASSWORD = "' + password + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC = "' + role + '");';
+    var q = 'SELECT FIRST_NAME, LAST_NAME, BANNED FROM USER WHERE EMAIL = "' + email + '" AND PASSWORD = "' + password + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC = "' + role + '");';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
-        o['code'] = 400;
+        o['code'] = 401;
         o['message'] = 'Invalid login credentials';
-        res.status(400);
+        res.status(401);
         console.log(o);
         res.send(o);
-      } else {
+      }
+      else if(rows[0].BANNED) {
+        o['code'] = 401;
+        o['message'] = 'Sorry, you have been banned for misconduct. Please contact customer support if you think this is a mistake.';
+        res.status(401);
+        res.send(o);
+      }
+      else {
         o['code'] = 200;
         o['message'] = 'Login successful';
         o['token'] = uuidv4();
@@ -1913,7 +1921,7 @@ function registerUser(firstName, lastName, email, password, role, cuisines) {
   })
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'INSERT INTO USER (PICTURE, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, ROLE) values("' + pic + '", "' + firstName + '", "' + lastName + '", "' + email + '", "' + password + '", (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '"));';
+    var q = 'INSERT INTO USER (PICTURE, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, ROLE, BANNED) values("' + pic + '", "' + firstName + '", "' + lastName + '", "' + email + '", "' + password + '", (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '"), 0);';
     connection.query(q, function (err, rows) {
       if (err) {
         console.log(err);

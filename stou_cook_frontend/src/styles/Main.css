@@ -256,6 +256,14 @@ align-self: center;
   width: 100%;
 }
 
+.alert-fixed {
+  position: fixed; 
+  top: 60px; 
+  left: 25%;
+  z-index: 9999; 
+  width: 50%;
+}
+
 @media all and (min-width: 480px) {
   .Login {
     padding: 60px 0;

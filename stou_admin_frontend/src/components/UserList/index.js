@@ -128,9 +128,23 @@ class UserList extends Component {
     })
   }
 
+  reloadAfterBan = e => {
+    const data = {
+      role: this.state.userRole,
+      page: this.state.page,
+      searchQuery: this.state.search
+    }
+    axios.post(`${serverURL}/getallusers`, { data })
+      .then(res => {
+        this.setState({
+          users: Array.from(res.data.data)
+        });
+      })
+  }
+
   handleUserClick = user => {
     const { openModal } = this.props;
-    openModal(ModalKey.BAN_PROFILE, { ...user });
+    openModal(ModalKey.BAN_PROFILE, { ...user, role: this.state.userRole, reloadAfterBan: this.reloadAfterBan });
   }
 
   getShownPages = () => {
