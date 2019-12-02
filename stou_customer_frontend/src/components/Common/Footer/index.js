@@ -16,23 +16,28 @@ class Footer extends Component {
     sendFeedback = () => {
         this.props.openModal(ModalKey.FEEDBACK, {email: this.props.email})
     }
+    shareApp = () => {
+        this.props.openModal(ModalKey.SHAREAPP, {email: this.props.email})
+    }
+    privacyPolicy = () => {
+        this.props.openModal(ModalKey.PRIVACY)
+    }
 
     render() {
         const { loggedIn } = this.props;
         return (
-            <Navbar className="navbar" expand="lg" sticky="top">
-                <Navbar.Brand as={Link} to="/">
+            <Navbar className="navbar-footer" expand="lg">
+                {/* <Navbar.Brand as={Link} to="/">
                     <Image className="navbar-logo" src={stoulogo} />
-                </Navbar.Brand>
+                </Navbar.Brand> */}
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav variant="pills" defaultActiveKey="/" className="navbar-content ml-auto">
+                    <Nav variant="pills" defaultActiveKey="/" className="navbar-content-footer ml-auto">
 
                     {loggedIn ?
-                            <Nav.Link as={Link} className="nav-link" to="/" onClick={this.sendFeedback}>Feedback!</Nav.Link> : null}
-                            <Nav.Link as={Link} className="nav-link" to="/">About Us</Nav.Link>
-                            <Nav.Link as={Link} className="nav-link" to="/">Contact Us</Nav.Link> 
-                            <Nav.Link as={Link} className="nav-link" to="/">Values</Nav.Link> 
+                            <Nav.Link as={Link} className="nav-link" to="/" onClick={this.sendFeedback}>Feedback</Nav.Link> : null}
+                            <Nav.Link as={Link} className="nav-link" to="/" onClick={this.privacyPolicy}>Privacy Policy</Nav.Link>
+                            <Nav.Link as={Link} className="nav-link" to="/" onClick={this.shareApp}>Share App!</Nav.Link> 
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>

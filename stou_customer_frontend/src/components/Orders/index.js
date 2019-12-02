@@ -60,7 +60,7 @@ class Orders extends Component {
     renderOrderInfo = order => {
         const orderTime = new Date(parseInt(order.orderedAt)).toLocaleString('en-US');
         return (
-            <div className="order-item-holder">
+            <div className="order-item-holder master_container">
                 <Image rounded className="order-item-image" src={order.picture} />
                 <Button className="order-item-info" variant="link" onClick={e => this.handleOrder(e, order)}>
                     <div>Order from <b>{order.name}</b></div>

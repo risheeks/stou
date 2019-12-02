@@ -10,7 +10,7 @@ class Requests extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      requests: [{name: 'Name1', description: 'Blah Blah Description Blah Blah'}, {name: 'Name2', description: 'Blah Blah'}],
+      requests: [{name: 'Name1', description: 'Blah Blah Description Blah Blah', cook: 'Cook1', status: 'Pending'}, {name: 'Name2', description: 'Blah Blah', cook: 'Cook1', status: 'Pending'}],
     };
   }
 
@@ -18,16 +18,16 @@ class Requests extends Component {
   
   render() {
     return (
-      <Container className="orders-container">
+      <Container className="orders-container master_container">
         <ListGroup className="orders-list">
           {this.state.requests.map(item => (
             <ListGroup.Item className="">
               
                 <div className="request_texts">
-                  <p>{item.name}</p>                  
+                  <p>{item.name} from {item.cook} </p>                  
                   <p>{item.description}</p>                                  
                 </div>
-                <Button className="submit-button request-button">Pending</Button>    
+                <Button className="submit-button request-button" onClick={this.handleRequest}>{item.status}</Button>    
 
                 
               

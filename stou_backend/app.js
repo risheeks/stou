@@ -100,8 +100,368 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
+app.use('/usepromocode', function (req, res, next) {
+  let promoCode = req.body['data']['promoCode'];
+  let status = req.body['data']['status']
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'UPDATE PROMOCODES SET STATUS=' + status + ' WHERE PROMO_CODE=\'' + promoCode + ';';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'Promo Code Not Found';
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Promo Code Used';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
 
-app.use('/setfeeedback', function (req, res, next) {
+app.use('/generatepromocode', function (req, res, next) {
+  var o = {};
+  let promoCode = uuidv4();
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'INSERT INTO PROMOCODES VALUES(\'' + promoCode + '\', 0);';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+        o['code'] = 200;
+        res.status(200);
+        o['data'] = promoCode;
+        o['message'] = 'Success';
+        res.send(o);
+    });
+    connection.release();
+  });
+});
+
+
+app.use('/getcustomersfollowinghomecook', function (req, res, next) {
+  const cookEmail = req.body['data']['cookEmail'];
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT * from FAVORITE_HOMECOOKS where COOK_EMAIL=\'' + cookEmail + '\');';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'Cook Not Found';
+        res.send(o);
+      } else {
+        let list = [];
+        for(i = 0; i < rows.length; i++){
+          list.push(rows[i].CUSTOMER_EMAIL);
+        }
+        o['code'] = 200;
+        res.status(200);
+        o['data'] = list;
+        o['message'] = 'Success';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+
+
+app.use('/changebanstatus', function (req, res, next) {
+  const email = req.body['data']['email'];
+  let role = req.body['data']['role'];
+  let status = req.body['data']['status'];
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'UPDATE USER SET BANNED=' + status + ' WHERE EMAIL=\'' + email + ' AND ROLE=' + role + ';';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'User Not Found';
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Status changed successfully';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+app.use('/getbanstatus', function (req, res, next) {
+  const email = req.body['data']['email'];
+  let role = req.body['data']['role'];
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT BANNED from USER where EMAIL=\'' + email + '\' AND ROLE=' + role +');';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'User Not Found';
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200);
+        o['data'] = { 'bannedStatus': rows[0].BANNED };
+        o['message'] = 'Success';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+
+app.use('/changerequeststatus', function (req, res, next) {
+  const cookEmail = req.body['data']['cookEmail'];
+  const customerEmail = req.body['data']['customerEmail'];
+  const itemName = req.body['data']['itemName'];
+  const status = req.body['data']['status'];
+
+  let o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'UPDATE REQUESTS SET STATUS=' + status + ' WHERE COOK_EMAIL=\'' + cookEmail +'\' AND CUSTOMER_EMAIL=\'' + customerEmail +'\' AND ITEM_NAME=\'' + itemName +'\';';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 500;
+        res.status(500);
+        o['message'] = 'Internal Server Error';
+        res.send(o);
+      }
+      else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Status changed';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+
+app.use('/getrequest', function (req, res, next) {
+  const email = req.body['data']['email'];
+  const role = req.body['data']['role'];
+  let q = '';
+  if(role === 1){
+    q = 'SELECT * FROM REQUESTS WHERE COOK_EMAIL=\'' + email +'\'';
+  } else {
+    q = 'SELECT * FROM REQUESTS WHERE CUSTOMER_EMAIL=\'' + email +'\'';
+  }
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'User Not Found';
+        res.send(o);
+      }
+      else {
+        let obList = [];
+        var ob = {};
+        for(i = 0; i < rows.length; i++) {
+          ob = { 'cookEmail' : rows[i].COOK_EMAIL, 'customerEmail' : rows[i].CUSTOMER_EMAIL, 'itemName' : rows[i].ITEM_NAME, 'itemDescription' : rows[i].ITEM_DESCRIPTION, 'status' : rows[i].STATUS};
+          obList.push(ob);
+          ob = {};
+        }
+        o['data'] = obList;
+        o['code'] = 200;
+        res.status(200);
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+app.use('/addrequest', function (req, res, next) {
+  const cookEmail = req.body['data']['cookEmail'];
+  const customerEmail = req.body['data']['customerEmail'];
+  const itemName = req.body['data']['itemName'];
+  const itemDescription = req.body['data']['itemDescription'];
+
+  let o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'INSERT INTO REQUESTS VALUES (\'' + cookEmail + '\', \'' + customerEmail + '\', \'' + itemName +'\', \'' + itemDescription +'\', STATUS=0);';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 500;
+        res.status(500);
+        o['message'] = 'Internal Server Error';
+        res.send(o);
+      }
+      else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Request added';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+
+
+app.use('/getreviewrating', function (req, res, next) {
+  const email = req.body['data']['email'];
+  const role = req.body['data']['role'];
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT FIRST_NAME, LAST_NAME, RATING FROM USER WHERE EMAIL=\'' + email +'\' AND ROLE=' + role + ';';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'User Not Found';
+        res.send(o);
+      }
+      else {
+        let obList = [];
+
+        let ob = {'name' : rows[0].FIRST_NAME + ' ' + rows[0].LAST_NAME,
+                   'averageRating' : rows[0].RATING };
+        obList.push(ob);
+        con.getConnection(function (err, connection) {
+          if (err) throw err;
+          var q = 'SELECT FIRST_NAME, LAST_NAME, REVIEW, ORDERS.RATING FROM ORDERS, USER WHERE CUSTOMER_EMAIL=EMAIL AND COOK_EMAIL=\'' + email +'\' AND ORDERS.RATING IS NOT NULL;'
+          connection.query(q, function (err, rows) {
+            if (err) throw err;
+            if (rows.length === 0) {
+              o['code'] = 404;
+              res.status(404);
+              o['message'] = 'No Reviews Found';
+              res.send(o);
+            }
+            else {
+              let tempList = [];
+              let tempOb = {};
+              for(i = 0; i < rows.length; i++) {
+                 tempOb = {'customer' : rows[i].FIRST_NAME + " " + rows[i].LAST_NAME,
+                            'review' : rows[i].REVIEW,
+                            'rating' : rows[i].RATING};
+                 tempList.push(tempOb);
+                 tempOb = {};
+              }
+              obList.push(tempList);
+              o['data'] = obList;
+              o['code'] = 200;
+              res.status(200);
+              res.send(o);
+            }
+          });
+          connection.release();
+        });
+      }
+    });
+    connection.release();
+  });
+});
+
+
+
+app.use('/setreviewrating', function (req, res, next) {
+  
+
+  const email = req.body['data']['email'];
+  let rating = req.body['data']['rating'];
+  let role = req.body['data']['role'];
+  let orderId = req.body['data']['orderId'];
+  let review = req.body['data']['review'];
+  
+  // console.log(email + " " + rating + " " + role + " " + orderId + review)
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'UPDATE ORDERS SET REVIEW=\'' + review + '\', RATING=' + rating + ' WHERE ORDER_ID=\'' + orderId +'\';';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'Order Not Found';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+
+  let o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT RATING, NUMRATINGS from USER where EMAIL=\'' + email +'\' AND ROLE=' + role +';';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'User Not Found';
+        res.send(o);
+      }
+      else {
+        let currentRating = 0;
+        let numRatings = 0;
+        if(rows[0].RATING !== null) {
+          currentRating = rows[0].RATING;
+        }
+        if(rows[0].NUMRATINGS !== null) {
+          numRatings = rows[0].NUMRATINGS;
+        }
+        let newRating = ((parseFloat(currentRating) * parseInt(numRatings)) + parseFloat(rating)) / parseInt(numRatings + 1);
+        con.getConnection(function (err, connection) {
+          if (err) throw err;
+          var q = 'UPDATE USER SET RATING=' + newRating +', NUMRATINGS='+ (numRatings + 1) +' WHERE EMAIL=\'' + email +'\' AND ROLE='+role+';';
+          connection.query(q, function (err, rows) {
+            if (err) throw err;
+            if (rows.length === 0) {
+              o['code'] = 500;
+              res.status(500);
+              o['message'] = 'Internal Server Error';
+              res.send(o);
+            }
+            else {
+              o['code'] = 200;
+              res.status(200);
+              o['message'] = 'Rating updated';
+              res.send(o);
+            }
+          });
+          connection.release();
+        });
+      }
+    });
+    connection.release();
+  });
+});
+
+
+
+app.use('/setfeedback', function (req, res, next) {
   const email = req.body['data']['email'];
   let feedback = req.body['data']['feedback'];
 
@@ -129,7 +489,6 @@ app.use('/setfeeedback', function (req, res, next) {
 });
 
 app.use('/getfeedback', function (req, res, next) {
-
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
@@ -152,7 +511,6 @@ app.use('/getfeedback', function (req, res, next) {
         }
         o['data'] = obList;
         o['code'] = 200;
-        console.log(o);
         res.status(200);
         res.send(o);
       }
@@ -317,7 +675,7 @@ app.use('/getcustomerorders', function (req, res, next) {
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    let q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.COOK_EMAIL AND USER.ROLE=1 AND CUSTOMER_EMAIL="' + customerEmail + '" ORDER BY ORDERED_AT DESC;';
+    let q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.COOK_EMAIL AND USER.ROLE=1 AND CUSTOMER_EMAIL="' + customerEmail + '"AND ORDERS.RATING IS NULL ORDER BY ORDERED_AT DESC;';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {

@@ -35,7 +35,7 @@ class FavoriteHomeCooksList extends Component {
 	}
 	render() {
 		return (
-			<Container className="homecook-container">
+			<Container className="homecook-container master_container">
 					{this.state.favhomecooks.map(item => (
 						<FavoriteHomeCook 
 							openModal={this.props.openModal}

@@ -73,11 +73,12 @@ class HomeCook extends Component {
             const { openModal, addToOrder, name, clearOrder, baggedItems } = this.props;
             const {fooditems} = this.state
             
-            openModal(ModalKey.MENU, {fooditems,addToOrder,openModal, name, baggedItems: baggedItems, clearOrder: clearOrder});
+            openModal(ModalKey.MENU, {fooditems,addToOrder,openModal, name, baggedItems: baggedItems, clearOrder: clearOrder, customerEmail: this.props.email, cookEmail: this.state.cook_email});
             //console.log(this.state.fooditems)   
+            
         }).catch(function (error) {
             const { openModal, name} = self.props;
-            openModal(ModalKey.MENU, {openModal, name});
+            openModal(ModalKey.MENU, {openModal, name, customerEmail: this.props.email, cookEmail: this.state.cook_email});
         });
     }
 

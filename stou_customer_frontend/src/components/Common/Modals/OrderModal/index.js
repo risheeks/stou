@@ -59,7 +59,7 @@ class OrderModal extends Component {
                     {this.renderOrderInfo(order)}
                     <OrderProgress status={order.orderStatus} />
                     {order.orderStatus == 'delivered' ?
-                        <Rate /> : null
+                        <Rate order={this.props.order}/> : null
                     }
                     <ListGroup className="bag-itemlist-container">
                         <ListGroup.Item>
