@@ -100,6 +100,84 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
+app.use('/getrating', function (req, res, next) {
+  const email = req.body['data']['email'];
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT RATING FROM USER WHERE EMAIL=\'' + email +'\' AND ROLE=1';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'User Not Found';
+        res.send(o);
+      }
+      else {
+        o['data'] = rows[0].RATING;
+        o['code'] = 200;
+        res.status(200);
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+app.use('/setrating', function (req, res, next) {
+  const email = req.body['data']['email'];
+  let rating = req.body['data']['rating'];
+
+  let o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT RATING, NUMRATINGS from USER where EMAIL=\'' + email +'\' AND ROLE=1;';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'User Not Found';
+        res.send(o);
+      }
+      else {
+        let currentRating = 0;
+        let numRatings = 0;
+        if(rows[0].RATING !== null) {
+          currentRating = rows[0].RATING;
+        }
+        if(rows[0].NUMRATINGS !== null) {
+          numRatings = rows[0].NUMRATINGS;
+        }
+        let newRating = ((parseFloat(currentRating) * parseInt(numRatings)) + parseFloat(rating)) / parseInt(numRatings + 1);
+        con.getConnection(function (err, connection) {
+          if (err) throw err;
+          var q = 'UPDATE USER SET RATING=' + newRating +', NUMRATINGS='+ (numRatings + 1) +' WHERE EMAIL=\'' + email +'\' AND ROLE=1;';
+          connection.query(q, function (err, rows) {
+            if (err) throw err;
+            if (rows.length === 0) {
+              o['code'] = 500;
+              res.status(500);
+              o['message'] = 'Internal Server Error';
+              res.send(o);
+            }
+            else {
+              o['code'] = 200;
+              res.status(200);
+              o['message'] = 'Rating updated';
+              res.send(o);
+            }
+          });
+          connection.release();
+        });
+      }
+    });
+    connection.release();
+  });
+});
+
+
 
 app.use('/setfeedback', function (req, res, next) {
   const email = req.body['data']['email'];
@@ -129,7 +207,6 @@ app.use('/setfeedback', function (req, res, next) {
 });
 
 app.use('/getfeedback', function (req, res, next) {
-
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
@@ -397,11 +474,13 @@ app.use('/getrecentorders', function (req, res, next) {
 });
 
 app.use('/getdetailsbyorder', function (req, res, next) {
+  // console.log(req.body['data'])
   const orderId = req.body['data']['orderId'];
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.COOK_EMAIL and USER.ROLE=1 and ORDER_ID=\'' + orderId + '\';';
+    // console.log(q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -410,9 +489,12 @@ app.use('/getdetailsbyorder', function (req, res, next) {
         o['message'] = 'Invalid Order';
         res.send(o);
       } else {
+        // console.log(rows[0]);
         var ord = {};
           ord['orderedAt'] = rows[0].ORDERED_AT;
           ord['orderAddress'] = rows[0].ORDER_ADDRESS;
+          ord['cookEmail'] = rows[0].COOK_EMAIL;
+          ord['customerEmail'] = rows[0].CUSTOMER_EMAIL;
           ord['cookName'] = rows[0].FIRST_NAME + " " + rows[0].LAST_NAME;
           ord['orderStatus'] = rows[0].ORDER_STATUS;
         o['code'] = 200;

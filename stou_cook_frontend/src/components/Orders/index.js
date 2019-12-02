@@ -3,6 +3,8 @@ import { ToggleButtonGroup, ToggleButton, ListGroup, Button } from 'react-bootst
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { ModalKey } from '../../constants/ModalKeys';
+import { tokenUrl, instanceLocator } from '../../config'
+import { ChatManager, TokenProvider } from '@pusher/chatkit-client'
 
 class Orders extends Component {
     constructor(props) {
@@ -15,12 +17,40 @@ class Orders extends Component {
 
     componentDidMount() {
         this.setOrders();
+        // const chatManager = new ChatManager({
+        //     instanceLocator: instanceLocator,
+        //     userId: this.props.email,
+        //     tokenProvider: new TokenProvider({
+        //         url: tokenUrl,
+
+        //     })
+        // })
+        // chatManager.connect()
+        // .then(currentUser => {
+        //     this.setState({currentUser})
+        //     // this.getRooms()
+        // })
+        // .catch(err => console.log('error on connecting: ', err))
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevState.orders_type !== this.state.orders_type || prevProps.email !== this.props.email) {
             this.setOrders();
         }
+        const chatManager = new ChatManager({
+            instanceLocator: instanceLocator,
+            userId: this.props.email,
+            tokenProvider: new TokenProvider({
+                url: tokenUrl,
+
+            })
+        })
+        chatManager.connect()
+        .then(currentUser => {
+            this.setState({currentUser})
+            // this.getRooms()
+        })
+        .catch(err => console.log('error on connecting: ', err))
     }
 
     setOrders = () => {
@@ -53,7 +83,35 @@ class Orders extends Component {
         this.props.openModal(ModalKey.ORDER_STATUS, { order, setOrders: this.setOrders });
     }
 
-    setOrderStatus = (orderStatus, order) => {
+    async setOrderStatus(orderStatus, order) {
+        if (orderStatus === "in_progress") {
+            await axios.post(`${serverURL}/getdetailsbyorder`, {
+            data: { 
+                orderId: order.orderId
+             }
+            })
+            .then(res => {
+                console.log(res.data);
+                let {customerEmail, cookEmail} = ""; 
+                customerEmail = res.data.data.customerEmail;
+                cookEmail = res.data.data.cookEmail;
+                this.state.currentUser.createRoom({
+                    id: customerEmail + "-" + cookEmail,
+                    name: customerEmail + "-" + cookEmail,
+                    private: true,
+                    addUserIds: [customerEmail, cookEmail]
+                })
+            })
+            
+            // this.state.currentUser.addUserToRoom({
+            //     userId: customerEmail,
+            //     roomId: customerEmail + "-" + cookEmail
+            // })
+            // this.state.currentUser.addUserToRoom({
+            //     userId: cookEmail,
+            //     roomId: customerEmail + "-" + cookEmail
+            // })
+        }
         const data = {
             orderStatus,
             orderId: order.orderId
