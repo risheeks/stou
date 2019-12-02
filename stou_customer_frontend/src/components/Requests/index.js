@@ -10,9 +10,36 @@ class Requests extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      requests: [{name: 'Name1', description: 'Blah Blah Description Blah Blah', cook: 'Cook1', status: 'Pending'}, {name: 'Name2', description: 'Blah Blah', cook: 'Cook1', status: 'Pending'}],
+      requests: [{cook: 'Cook1', customer: 'Customer1', itemName: 'Name1', itemDescription: 'Blah Blah Description Blah Blah', status: 'Pending'}, {cook: 'Cook2', customer: 'Customer2', itemName: 'Name2', itemDescription: 'Blah Blah Description Blah Blah', status: 'Pending'}],
     };
   }
+
+
+  componentDidMount() {
+    this.getRequests();
+  }
+
+  getRequests = () => {
+    //console.log(this.state.feedback)
+    const { openModal} = this.props;
+
+    axios.post(`${serverURL}/getrequest`, {
+        data: {
+            customerEmail: this.props.cookEmail,
+            role: 2            
+        }
+    })
+    .then(res => {
+        if (res.data.name.length > 0) {
+            this.setState({
+                requests: Array.from(res.data.data)
+            });
+        });
+    }
+  }
+
+
+
 
    
   
@@ -24,13 +51,10 @@ class Requests extends Component {
             <ListGroup.Item className="">
               
                 <div className="request_texts">
-                  <p>{item.name} from {item.cook} </p>                  
-                  <p>{item.description}</p>                                  
+                  <p>{item.itemName} from {item.cook} </p>                  
+                  <p>{item.itemDescription}</p>                                  
                 </div>
-                <Button className="submit-button request-button" onClick={this.handleRequest}>{item.status}</Button>    
-
-                
-              
+                <Button className="submit-button request-button" >{item.status}</Button>                 
             </ListGroup.Item>
           ))}
         </ListGroup>

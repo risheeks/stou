@@ -27,7 +27,7 @@ class ProfileModal extends Component {
         e.preventDefault();
         console.log('customerEmail below')
         console.log(this.props.customerEmail)
-        openModal(ModalKey.REQUEST, {email: this.props.customerEmail, cookEmail: this.props.cookEmail });
+        openModal(ModalKey.REQUEST, {email: this.props.customerEmail, cookEmail: this.props.cookEmail, openModal});
     }
 
     render() {

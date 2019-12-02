@@ -5,6 +5,7 @@ import axios from 'axios';
 import { serverURL } from '../../../config';
 import { pusher } from '../../../config';
 import { ModalKey } from "../../../constants/ModalKeys";
+import notificationSound from '../../../constants/sounds/notification.mp3';
  class RequestModal extends Component {
     constructor(props) {
       super(props);
@@ -16,14 +17,15 @@ import { ModalKey } from "../../../constants/ModalKeys";
 
     AddRequest = () => {
         //console.log(this.state.feedback)
+        const { openModal} = this.props;
 
         axios.post(`${serverURL}/addrequest`, {
-          data: {
-            cookEmail: this.props.email,
-            customerEmail: this.props.cookEmail,
-            ItemName: this.state.request,
-            ItemDescription: this.state.description            
-          }
+            data: {
+                cookEmail: this.props.email,
+                customerEmail: this.props.cookEmail,
+                ItemName: this.state.request,
+                ItemDescription: this.state.description            
+            }
         })
         .then(res => {
             console.log(res.data);
@@ -34,7 +36,7 @@ import { ModalKey } from "../../../constants/ModalKeys";
             openModal(ModalKey.NEW_ORDER, {...data});
             });
         })
-      }
+    }
 
     render() {
         let { showModal, closeModal, description} = this.props;
