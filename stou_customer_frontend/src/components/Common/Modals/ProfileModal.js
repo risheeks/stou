@@ -4,17 +4,38 @@ import { Row, Col, Container, FormGroup, FormControl, FormLabel, Image, ListGrou
 import CustomRating from '../../Common/CustomRating';
 import Accordion from 'react-bootstrap/Accordion'
 import { useState } from 'react';
+import axios from 'axios';
+import { serverURL } from '../../../config';
 
 class ProfileModal extends Component {
     
     constructor(props) {
       super(props);
       this.state = {
-        open:false
+        open:false,
+        reviewRating:[]
       };
+    }
+    componentDidMount() {
+        this.getReviewRating();
     }
     setOpen = (open) => {
         this.setState({open:open})
+        console.log(this.state.reviewRating[1])
+    }
+
+    getReviewRating = () => {
+        axios.post(`${serverURL}/getreviewrating`, {
+            data: {
+              email: this.props.cook_email,
+              role: 1
+            }
+        })
+        .then(res => {
+            this.setState({
+                reviewRating: Array.from(res.data.data[1])
+            });
+        })
     }
 
     render() {
@@ -51,7 +72,7 @@ class ProfileModal extends Component {
                         </Button>
                         
                         <div className="">
-                        <Collapse in={open}>
+                        {/* <Collapse in={open}>
                         <Container className="Review-container">
                             <ListGroup>
                             <ListGroup.Item className="food-option-view-menu">
@@ -99,7 +120,34 @@ class ProfileModal extends Component {
                             </ListGroup.Item>
                             </ListGroup>
                         </Container>
-                        </Collapse>
+                        </Collapse> */}
+                        {this.state.reviewRating.map(item => (
+                            <Collapse in={open}>
+                            <Container className="ViewFoodOptions">
+                                <ListGroup>
+                                <ListGroup.Item className="food-option-view-menu">
+                                <div className="food-option-inner">
+                                    <div className="review-info">
+                                        <div className="reviewer-name">
+                                            <Form.Label>
+                                                <p>{item.customer}</p>
+                                            </Form.Label>
+                                        </div>
+                                        <div className="vfo-description wrapped-review-text">
+                                            <p>
+                                                {item.review}
+                                            </p>
+                                        </div>
+                                        <div className="review-bowl">
+                                            <p><b><CustomRating rating={item.rating} readonly={true} bowlSize="20px"/></b></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                </ListGroup.Item>
+                                </ListGroup>
+                            </Container>
+                            </Collapse>
+                        ))}
                         </div>
                     </div>
                 </div>
