@@ -93,7 +93,8 @@ class RoomList extends React.Component {
                     }}
                 >
                     <MessageList active containScrollInSubtree style={{
-                        background: 'white'
+                        background: 'white',
+                        height: '75%'
                     }}>
                         <Message>
                             {this.renderRooms()}
@@ -110,17 +111,6 @@ class RoomList extends React.Component {
                         </Fit>
                     </Row>
                 </TextComposer>
-                <div
-                    style={{
-                        textAlign: 'center',
-                        fontSize: '.6em',
-                        padding: '.4em',
-                        background: '#fff',
-                        color: '#888',
-                    }}
-                >
-                    {'Powered by LiveChat'}
-                </div>
             </div>
         )
     }

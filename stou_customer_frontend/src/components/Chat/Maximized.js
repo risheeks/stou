@@ -167,17 +167,6 @@ class Maximized extends React.Component {
 						</Fit>
 					</Row>
 				</TextComposer>
-				<div
-					style={{
-						textAlign: 'center',
-						fontSize: '.6em',
-						padding: '.4em',
-						background: '#fff',
-						color: '#888',
-					}}
-				>
-					{'Powered by LiveChat'}
-				</div>
 			</div>
 		)
 	}
