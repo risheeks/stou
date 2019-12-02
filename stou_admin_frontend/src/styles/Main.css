@@ -74,3 +74,28 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+.feedback-page {
+  margin: 5% 10%;
+}
+
+.feedback-card {
+  border-color: #454d55;
+}
+
+.feedback-card-header-text {
+  text-align: left;
+}
+
+.feedback-card-header {
+  text-align: left;
+  background-color: #343a40;
+  border-color: #343a40;
+}
+
+.feedback-card-body {
+  text-align: left;
+  background-color: #6c757d;
+  color: white;
+
+}

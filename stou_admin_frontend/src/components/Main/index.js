@@ -13,6 +13,7 @@ import { openModal, closeModal } from '../../actions/modal.action';
 import { ModalKey } from '../../constants/ModalKeys';
 import axios from 'axios';
 import { serverURL } from '../../config';
+import Feedback from '../Feedback';
 
 function mapStateToProps(state) {
     return {
@@ -54,6 +55,7 @@ class Main extends Component {
             <Router>
                 <Header loggedIn={loggedIn} />
                 <Route exact path="/" render={() => <Home  openModal={openModal} />} />
+                <Route exact path="/feedback" render={() => <Feedback  openModal={openModal} auth_token={auth_token} email={email} />} />
                 <MyModal {...modalProps} closeModal={closeModal} />
             </Router>
         );

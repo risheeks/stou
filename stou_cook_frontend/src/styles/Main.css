@@ -364,7 +364,7 @@ align-self: center;
 }
 
 .online-status-position {
-  float: right;
+  text-align: right;
 }
 
 .text-profile-name-modal {
@@ -415,3 +415,15 @@ align-self: center;
     margin-left: 4%;
     width: 80%;
   }
+
+  .request-button {
+  float: right;
+
+  }
+
+  .request_texts {
+  display: inline-block;
+  float: left;
+  text-align: left;
+  }
+

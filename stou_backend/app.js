@@ -257,7 +257,9 @@ app.use('/getreviewrating', function (req, res, next) {
 });
 
 
+
 app.use('/setreviewrating', function (req, res, next) {
+
   const email = req.body['data']['email'];
   let rating = req.body['data']['rating'];
   let role = req.body['data']['role'];
@@ -622,11 +624,13 @@ app.use('/getrecentorders', function (req, res, next) {
 });
 
 app.use('/getdetailsbyorder', function (req, res, next) {
+  // console.log(req.body['data'])
   const orderId = req.body['data']['orderId'];
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.COOK_EMAIL and USER.ROLE=1 and ORDER_ID=\'' + orderId + '\';';
+    // console.log(q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -635,9 +639,12 @@ app.use('/getdetailsbyorder', function (req, res, next) {
         o['message'] = 'Invalid Order';
         res.send(o);
       } else {
+        // console.log(rows[0]);
         var ord = {};
           ord['orderedAt'] = rows[0].ORDERED_AT;
           ord['orderAddress'] = rows[0].ORDER_ADDRESS;
+          ord['cookEmail'] = rows[0].COOK_EMAIL;
+          ord['customerEmail'] = rows[0].CUSTOMER_EMAIL;
           ord['cookName'] = rows[0].FIRST_NAME + " " + rows[0].LAST_NAME;
           ord['orderStatus'] = rows[0].ORDER_STATUS;
         o['code'] = 200;
@@ -1102,6 +1109,7 @@ app.use('/gethomecooks', function (req, res, next) {
 app.use('/getallusers', function (req, res, next) {
   const page = parseInt(req.body['data']['page']);
   let role = req.body['data']['role'];
+  const searchQuery = req.body['data']['searchQuery'];
   const start = (page - 1) * 10;
   const end = page * 10;
   if(role === 'Homecook') {
@@ -1110,7 +1118,7 @@ app.use('/getallusers', function (req, res, next) {
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT * FROM USER WHERE ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '") ORDER BY FIRST_NAME, LAST_NAME LIMIT ' + start + ', ' + end + ';';
+    var q = 'SELECT * FROM USER WHERE ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '") AND (FIRST_NAME LIKE "%'+ searchQuery + '%" OR EMAIL LIKE "%'+ searchQuery + '%" OR LAST_NAME LIKE "%'+ searchQuery + '%") ORDER BY FIRST_NAME, LAST_NAME LIMIT ' + start + ', ' + end + ';';
     connection.query(q, function (err, result) {
       if (err) console.log(err);
       if (result.length === 0) {
@@ -1146,13 +1154,14 @@ app.use('/getallusers', function (req, res, next) {
 
 app.use('/getnumberofusers', function (req, res, next) {
   let role = req.body['data']['role'];
+  const searchQuery = req.body['data']['searchQuery'];
   if(role === 'Homecook') {
     role = 'COOK';
   }
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT COUNT(*) AS numusers FROM USER WHERE ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
+    var q = 'SELECT COUNT(*) AS numusers FROM USER WHERE ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '") AND (FIRST_NAME LIKE "%'+ searchQuery + '%" OR EMAIL LIKE "%'+ searchQuery + '%" OR LAST_NAME LIKE "%'+ searchQuery + '%");';
     connection.query(q, function (err, result) {
       if (err) console.log(err);
       if (result.length === 0) {

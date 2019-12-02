@@ -43,6 +43,8 @@ export class Header extends Component {
                             <Nav.Link as={Link} className="nav-link" to="/login">Login</Nav.Link> : null}
                         {this.props.loggedIn ?
                             <Nav.Link as={Link} className="nav-link" to="/" onClick={this.handleSignOut}>Sign Out</Nav.Link> : null}
+                        {!this.props.loggedIn ?
+                            <Nav.Link as={Link} className="nav-link" to="/feedback">Feedback</Nav.Link> : null}
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>

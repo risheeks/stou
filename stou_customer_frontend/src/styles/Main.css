@@ -1,3 +1,7 @@
+.master_container {
+  min-height: 100vh;
+}
+
 textarea {
   resize: none;
   height: 7rem !important;
@@ -9,6 +13,14 @@ textarea {
 
 .navbar-logo {
     max-width: 5rem;
+}
+
+.feedback-button {
+  color: white;
+  
+}
+.feedback-button:hover {
+  color: white;
 }
 
 .navbar {
@@ -28,6 +40,17 @@ textarea {
 
 .navbar-content > .nav-link {
     color: white !important;
+}
+
+.navbar-content-footer > .nav-link {
+  color: black !important;
+  font-size: 80%;
+}
+
+.navbar-footer {
+  background-color: #fec0ae;
+  padding-left: 2rem;
+  padding-right: 2rem;
 }
 
 .navbar-content > .active {
@@ -719,6 +742,16 @@ textarea {
   display:none; 
 }
 
+.request-button {
+  float: right;
+
+}
+
+.request_texts {
+  display: inline-block;
+  float: left;
+  text-align: left;
+}
 .profile-footer-modal {  
   justify-content: space-between;  
 }
