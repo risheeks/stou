@@ -199,12 +199,13 @@ app.use('/addrequest', function (req, res, next) {
 
 
 
-app.use('/getrating', function (req, res, next) {
+app.use('/getreviewrating', function (req, res, next) {
   const email = req.body['data']['email'];
+  const role = req.body['data']['role'];
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT RATING FROM USER WHERE EMAIL=\'' + email +'\' AND ROLE=1';
+    var q = 'SELECT FIRST_NAME, LAST_NAME, RATING FROM USER WHERE EMAIL=\'' + email +'\' AND ROLE=' + role + ';';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -214,24 +215,75 @@ app.use('/getrating', function (req, res, next) {
         res.send(o);
       }
       else {
-        o['data'] = rows[0].RATING;
-        o['code'] = 200;
-        res.status(200);
-        res.send(o);
+        let obList = [];
+
+        let ob = {'name' : rows[0].FIRST_NAME + ' ' + rows[0].LAST_NAME,
+                   'averageRating' : rows[0].RATING };
+        obList.push(ob);
+        con.getConnection(function (err, connection) {
+          if (err) throw err;
+          var q = 'SELECT CUSTOMER_EMAIL, REVIEW, RATING WHERE COOK_EMAIL=\'' + email +'\';';
+          connection.query(q, function (err, rows) {
+            if (err) throw err;
+            if (rows.length === 0) {
+              o['code'] = 404;
+              res.status(404);
+              o['message'] = 'No Reviews Found';
+              res.send(o);
+            }
+            else {
+              let tempList = [];
+              let tempOb = {};
+              for(i = 0; i < rows.length; i++) {
+                 tempOb = {'customer' : rows[i].CUSTOMER_EMAIL,
+                            'review' : rows[i].REVIEW,
+                            'rating' : rows[i].RATING};
+                 tempList.push(tempOb);
+                 tempOb = {};
+              }
+              obList.push(tempList);
+              o['data'] = obList;
+              o['code'] = 200;
+              res.status(200);
+              res.send(o);
+            }
+          });
+          connection.release();
+        });
       }
     });
     connection.release();
   });
 });
 
-app.use('/setrating', function (req, res, next) {
+
+
+app.use('/setreviewrating', function (req, res, next) {
+
   const email = req.body['data']['email'];
   let rating = req.body['data']['rating'];
+  let role = req.body['data']['role'];
+  let orderId = req.body['data']['orderId'];
+  let review = req.body['data']['review'];
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'UPDATE ORDERS SET REVIEW=\'' + review + '\', RATING=' + rating + ' WHERE ORDER_ID=\'' + orderId +'\';';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'Order Not Found';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
 
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT RATING, NUMRATINGS from USER where EMAIL=\'' + email +'\' AND ROLE=1;';
+    var q = 'SELECT RATING, NUMRATINGS from USER where EMAIL=\'' + email +'\' AND ROLE=' + role +';';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -252,7 +304,7 @@ app.use('/setrating', function (req, res, next) {
         let newRating = ((parseFloat(currentRating) * parseInt(numRatings)) + parseFloat(rating)) / parseInt(numRatings + 1);
         con.getConnection(function (err, connection) {
           if (err) throw err;
-          var q = 'UPDATE USER SET RATING=' + newRating +', NUMRATINGS='+ (numRatings + 1) +' WHERE EMAIL=\'' + email +'\' AND ROLE=1;';
+          var q = 'UPDATE USER SET RATING=' + newRating +', NUMRATINGS='+ (numRatings + 1) +' WHERE EMAIL=\'' + email +'\' AND ROLE='+role+';';
           connection.query(q, function (err, rows) {
             if (err) throw err;
             if (rows.length === 0) {
