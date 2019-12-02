@@ -135,7 +135,6 @@ class UserList extends Component {
 
   getShownPages = () => {
     const { page, lastPage } = this.state;
-    console.log(lastPage)
     let pages = [];
     if(page <= 1 && lastPage <= 1) {
       return [1];
@@ -159,7 +158,6 @@ class UserList extends Component {
   render() {
     const { search, users, userRole, page, lastPage } = this.state;
     const pages = this.getShownPages();
-    console.log(pages);
     return (
       <div className="userlist-container">
         <div className="searchbar-container">

@@ -48,16 +48,14 @@ class RoomList extends React.Component {
     renderRooms() {
         const { rooms } = this.props;
         if (rooms[0] && rooms.length > 0 && rooms[0].users && rooms[0].users.length > 0) {
-
-            console.log(rooms[0])
             return (
                 <ChatList style={{ width: 200 }}>
                     {rooms.map((room) =>
                         <ChatListItem onClick={e => this.changeRoomId(room.id)} >
-                            <Avatar imgUrl={this.props.ownId === room.users[0].id ? room.users[0].avatarURL : room.users[1].avatarURL}  style={{height: '40px', width: '40px'}}/>
+                            <Avatar imgUrl={this.props.ownId !== room.users[0].id ? room.users[0].avatarURL : room.users[1].avatarURL}  style={{height: '40px', width: '40px'}}/>
                             <Column fill>
                                 <Row justify>
-                                    <Title ellipsis>{room.users[1].name}</Title>
+                                    <Title ellipsis>{this.props.ownId === room.users[0].id ? room.users[1].name : room.users[0].name}</Title>
                                 </Row>
                             </Column>
                         </ChatListItem>
@@ -69,7 +67,6 @@ class RoomList extends React.Component {
     }
 
     render() {
-        console.log(this.props.messages)
         return (
             <div
                 style={{

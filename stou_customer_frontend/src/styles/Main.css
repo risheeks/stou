@@ -1,6 +1,9 @@
 textarea {
   resize: none;
-  height: 7rem !important;
+}
+
+.text-about-me {
+  height: 8rem !important;
 }
 
 .basic-checkbox {

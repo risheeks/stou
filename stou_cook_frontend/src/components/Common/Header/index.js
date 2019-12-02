@@ -39,15 +39,13 @@ export class Header extends Component {
             }
         })
         .then(res => {
-            console.log(res.data)
             this.setState({
                 fooditems: Array.from(res.data.data)
             });
             const { openModal, addToOrder, name} = this.props;
             const {fooditems} = this.state
             
-            openModal(ModalKey.MENU_MODAL, {fooditems,addToOrder,openModal, name});
-            console.log(this.state.fooditems)   
+            openModal(ModalKey.MENU_MODAL, {fooditems,addToOrder,openModal, name}); 
         }).catch(function (error) {
             const { openModal, name} = self.props;
             openModal(ModalKey.MENU_MODAL, {openModal, name});

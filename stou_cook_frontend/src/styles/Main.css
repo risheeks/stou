@@ -1,3 +1,11 @@
+textarea {
+  resize: none;
+}
+
+.text-about-me {
+  height: 8rem !important;
+}
+
 .navbar-logo {
   max-width: 5rem;
 }

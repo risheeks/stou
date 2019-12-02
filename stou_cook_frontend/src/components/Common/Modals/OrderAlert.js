@@ -21,8 +21,6 @@ class OrderAlert extends Component {
     }
 
     componentDidMount() {
-            console.log("CHECK");
-            console.log(this.props.order);
             const chatManager = new ChatManager({
                 instanceLocator: instanceLocator,
                 userId: this.props.order.cookEmail,

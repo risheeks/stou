@@ -4,7 +4,6 @@ import BanProfileModal from './BanProfileModal';
 
 class MyModal extends Component {
     render() {
-        console.log(this.props);
         const { modalKey } = this.props;
         switch (modalKey) {
             case ModalKey.CHAT:

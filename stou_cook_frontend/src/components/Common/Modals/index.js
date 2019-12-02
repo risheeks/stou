@@ -9,7 +9,6 @@ import ResetPasswordModal from './ResetPasswordModal';
 
 class MyModal extends Component {
     render() {
-        console.log(this.props);
         const { modalKey } = this.props;
         switch (modalKey) {
             case ModalKey.ZIPCODE:

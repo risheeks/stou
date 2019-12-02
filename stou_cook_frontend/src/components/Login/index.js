@@ -45,7 +45,6 @@ export class Login extends Component {
       }
     })
       .then(res => {
-        console.log(res);
         this.props.getToken(res.data['token'], email);
       })
       .catch(err => {

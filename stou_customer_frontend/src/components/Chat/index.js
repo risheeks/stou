@@ -135,11 +135,15 @@ class Chat extends React.Component {
             messages[rooms[i].id] = [];
         }
         this.setState({
-            messages: messages
-        }, 
-            () => {for (let i = 0; i < rooms.length; i++) {
-                this.subscribeToRoom(rooms[i].id);
-            }}
+            messages: messages,
+            roomId: rooms[0].id
+        },
+            () => {
+                this.subscribeToRoom(rooms[0].id);
+                for (let i = 0; i < rooms.length; i++) {
+                    this.subscribeToRoom(rooms[i].id);
+                }
+            }
         )
 
         this.setState({
@@ -161,7 +165,7 @@ class Chat extends React.Component {
 
             }
         })
-        .catch(err => console.log('error on subscribing to room: ', err))
+            .catch(err => console.log('error on subscribing to room: ', err))
     }
 
     sendMessage(text) {

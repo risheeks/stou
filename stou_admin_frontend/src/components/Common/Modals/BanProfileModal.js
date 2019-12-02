@@ -9,7 +9,6 @@ class BanProfileModal extends Component {
 
     render() {
         let { showModal, closeModal} = this.props;
-        console.log(this.props);
         return (
             <Modal show={showModal} onHide={() => closeModal()}>
                 <Modal.Header closeButton className="profile-footer-modal">
