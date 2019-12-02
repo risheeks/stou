@@ -9,6 +9,8 @@ import OrderUpdateModal from './OrderUpdateModal';
 import RequestModal from './RequestModal';
 import RatingModal from './RatingModal';
 import FeedbackModal from './FeedbackModal';
+import ShareappModal from './ShareappModal';
+import PrivacyModal from './PrivacyModal';
 
 class MyModal extends Component {
     render() {
@@ -33,6 +35,10 @@ class MyModal extends Component {
                 return <RatingModal {...this.props} />;
             case ModalKey.FEEDBACK:
                 return <FeedbackModal {...this.props} />;
+            case ModalKey.SHAREAPP:
+                return <ShareappModal {...this.props} />;
+            case ModalKey.PRIVACY:
+                return <PrivacyModal {...this.props} />; 
             default:
                 return null;
         }
