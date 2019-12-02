@@ -11,6 +11,7 @@ class Rate extends Component {
 
         this.state = {
             review: '',
+            rating:0
         }
     }
 
@@ -20,18 +21,22 @@ class Rate extends Component {
         })
     }
 
+    sendRating = e => {
+        
+    }
+
     render() {
         return (
             <div>
                 <p className="rate-orders-heading">Please rate your experience</p>
                 <div className="rating-modal-div">
-                    <CustomRating rating={0} readonly={false} bowlSize="50px" />
+                    <CustomRating rating={this.state.rating} readonly={false} bowlSize="50px" />
                 </div>
                 <Form.Group controlId="review" className="form-group">
                     <Form.Control as="textarea" value={this.state.review} type="text" onChange={this.handleChange} placeholder="Write your review..." />
                 </Form.Group>
                 <div className="rate-submit-div">
-                    <Button className="rate-submit" variant="success">Submit</Button>
+                    <Button className="rate-submit" variant="success" onSubmit={this.sendRating}>Submit</Button>
                 </div>
             </div>
         );
