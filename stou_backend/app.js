@@ -508,7 +508,9 @@ app.use('/placeorder', function (req, res, next) {
             "orderId": orderID,
             "orderAddress": orderAddress,
             "instructions": instructions,
-            "orderedAt": Date.now()
+            "orderedAt": Date.now(),
+            "customerEmail": customerEmail,
+            "cookEmail": cookEmail
           }
         });
         o['code'] = 200;
@@ -1110,6 +1112,13 @@ app.use('/editProfile', function (req, res, next) {
         console.log(err)
         res.send(o);
       } else {
+        chatkit.updateUser({
+          id: email,
+          avatarURL: profilePicture
+        })
+        .then(res => {
+          console.log("Chatkit user updated.");
+        })
         o['code'] = 200;
         res.status(200)
         o['message'] = 'Successfully updated';
@@ -1456,7 +1465,6 @@ app.use('/login', function(req, res, next){
   let role = req.body['data']['role'];
   if (role === 'Homecook') role = 'cook';
   var o = {};
-
   con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'SELECT FIRST_NAME, LAST_NAME FROM USER WHERE EMAIL = "' + email + '" AND PASSWORD = "' + password + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC = "' + role + '");';
@@ -1532,11 +1540,6 @@ app.use('/register', function (req, res, next) {
 });
 
 function registerUser(firstName, lastName, email, password, role, cuisines) {
-  console.log(role);
-  chatkit.createUser({
-    id: email,
-    name: firstName + " " + lastName,
-  })
 
   let pic = '';
   if (role === 'Homecook') role = 'COOK';
@@ -1545,6 +1548,11 @@ function registerUser(firstName, lastName, email, password, role, cuisines) {
   } else {
     pic = 'https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/4.png?alt=media&token=47d52479-c8cf-46a1-8116-e5f1bc8765f7';
   }
+  chatkit.createUser({
+    id: email,
+    name: firstName + " " + lastName,
+    avatarURL: pic
+  })
   con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'INSERT INTO USER (PICTURE, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, ROLE) values("' + pic + '", "' + firstName + '", "' + lastName + '", "' + email + '", "' + password + '", (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '"));';

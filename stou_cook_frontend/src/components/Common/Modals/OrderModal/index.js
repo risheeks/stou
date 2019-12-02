@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { Modal, Button, Image, ListGroup } from 'react-bootstrap';
 import OrderProgress from './OrderProgress';
 import axios from 'axios';
-import { serverURL } from '../../../../config';
+import { serverURL, tokenUrl, instanceLocator } from '../../../../config';
 import { ModalKey } from '../../../../constants/ModalKeys';
+import { ChatManager, TokenProvider } from '@pusher/chatkit-client';
 
 class OrderModal extends Component {
     constructor(props) {
@@ -29,6 +30,25 @@ class OrderModal extends Component {
                     items: Array.from(res.data)
                 });
             })
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.order !== this.props.order) {
+            const chatManager = new ChatManager({
+                instanceLocator: instanceLocator,
+                userId: this.props.order.cookEmail,
+                tokenProvider: new TokenProvider({
+                    url: tokenUrl,
+
+                })
+            })
+            chatManager.connect()
+                .then(currentUser => {
+                    this.setState({ currentUser })
+                    // this.getRooms()
+                })
+                .catch(err => console.log('error on connecting: ', err))
+        }
     }
 
     getSubtotal = () => {
@@ -62,6 +82,25 @@ class OrderModal extends Component {
                 this.setState({
                     order: order
                 });
+                if (orderStatus === "in_progress") {
+                    let { customerEmail, cookEmail } = "";
+                    customerEmail = order.customerEmail;
+                    cookEmail = order.cookEmail;
+                    this.state.currentUser.createRoom({
+                        id: customerEmail + "-" + cookEmail,
+                        name: customerEmail + "-" + cookEmail,
+                        private: true,
+                        addUserIds: [customerEmail, cookEmail]
+                    });
+                    this.state.currentUser.addUserToRoom({
+                        userId: customerEmail,
+                        roomId: customerEmail + "-" + cookEmail
+                    })
+                    this.state.currentUser.addUserToRoom({
+                        userId: cookEmail,
+                        roomId: customerEmail + "-" + cookEmail
+                    })
+                }
                 this.props.setOrders();
             })
     }
@@ -149,7 +188,7 @@ class OrderModal extends Component {
         return (
             <Modal show={showModal} onHide={() => closeModal()}>
                 <Modal.Header closeButton>
-                    <b>{order.orderStatus === 'request_cancel'? order.name + " is requesting order cancellation" : "Order details"}</b>
+                    <b>{order.orderStatus === 'request_cancel' ? order.name + " is requesting order cancellation" : "Order details"}</b>
                 </Modal.Header>
                 <Modal.Body>
                     {this.renderOrderInfo(order)}
@@ -170,8 +209,8 @@ class OrderModal extends Component {
                         </ListGroup.Item>
                     </ListGroup>
                 </Modal.Body>
-                    {this.renderOrders()}
-            </Modal>
+                {this.renderOrders()}
+            </Modal >
         );
     }
 }

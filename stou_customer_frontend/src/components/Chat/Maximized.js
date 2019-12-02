@@ -26,6 +26,8 @@ import {
 	RateGoodIcon,
 	RateBadIcon,
 	Bubble,
+	ChatList,
+	ChatListItem
 } from '@livechat/ui-kit'
 
 const getAvatarForUser = (userId, users) => {
@@ -64,13 +66,13 @@ class Maximized extends React.Component {
 	}
 
 	render() {
-		console.log(this.props.messages)
+		const { messages } = this.props;
 		return (
 			<div
 				style={{
 					display: 'flex',
 					flexDirection: 'column',
-					height: '100%',
+					width: '300px',
 				}}
 			>
 				<TitleBar
@@ -114,42 +116,45 @@ class Maximized extends React.Component {
 					style={{
 						flexGrow: 1,
 						minHeight: 0,
-						height: '100%',
+						height: '20rem',
 					}}
 				>
 					<MessageList active containScrollInSubtree>
-						{this.props.messages.map((message, index) => (
-							<Message
-								// avatarUrl={parseUrl(getAvatarForUser(message.authorId, users))}
-								date={message.parsedDate}
-								isOwn={message.userId === this.props.email}
-								key={message.id}
-							>
-								<Bubble isOwn={message.authorId === this.props.email}>
-									{message.title && <MessageTitle title={message.title} />}
-									{message.text && <MessageText>{message.text}</MessageText>}
-									{message.imageUrl && (
-										<MessageMedia>
-											<img src={message.imageUrl} />
-										</MessageMedia>
-									)}
-									{message.buttons &&
-										message.buttons.length !== 0 && (
-											<MessageButtons>
-												{message.buttons.map((button, buttonIndex) => (
-													<MessageButton
-														key={buttonIndex}
-														label={button.title}
-														onClick={() => {
-															this.props.sendMessage(button.postback)
-														}}
-													/>
-												))}
-											</MessageButtons>
-										)}
-								</Bubble>
-							</Message>
-						))}
+						{this.props.messages.map((message, index) =>
+								<Row reverse={message.senderId === this.props.ownId}>
+									<Avatar imgUrl={message.sender.avatarURL} />
+									<Message
+										authorName={message.sender.name}
+										date={(new Date(message.createdAt)).toLocaleTimeString()}
+										isOwn={message.senderId === this.props.ownId}
+										key={message.id}
+									>
+										<Bubble >
+											{message.title && <MessageTitle title={message.title} />}
+											{message.text && <MessageText>{message.text}</MessageText>}
+											{message.imageUrl && (
+												<MessageMedia>
+													<img src={message.imageUrl} />
+												</MessageMedia>
+											)}
+											{message.buttons &&
+												message.buttons.length !== 0 && (
+													<MessageButtons>
+														{message.buttons.map((button, buttonIndex) => (
+															<MessageButton
+																key={buttonIndex}
+																label={button.title}
+																onClick={() => {
+																	this.props.sendMessage(button.postback)
+																}}
+															/>
+														))}
+													</MessageButtons>
+												)}
+										</Bubble>
+									</Message>
+								</Row>
+						)}
 					</MessageList>
 				</div>
 				<TextComposer onSend={this.props.sendMessage}>
