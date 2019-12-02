@@ -36,30 +36,31 @@ export class Home extends Component {
         const { openModal, addToOrder, location, baggedItems, clearOrder, email } = this.props;
         //console.log(location)
         return (
-            <div className="home master_container">
-                <RecentOrders openModal={openModal} email={email} />
-                <Tabs defaultActiveKey="food" id="uncontrolled-tab-example">
-                    <Tab eventKey="food" title="Food">
-                        <div className="homec">
-                            <FilterBar onFilter={this.onFilter} />
-                            <ViewFoodOptions
-                                allergens={this.state.allergens}
-                                cuisines={this.state.cuisines}
-                                openModal={openModal}
-                                addToOrder={addToOrder}
-                                location={location}
-                                baggedItems={baggedItems}
-                                clearOrder={clearOrder}
-                            />
-                        </div>
-                    </Tab>
-                    <Tab eventKey="cooks" title="Homecooks">
-                        <div className="homec">
-                            <ListOfHomeCooks clearOrder={clearOrder} baggedItems={baggedItems} location={location} addToOrder={addToOrder} email={this.props.email} openModal={openModal}/>
-                        </div>
-                    </Tab>
-                </Tabs>
-                
+            <div className="master-container">
+                <div className="home">
+                    <RecentOrders openModal={openModal} email={email} />
+                    <Tabs defaultActiveKey="food" id="uncontrolled-tab-example">
+                        <Tab eventKey="food" title="Food">
+                            <div className="homec">
+                                <FilterBar onFilter={this.onFilter} />
+                                <ViewFoodOptions
+                                    allergens={this.state.allergens}
+                                    cuisines={this.state.cuisines}
+                                    openModal={openModal}
+                                    addToOrder={addToOrder}
+                                    location={location}
+                                    baggedItems={baggedItems}
+                                    clearOrder={clearOrder}
+                                />
+                            </div>
+                        </Tab>
+                        <Tab eventKey="cooks" title="Homecooks">
+                            <div className="homec">
+                                <ListOfHomeCooks clearOrder={clearOrder} baggedItems={baggedItems} location={location} addToOrder={addToOrder} email={this.props.email} openModal={openModal} />
+                            </div>
+                        </Tab>
+                    </Tabs>
+                </div>
             </div>
         );
     }

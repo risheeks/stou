@@ -31,7 +31,7 @@ class Orders extends Component {
         axios.post(`${serverURL}/setorderstatus`, { data })
             .then(res => {
                 order.orderStatus = orderStatus
-                this.props.openModal(ModalKey.ORDER_STATUS, {order, setOrders: this.setOrders});
+                this.props.openModal(ModalKey.ORDER_STATUS, { order, setOrders: this.setOrders });
             })
     }
 
@@ -60,7 +60,7 @@ class Orders extends Component {
     renderOrderInfo = order => {
         const orderTime = new Date(parseInt(order.orderedAt)).toLocaleString('en-US');
         return (
-            <div className="order-item-holder master_container">
+            <div className="order-item-holder">
                 <Image rounded className="order-item-image" src={order.picture} />
                 <Button className="order-item-info" variant="link" onClick={e => this.handleOrder(e, order)}>
                     <div>Order from <b>{order.name}</b></div>
@@ -91,9 +91,11 @@ class Orders extends Component {
         const { orders_type } = this.state;
 
         return (
-            <div className="orders-container">
-                <h3>Your Orders</h3>
-                {this.renderOrders()}
+            <div className="master-container">
+                <div className="orders-container">
+                    <h3>Your Orders</h3>
+                    {this.renderOrders()}
+                </div>
             </div>
         );
     }

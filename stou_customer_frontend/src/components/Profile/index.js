@@ -29,7 +29,7 @@ export default class Profile extends React.Component {
       progress: 0,
       avatarURL: '',
       fireBaseURL: '',
-      pastfood : [],
+      pastfood: [],
       defaultURL: 'https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/4.png?alt=media&token=47d52479-c8cf-46a1-8116-e5f1bc8765f7'
     };
     // this.getProfile();
@@ -88,7 +88,7 @@ export default class Profile extends React.Component {
       uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
         console.log('File available at', downloadURL);
         url = downloadURL;
-        self.setState({fireBaseURL:url}, () => self.updateProfileCallBack());
+        self.setState({ fireBaseURL: url }, () => self.updateProfileCallBack());
       });
     });
 
@@ -98,27 +98,27 @@ export default class Profile extends React.Component {
     let apiCall = serverURL;
     apiCall = apiCall + "/editProfile";
     console.log("photo URL=" + this.state.fireBaseURL);
-    if(!this.state.aboutMe) this.state.aboutMe = " "
+    if (!this.state.aboutMe) this.state.aboutMe = " "
     axios.post(`${serverURL}/editProfile`, {
       data: {
         name: this.state.name,
         role: this.state.role,
         aboutMe: this.state.aboutMe,
         profilePicture: this.state.fireBaseURL,
-        email:this.props.email,
+        email: this.props.email,
       }
     })
-    .then(res => {
-      console.log(res.data);
-    })
+      .then(res => {
+        console.log(res.data);
+      })
   }
   updateProfile = e => {
-    if(!this.state.avatarURL) {
-      this.setState({fireBaseURL:this.state.defaultURL});
+    if (!this.state.avatarURL) {
+      this.setState({ fireBaseURL: this.state.defaultURL });
       this.updateProfileCallBack();
-    }else if(this.state.avatarURL.toString().startsWith("https://firebasestorage.googleapis.co")) {
-      this.setState({fireBaseURL:this.state.avatarURL}, () => this.updateProfileCallBack());
-    }else {
+    } else if (this.state.avatarURL.toString().startsWith("https://firebasestorage.googleapis.co")) {
+      this.setState({ fireBaseURL: this.state.avatarURL }, () => this.updateProfileCallBack());
+    } else {
       this.uploadToFireBase();
     }
   }
@@ -141,8 +141,8 @@ export default class Profile extends React.Component {
             avatarURL: res.data.profilePicture,
             email: res.data.email
           });
-          if(!this.state.avatarURL) {
-            this.setState({avatarURL:this.state.defaultURL});
+          if (!this.state.avatarURL) {
+            this.setState({ avatarURL: this.state.defaultURL });
           }
         }
       })
@@ -150,12 +150,12 @@ export default class Profile extends React.Component {
 
   }
 
-  ChangeSaveFavHomeCookStatus =(e)=> {
-        const currentFavHomeCookStatus=this.state.isFavoriteHomeCook;
-        this.setState({
-            isFavoriteHomeCook: !currentFavHomeCookStatus
-        })
-        console.log("status: ", !currentFavHomeCookStatus);
+  ChangeSaveFavHomeCookStatus = (e) => {
+    const currentFavHomeCookStatus = this.state.isFavoriteHomeCook;
+    this.setState({
+      isFavoriteHomeCook: !currentFavHomeCookStatus
+    })
+    console.log("status: ", !currentFavHomeCookStatus);
   }
 
   onClickUpload = e => {
@@ -184,81 +184,82 @@ export default class Profile extends React.Component {
   }
 
   getHomecooks = () => {
-    console.log("LOCATION="+this.props.email)
-		const data = {location:this.props.location,email:this.props.email}
-    axios.post(`${serverURL}/getpastfood`, { data: data})
+    console.log("LOCATION=" + this.props.email)
+    const data = { location: this.props.location, email: this.props.email }
+    axios.post(`${serverURL}/getpastfood`, { data: data })
       .then(res => {
-          console.log(res.data)
-          //console.log(Array.from(res.data.data))
-          this.setState({
-            pastfood: Array.from(res.data.data)
-          });
-			console.log(this.state.pastfood)
-		});
-	}
+        console.log(res.data)
+        //console.log(Array.from(res.data.data))
+        this.setState({
+          pastfood: Array.from(res.data.data)
+        });
+        console.log(this.state.pastfood)
+      });
+  }
 
 
   render() {
     const { avatarURL } = this.state;
     return (
-      <div className="container profile bg-profile master_container">        
-        <div className="form-area">
-          <Form role="form">
-            {this.props.show}
-            <br styles="clear:both" />
-            <Image className="image-upload-preview" src={avatarURL} fluid thumbnail onClick={this.onClickUpload} roundedCircle />
-            <FormControl
-              type="file"
-              className="image-upload-input"
-              onChange={this.onImageChange}
-              ref={input => this.inputElement = input}
-            />
+      <div className="master-container">
+        <div className="container profile bg-profile">
+          <div className="form-area">
+            <Form role="form">
+              {this.props.show}
+              <br styles="clear:both" />
+              <Image className="image-upload-preview" src={avatarURL} fluid thumbnail onClick={this.onClickUpload} roundedCircle />
+              <FormControl
+                type="file"
+                className="image-upload-input"
+                onChange={this.onImageChange}
+                ref={input => this.inputElement = input}
+              />
 
-            <FormGroup controlId="name" className="form-group">
-              {/* <Form.Label className='form-text'><h5>Name</h5></Form.Label> */}
-              <Form.Label value={this.state.name} className='form-value'><h1>{this.state.name}</h1></Form.Label>
-            </FormGroup>
-            <FormGroup className="form-group">
-              {/* <Form.Label className='form-text'><h5>Email</h5></Form.Label> */}
-              <Form.Label value={this.state.name} className='form-value profileEmail'><h5><b>{this.props.email}</b></h5></Form.Label>
-            </FormGroup>
-            {/* <FormGroup className="form-group">
+              <FormGroup controlId="name" className="form-group">
+                {/* <Form.Label className='form-text'><h5>Name</h5></Form.Label> */}
+                <Form.Label value={this.state.name} className='form-value'><h1>{this.state.name}</h1></Form.Label>
+              </FormGroup>
+              <FormGroup className="form-group">
+                {/* <Form.Label className='form-text'><h5>Email</h5></Form.Label> */}
+                <Form.Label value={this.state.name} className='form-value profileEmail'><h5><b>{this.props.email}</b></h5></Form.Label>
+              </FormGroup>
+              {/* <FormGroup className="form-group">
               <Form.Label className='form-text'><h5>Cuisines</h5></Form.Label>
               <Form.Label value={this.state.name} className='form-value'><h5>{this.state.cuisines}</h5></Form.Label>
             </FormGroup>
             <br /> */}
-            <FormGroup controlId="aboutMe" className="form-group">
-              <Form.Label className='form-text text-about-me-label'><h6><b>About Me</b></h6></Form.Label>
-              <Form.Control value={this.state.aboutMe} type="text" onChange={this.handleChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3" as="textarea" />
-              {/* <Textarea value={this.state.aboutMe} type="text" onChange={this.handleAboutMeChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3"></Textarea> */}
-            </FormGroup>
-            <br />
-            <Button
-              block
-              className="submit-button"
-              onClick={this.updateProfile}
-            >
-              Update
+              <FormGroup controlId="aboutMe" className="form-group">
+                <Form.Label className='form-text text-about-me-label'><h6><b>About Me</b></h6></Form.Label>
+                <Form.Control value={this.state.aboutMe} type="text" onChange={this.handleChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3" as="textarea" />
+                {/* <Textarea value={this.state.aboutMe} type="text" onChange={this.handleAboutMeChange} className="text-about-me" placeholder={this.state.aboutMe} rows="3"></Textarea> */}
+              </FormGroup>
+              <br />
+              <Button
+                block
+                className="submit-button"
+                onClick={this.updateProfile}
+              >
+                Update
             </Button>
-            <br />
-            <h5><p className='form-text'>Past Food:</p></h5>
-            <div className="center-col">
-            {this.state.pastfood.map(item => (
-              <FavoriteFood email={this.props.email}
-              picture={item.picture}
-              description={item.description}
-              title={item.name}
-              food_id={item.food_id}
-              price={item.price}
-              isfavfood={item.is_favorite}
-              />
-            ))}
-            </div>
-          </Form>
+              <br />
+              <h5><p className='form-text'>Past Food:</p></h5>
+              <div className="center-col">
+                {this.state.pastfood.map(item => (
+                  <FavoriteFood email={this.props.email}
+                    picture={item.picture}
+                    description={item.description}
+                    title={item.name}
+                    food_id={item.food_id}
+                    price={item.price}
+                    isfavfood={item.is_favorite}
+                  />
+                ))}
+              </div>
+            </Form>
 
+          </div>
         </div>
       </div>
-
     )
   }
 }

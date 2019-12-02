@@ -27,12 +27,12 @@ import { ModalKey } from "../../../constants/ModalKeys";
         })
         .then(res => {
             console.log(res.data);
-            let channel = pusher.subscribe(`cook-${this.props.email}`);
+            /*let channel = pusher.subscribe(`cook-${this.props.email}`);
             channel.bind('new-order', function (data) {
             const audio = new Audio(notificationSound);
             audio.play();
             openModal(ModalKey.NEW_ORDER, {...data});
-            });
+            });*/
         })
       }
 

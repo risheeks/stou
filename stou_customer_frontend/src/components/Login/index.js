@@ -17,7 +17,7 @@ export class Login extends Component {
 
   componentDidMount() {
     console.log(this.props.auth_token);
-    if(this.props.auth_token && this.props.auth_token.length > 0) {
+    if (this.props.auth_token && this.props.auth_token.length > 0) {
       this.props.history.push('/');
     }
   }
@@ -55,39 +55,41 @@ export class Login extends Component {
 
   render() {
     return (
-      <div className="Login container master_container">
-        { this.props.auth_token ? this.props.history.push('/') : null}
-        <form onSubmit={this.handleSubmit}>
-          <FormGroup controlId="email" bsSize="large">
-            <FormLabel>Email</FormLabel>
-            <FormControl className="email"
-              autoFocus
-              type="email"
-              value={this.state.email}
-              onChange={this.handleChange}
-            />
-          </FormGroup>
-          <FormGroup controlId="password" bsSize="large">
-            <FormLabel>Password</FormLabel>
-            <FormControl
-              value={this.state.password}
-              onChange={this.handleChange}
-              type="password"
-            />
-          </FormGroup>
-          <div>
-            <Button
-              block
-              bsSize="large"
-              className="submit-button"
-              disabled={!this.validateForm()}
-              onClick={this.handleSubmit}
-            >
-              Login
+      <div className="master-container">
+        <div className="Login container">
+          {this.props.auth_token ? this.props.history.push('/') : null}
+          <form onSubmit={this.handleSubmit}>
+            <FormGroup controlId="email" bsSize="large">
+              <FormLabel>Email</FormLabel>
+              <FormControl className="email"
+                autoFocus
+                type="email"
+                value={this.state.email}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+            <FormGroup controlId="password" bsSize="large">
+              <FormLabel>Password</FormLabel>
+              <FormControl
+                value={this.state.password}
+                onChange={this.handleChange}
+                type="password"
+              />
+            </FormGroup>
+            <div>
+              <Button
+                block
+                bsSize="large"
+                className="submit-button"
+                disabled={!this.validateForm()}
+                onClick={this.handleSubmit}
+              >
+                Login
             </Button>
-            <Link to="/register" className="btn btn-link">Register</Link>
-          </div>
-        </form>
+              <Link to="/register" className="btn btn-link">Register</Link>
+            </div>
+          </form>
+        </div>
       </div>
     );
   }

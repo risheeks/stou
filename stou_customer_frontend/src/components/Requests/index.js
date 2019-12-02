@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import {Button, ListGroup, Container} from "react-bootstrap";
+import { Button, ListGroup, Container } from "react-bootstrap";
 import axios from 'axios';
 import "../../styles/Main.css";
 import { serverURL } from '../../config';
@@ -10,34 +10,36 @@ class Requests extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      requests: [{name: 'Name1', description: 'Blah Blah Description Blah Blah', cook: 'Cook1', status: 'Pending'}, {name: 'Name2', description: 'Blah Blah', cook: 'Cook1', status: 'Pending'}],
+      requests: [{ name: 'Name1', description: 'Blah Blah Description Blah Blah', cook: 'Cook1', status: 'Pending' }, { name: 'Name2', description: 'Blah Blah', cook: 'Cook1', status: 'Pending' }],
     };
   }
 
-   
-  
+
+
   render() {
     return (
-      <Container className="orders-container master_container">
-        <ListGroup className="orders-list">
-          {this.state.requests.map(item => (
-            <ListGroup.Item className="">
-              
-                <div className="request_texts">
-                  <p>{item.name} from {item.cook} </p>                  
-                  <p>{item.description}</p>                                  
-                </div>
-                <Button className="submit-button request-button" onClick={this.handleRequest}>{item.status}</Button>    
+      <Container className="master-container">
+        <Container className="orders-container">
+          <ListGroup className="orders-list">
+            {this.state.requests.map(item => (
+              <ListGroup.Item className="">
 
-                
-              
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
+                <div className="request_texts">
+                  <p>{item.name} from {item.cook} </p>
+                  <p>{item.description}</p>
+                </div>
+                <Button className="submit-button request-button" onClick={this.handleRequest}>{item.status}</Button>
+
+
+
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        </Container>
       </Container>
     )
-  } 
-  
+  }
+
 }
 
 
