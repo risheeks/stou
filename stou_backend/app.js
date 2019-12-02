@@ -100,6 +100,60 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
+
+app.use('/changebanstatus', function (req, res, next) {
+  const email = req.body['data']['email'];
+  let role = req.body['data']['role'];
+  let status = req.body['data']['status'];
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'UPDATE USER SET BANNED=' + status + ' WHERE EMAIL=\'' + email + ' AND ROLE=' + role + ';';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'User Not Found';
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Status changed successfully';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+app.use('/getbanstatus', function (req, res, next) {
+  const email = req.body['data']['email'];
+  let role = req.body['data']['role'];
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT BANNED from USER where EMAIL=\'' + email + '\' AND ROLE=' + role +');';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'User Not Found';
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200);
+        o['data'] = { 'bannedStatus': rows[0].BANNED };
+        o['message'] = 'Success';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+
 app.use('/changerequeststatus', function (req, res, next) {
   const cookEmail = req.body['data']['cookEmail'];
   const customerEmail = req.body['data']['customerEmail'];
