@@ -36,7 +36,7 @@ export class Home extends Component {
         const { openModal, addToOrder, location, baggedItems, clearOrder, email } = this.props;
         //console.log(location)
         return (
-            <div className="home">
+            <div className="home master_container">
                 <RecentOrders openModal={openModal} email={email} />
                 <Tabs defaultActiveKey="food" id="uncontrolled-tab-example">
                     <Tab eventKey="food" title="Food">

@@ -55,7 +55,7 @@ export class Login extends Component {
 
   render() {
     return (
-      <div className="Login container">
+      <div className="Login container master_container">
         { this.props.auth_token ? this.props.history.push('/') : null}
         <form onSubmit={this.handleSubmit}>
           <FormGroup controlId="email" bsSize="large">

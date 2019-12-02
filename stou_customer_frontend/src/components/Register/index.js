@@ -167,7 +167,7 @@ class Register extends Component {
     }
     
     return (
-    <div className="Register container">
+    <div className="Register container master_container">
       <Modal show={this.state.modalisOpen} onHide={this.handleClose}>
         <PrivacyPolicy/>
       </Modal>

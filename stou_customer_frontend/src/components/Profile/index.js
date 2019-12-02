@@ -201,7 +201,7 @@ export default class Profile extends React.Component {
   render() {
     const { avatarURL } = this.state;
     return (
-      <div className="container profile bg-profile">        
+      <div className="container profile bg-profile master_container">        
         <div className="form-area">
           <Form role="form">
             {this.props.show}

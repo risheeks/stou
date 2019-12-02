@@ -8,17 +8,30 @@ class FeedbackModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            name:''
+            name:'',
+            feedback: ''
         };
 
        
     }
-    
+
+
     sendFeedback = () => {
-        console.log("Send feedback")
-
+        console.log(this.state.feedback)
+        axios.post(`${serverURL}/setfeedback`, {
+          data: {
+            email: this.props.email,
+            feedback: this.state.feedback,
+          }
+        })
+        .then(res => {
+          console.log(res.data);
+        })
+      }
+    handleChange = e => {
+        this.setState({ [e.target.id]: e.target.value })
     }
-
+    
     render() {
         const { showModal, closeModal} = this.props;
 
@@ -28,15 +41,11 @@ class FeedbackModal extends Component {
                     <Modal.Title>Please enter your feedback</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <FormControl
-                        placeholder="Enter name"
-                        value={this.state.name}
-                        type="text"
-                    />
+                    
                     <br/>
                     <Form.Group controlId="feedback">
                         <Form.Label>Enter Feedback</Form.Label>
-                        <Form.Control as="textarea" rows="3" />
+                        <Form.Control value={this.state.feedback} as="textarea" rows="3" onChange={this.handleChange}/>
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>

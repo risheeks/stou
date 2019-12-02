@@ -101,7 +101,7 @@ const uuidv4 = require('uuid/v4');
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
 
-app.use('/setfeeedback', function (req, res, next) {
+app.use('/setfeedback', function (req, res, next) {
   const email = req.body['data']['email'];
   let feedback = req.body['data']['feedback'];
 

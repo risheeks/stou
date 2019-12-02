@@ -255,7 +255,7 @@ class Checkout extends Component {
         const { instructions, street, city, state, zipcode, subtotal, fees, total, discount, promo_code} = this.state;
         
         return (
-            <div className="checkout-container">
+            <div className="checkout-container master_container">
                 <div className="checkout-items">
                     
                     <ListGroup className="checkout-items-list">

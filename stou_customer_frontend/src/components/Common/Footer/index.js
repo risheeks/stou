@@ -20,13 +20,13 @@ class Footer extends Component {
     render() {
         const { loggedIn } = this.props;
         return (
-            <Navbar className="navbar" expand="lg" sticky="top">
-                <Navbar.Brand as={Link} to="/">
+            <Navbar className="navbar-footer" expand="lg">
+                {/* <Navbar.Brand as={Link} to="/">
                     <Image className="navbar-logo" src={stoulogo} />
-                </Navbar.Brand>
+                </Navbar.Brand> */}
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav variant="pills" defaultActiveKey="/" className="navbar-content ml-auto">
+                    <Nav variant="pills" defaultActiveKey="/" className="navbar-content-footer ml-auto">
 
                     {loggedIn ?
                             <Nav.Link as={Link} className="nav-link" to="/" onClick={this.sendFeedback}>Feedback!</Nav.Link> : null}
