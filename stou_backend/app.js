@@ -125,7 +125,6 @@ app.use('/getrating', function (req, res, next) {
   });
 });
 
-
 app.use('/setrating', function (req, res, next) {
   const email = req.body['data']['email'];
   let rating = req.body['data']['rating'];

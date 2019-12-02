@@ -18,7 +18,7 @@ class Requests extends Component {
   
   render() {
     return (
-      <Container className="orders-container">
+      <Container className="orders-container master_container">
         <ListGroup className="orders-list">
           {this.state.requests.map(item => (
             <ListGroup.Item className="">

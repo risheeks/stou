@@ -1,3 +1,7 @@
+.master_container {
+  min-height: 100vh;
+}
+
 textarea {
   resize: none;
   height: 7rem !important;
@@ -36,6 +40,17 @@ textarea {
 
 .navbar-content > .nav-link {
     color: white !important;
+}
+
+.navbar-content-footer > .nav-link {
+  color: black !important;
+  font-size: 80%;
+}
+
+.navbar-footer {
+  background-color: #fec0ae;
+  padding-left: 2rem;
+  padding-right: 2rem;
 }
 
 .navbar-content > .active {
