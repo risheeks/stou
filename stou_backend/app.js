@@ -100,6 +100,50 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
+app.use('/usepromocode', function (req, res, next) {
+  let promoCode = req.body['data']['promoCode'];
+  let status = req.body['data']['status']
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'UPDATE PROMOCODES SET STATUS=' + status + ' WHERE PROMO_CODE=\'' + promoCode + ';';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'Promo Code Not Found';
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Promo Code Used';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+app.use('/generatepromocode', function (req, res, next) {
+  var o = {};
+  let promoCode = uuidv4();
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'INSERT INTO PROMOCODES VALUES(\'' + promoCode + '\', 0);';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+        o['code'] = 200;
+        res.status(200);
+        o['data'] = promoCode;
+        o['message'] = 'Success';
+        res.send(o);
+    });
+    connection.release();
+  });
+});
+
+
 app.use('/getcustomersfollowinghomecook', function (req, res, next) {
   const cookEmail = req.body['data']['cookEmail'];
   var o = {};
