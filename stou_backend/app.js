@@ -112,7 +112,7 @@ app.use('/shareapp', function(req,res,next){
         o['code'] = 202;
         res.status(202);
         let text = 'App link, Enjoy 10% off on your order with this promo code' + generatePromoCode;
-        sendEmail(email, text, 'ENJOY STOU');
+        sendEmail(email, "", text, 'ENJOY STOU');
         o['message'] = 'Shared App Successfully';
         res.send(o);
       } else {
@@ -124,7 +124,6 @@ app.use('/shareapp', function(req,res,next){
     });
     connection.release();
   });
-
 });
 
 app.use('/getnamefromemail', function(req,res,next){
