@@ -105,7 +105,7 @@ app.use('/shareapp', function(req,res,next){
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT * FROM USER WHERE CUSTOMER_EMAIL=\'' + email + '\';';
+    var q = 'SELECT * FROM USER WHERE EMAIL=\'' + email + '\' AND ROLE=2;';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
