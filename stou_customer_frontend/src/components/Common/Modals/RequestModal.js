@@ -29,20 +29,21 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
 
     AddRequest = () => {
         const { openModal} = this.props;
-        //console.log("Yo")
+        console.log("Yo");
 
         axios.post(`${serverURL}/addrequest`, {
             data: {
-                cookEmail: this.props.email,
-                customerEmail: this.props.cookEmail,
-                ItemName: this.state.request,
-                ItemDescription: this.state.description            
+                cookEmail: this.props.cookEmail,
+                customerEmail: this.props.email,
+                itemName: this.state.request,
+                itemDescription: this.state.description            
             }
         })
         .then(res => {
             console.log(res.data);
-            let channel = pusher.subscribe(`cook-${this.props.email}`);
-            channel.bind('new-order', function (data) {
+            //console.log("yo again");
+            let channel = pusher.subscribe(`cook-${this.props.cookEmail}`);
+            channel.bind('new-request', function (data) {
             const audio = new Audio(notificationSound);
             audio.play();
             openModal(ModalKey.NEW_ORDER, {...data});
