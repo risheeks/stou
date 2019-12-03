@@ -112,7 +112,7 @@ app.use('/shareapp', function(req,res,next){
         o['code'] = 202;
         res.status(202);
         let a  = generatePromoCode();
-        let text = 'App link, Enjoy 10% off on your order with this promo code' + a;
+        let text = 'App link, Enjoy 10% off on your order with this promo code ' + a;
         sendEmail(email, "", text, 'ENJOY STOU');
         o['message'] = 'Shared App Successfully';
         res.send(o);
@@ -251,7 +251,7 @@ app.use('/usepromocode', function (req, res, next) {
   let promoCode = uuidv4();
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'INSERT INTO PROMOCODES VALUES(\'' + promoCode + '\', 0);';
+    var q = 'INSERT INTO PROMOCODES VALUES(\'' + promoCode.substring(0,7) + '\', 0);';
     connection.query(q, function (err, rows) {
       if (err) throw err;
     });
