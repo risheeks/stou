@@ -3,6 +3,7 @@ import { Modal, Button, Image, ListGroup } from 'react-bootstrap';
 import OrderProgress from './OrderProgress';
 import axios from 'axios';
 import { serverURL } from '../../../../config';
+import Rate from '../OrderModal/Rate';
 
 class OrderUpdateModal extends Component {
     constructor(props) {
@@ -53,7 +54,7 @@ class OrderUpdateModal extends Component {
     }
 
     render() {
-        const { showModal, closeModal } = this.props;
+        const { showModal, closeModal, setOrders } = this.props;
         const propsOrder = this.props.order;
         const { items, order } = this.state;
 
@@ -65,6 +66,9 @@ class OrderUpdateModal extends Component {
                 <Modal.Body>
                     {this.renderOrderInfo(order)}
                     <OrderProgress status={propsOrder.orderStatus} />
+                    {order.orderStatus == 'delivered' && !order.rating ?
+                        <Rate order={propsOrder} closeModal={closeModal} setOrders={setOrders}/> : null
+                    }
                     <ListGroup className="bag-itemlist-container">
                         <ListGroup.Item>
                             <b>Order items</b>

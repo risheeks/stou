@@ -125,7 +125,6 @@ class Main extends Component {
     }
 
     render() {
-        console.log(this.props);
         const { signOut, auth_token, email, getToken, modalProps, openModal, closeModal, addToOrder, removeFromOrder, refresh, baggedItems, zipcode, changeLocation, clearOrder } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
         return (

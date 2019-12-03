@@ -5,6 +5,7 @@ import axios from 'axios';
 import { serverURL, tokenUrl, instanceLocator } from '../../../../config';
 import { ModalKey } from '../../../../constants/ModalKeys';
 import { ChatManager, TokenProvider } from '@pusher/chatkit-client';
+import Rate from './Rate';
 
 class OrderModal extends Component {
     constructor(props) {
@@ -186,13 +187,16 @@ class OrderModal extends Component {
         const { items, order } = this.state;
 
         return (
-            <Modal show={showModal} onHide={() => closeModal()}>
-                <Modal.Header closeButton>
+            <Modal show={showModal} onHide={order.orderStatus !== 'delivered' || order.rating ? () => closeModal() : () => {return}}>
+                <Modal.Header closeButton={order.orderStatus !== 'delivered' || order.rating}>
                     <b>{order.orderStatus === 'request_cancel' ? order.name + " is requesting order cancellation" : "Order details"}</b>
                 </Modal.Header>
                 <Modal.Body>
                     {this.renderOrderInfo(order)}
                     <OrderProgress status={order.orderStatus} />
+                    {order.orderStatus == 'delivered' && !order.rating ?
+                        <Rate order={order} closeModal={closeModal} setOrders={this.props.setOrders}/> : null
+                    }
                     <ListGroup className="bag-itemlist-container">
                         <ListGroup.Item>
                             <b>Order items</b>

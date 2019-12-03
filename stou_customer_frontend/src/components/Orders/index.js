@@ -54,7 +54,7 @@ class Orders extends Component {
     }
 
     handleOrder = (e, order) => {
-        this.props.openModal(ModalKey.ORDER_STATUS, { order });
+        this.props.openModal(ModalKey.ORDER_STATUS, { order, setOrders: this.setOrders });
     }
 
     renderOrderInfo = order => {
