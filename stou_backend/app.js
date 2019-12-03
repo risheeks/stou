@@ -101,7 +101,7 @@ const uuidv4 = require('uuid/v4');
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
 app.use('/shareapp', function(req,res,next){
-  let email = req.param('email')//req.body['data']['email'];
+  let email = req.body['data']['email'];
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
