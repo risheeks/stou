@@ -20,7 +20,7 @@ class RecentOrders extends Component {
         }
         axios.post(`${serverURL}/getrecentorders`, { data: data })
             .then(res => {
-                console.log(res.data)
+                //console.log(res.data)
                 // console.log(Array.from(res.data.data));
                 this.setState({
                     recent: Array.from(res.data)

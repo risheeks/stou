@@ -21,7 +21,7 @@ class ProfileModal extends Component {
     }
     setOpen = (open) => {
         this.setState({open:open})
-        console.log(this.state.reviewRating[1])
+        // console.log(this.state.reviewRating[1])
     }
 
     getReviewRating = () => {
@@ -35,6 +35,7 @@ class ProfileModal extends Component {
             this.setState({
                 reviewRating: Array.from(res.data.data[1])
             });
+            console.log(this.state.reviewRating)
         })
     }
 

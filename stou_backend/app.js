@@ -409,7 +409,7 @@ app.use('/getreviewrating', function (req, res, next) {
         obList.push(ob);
         con.getConnection(function (err, connection) {
           if (err) throw err;
-          var q = 'SELECT FIRST_NAME, LAST_NAME, REVIEW, ORDERS.RATING FROM ORDERS, USER WHERE CUSTOMER_EMAIL=EMAIL AND COOK_EMAIL=\'' + email + '\''
+          var q = 'SELECT FIRST_NAME, LAST_NAME, REVIEW, ORDERS.CUSTOMER_RATING FROM ORDERS, USER WHERE CUSTOMER_EMAIL=EMAIL AND COOK_EMAIL=\'' + email + '\''
           connection.query(q, function (err, rows) {
             if (err) throw err;
             if (rows.length === 0) {
@@ -763,7 +763,7 @@ app.use('/getcustomerorders', function (req, res, next) {
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    let q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.COOK_EMAIL AND USER.ROLE=1 AND CUSTOMER_EMAIL="' + customerEmail + '"AND ORDERS.RATING IS NULL ORDER BY ORDERED_AT DESC;';
+    let q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.COOK_EMAIL AND USER.ROLE=1 AND CUSTOMER_EMAIL="' + customerEmail + '"AND ORDERS.CUSTOMER_RATING IS NULL ORDER BY ORDERED_AT DESC;';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
