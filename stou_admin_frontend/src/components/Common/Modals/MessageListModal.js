@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Modal, Button, Form, Col, Row, Image } from "react-bootstrap";
 import MessageList from "../../Chat/MessageList";
+import { ModalKey } from '../../../constants/ModalKeys';
 
 class MessageListModal extends Component {
     constructor(props) {
@@ -8,6 +9,11 @@ class MessageListModal extends Component {
         this.state = {
             currentUser: this.props.currentUser
         }
+    }
+
+    handleBackButton = e =>{
+        const { openModal, retProps} = this.props;
+        openModal(ModalKey.BAN_PROFILE, { ...retProps})
     }
 
     render() {

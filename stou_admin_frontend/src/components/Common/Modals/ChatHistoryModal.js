@@ -25,7 +25,7 @@ class ChatHistoryModal extends Component {
             hooks: {
                 onMessage: message => {
                     let messages = this.state.messages;
-                    messages= [...this.state.messages, message]
+                    messages = [...this.state.messages, message]
                     this.setState({
                         
                         messages: messages
@@ -37,15 +37,15 @@ class ChatHistoryModal extends Component {
         .then(e => {
             const {openModal} = this.props;
             // console.log(this.state.messages);
-            openModal(ModalKey.MESSAGES, { roomName: roomId, messages: this.state.messages, user: this.props.retProps.user, role: this.props.retProps.userRole, reloadAfterBan: this.props.retProps.reloadAfterBan, openModal})
+            openModal(ModalKey.MESSAGES, { openModal: this.props.openModal, retProps: this.props, messages: this.state.messages })
         })
         .catch(err => console.log('error on subscribing to room: ', err))
         
     }
 
     handleBackButton = e =>{
-        const {openModal} = this.props;
-        openModal(ModalKey.BAN_PROFILE, { user: this.props.retProps.user, role: this.props.retProps.userRole, reloadAfterBan: this.props.retProps.reloadAfterBan, openModal})
+        const { openModal, retProps } = this.props;
+        openModal(ModalKey.BAN_PROFILE, { ...retProps})
     }
 
     render() {
