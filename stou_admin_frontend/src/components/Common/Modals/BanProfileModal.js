@@ -4,6 +4,8 @@ import { ModalKey } from '../../../constants/ModalKeys';
 import CustomRating from "../CustomRating";
 import axios from 'axios';
 import { serverURL } from "../../../config";
+import {tokenUrl, instanceLocator} from '../../../config'
+import { ChatManager, TokenProvider } from '@pusher/chatkit-client'
 
 class BanProfileModal extends Component {
     constructor(props) {
@@ -22,6 +24,26 @@ class BanProfileModal extends Component {
                 this.props.reloadAfterBan();
                 this.props.closeModal();
             })
+    }
+
+    handleChatHistory = async e => {
+        const { openModal } = this.props;
+        const email = this.props.email;
+        const chatManager = new ChatManager({
+            instanceLocator: instanceLocator,
+            userId: email,
+            tokenProvider: new TokenProvider({
+                url: tokenUrl,
+
+            })
+        })
+         await chatManager.connect()
+            .then(currentUser => {
+                this.setState({ currentUser })
+                console.log("current user assigned")
+            })
+            .catch(err => console.log('error on connecting: ', err))
+        openModal(ModalKey.CHAT, { openModal: this.props.openModal, retProps: this.props, email: this.props.email, role: this.props.role, currentUser: this.state.currentUser});
     }
 
     render() {
@@ -47,7 +69,7 @@ class BanProfileModal extends Component {
                     </Row>
                 </Modal.Body>
                 <Modal.Footer className="profile-footer-modal">
-                    <Button>View Chat History</Button>
+                    <Button onClick={this.handleChatHistory}>View Chat History</Button>
                     <Button variant={this.props.banStatus ? "success" : "danger"} onClick={this.changeBanStatus}>{this.props.banStatus ? 'Un' : ''}Ban User</Button>
                 </Modal.Footer>
             </Modal>
