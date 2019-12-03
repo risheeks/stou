@@ -15,9 +15,21 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
       };
     }
 
+    handleChangeRequest = event => {
+        
+        this.setState({ request: event.target.value });
+        
+    }
+
+    handleChangeDescription = event => {
+        
+        this.setState({ description: event.target.value });
+        
+    }
+
     AddRequest = () => {
-        //console.log(this.state.feedback)
         const { openModal} = this.props;
+        //console.log("Yo")
 
         axios.post(`${serverURL}/addrequest`, {
             data: {
@@ -57,6 +69,7 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
                                     name="requests"
                                     className=""
                                     value={this.state.request}
+                                    onChange={this.handleChangeRequest}
                                 />
                              </FormLabel>
                         </FormGroup>
@@ -72,6 +85,7 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
                               name="requestHomeCook"
                               className=""  
                               value={this.state.description}
+                              onChange={this.handleChangeDescription}
                             />
                             </FormLabel>
                         </FormGroup>

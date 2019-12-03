@@ -40,13 +40,46 @@ class Requests extends Component {
     acceptRequest = (e) => {
         //console.log(request);
         e.preventDefault();
-        
+        axios.post(`${serverURL}/changerequeststatus`, {
+            data: {
+                cookEmail: this.props.cookEmail,
+                customerEmail: this.props.customerEmail,
+                itemName: this.state.request,
+                status: 1            
+            }
+        })
+        .then(res => {
+            console.log(res.data);
+            let channel = pusher.subscribe(`customer-${this.props.customerEmail}`);
+            channel.bind('request-accepted', function (data) {
+            const audio = new Audio(notificationSound);
+            audio.play();
+            //openModal(ModalKey.NEW_ORDER, {...data});
+            });
+        })
     }
 
     rejectRequest = (e) => {
         //console.log(request);
         e.preventDefault();
-        
+                e.preventDefault();
+        axios.post(`${serverURL}/changerequeststatus`, {
+            data: {
+                cookEmail: this.props.cookEmail,
+                customerEmail: this.props.customerEmail,
+                itemName: this.state.request,
+                status: 2            
+            }
+        })
+        .then(res => {
+            console.log(res.data);
+            let channel = pusher.subscribe(`customer-${this.props.customerEmail}`);
+            channel.bind('request-rejected', function (data) {
+            const audio = new Audio(notificationSound);
+            audio.play();
+            //openModal(ModalKey.NEW_ORDER, {...data});
+            });
+        })   
     }
 
   render() {

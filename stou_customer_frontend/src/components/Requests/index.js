@@ -34,14 +34,11 @@ class Requests extends Component {
             this.setState({
                 requests: Array.from(res.data.data)
             });
-        };
-    }
+        }
+    })
   }
 
-
-
-
-   
+  
   
   render() {
     return (
