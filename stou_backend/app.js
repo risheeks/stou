@@ -100,6 +100,37 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
+
+app.use('/getnamefromemail', function(req,res,next){
+  let email = req.body['data']['email'];
+  let role = req.body['data']['role'];
+  let q = "";
+  if(role === 1) {
+    q = 'SELECT FIRST_NAME,LAST_NAME FROM USER WHERE COOK_EMAIL=\'' + email + '\';';
+  } else {
+    q = 'SELECT FIRST_NAME,LAST_NAME FROM USER WHERE CUSTOMER_EMAIL=\'' + email + '\';';
+  }
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'User Not Found';
+        res.send(o);
+      } else {
+        o['data'] = rows[0].FIRST_NAME + ' ' + rows[0].LAST_NAME;
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Success';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
 app.get('/getroomid', function(req,res,next) {
     let email = req.body['data']['email'];
     var o = {};
