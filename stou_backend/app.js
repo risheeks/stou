@@ -520,11 +520,11 @@ app.use('/setreviewrating', function (req, res, next) {
   con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = '';
-    if (role === 2) {
-      q = 'UPDATE ORDERS SET REVIEW=\'' + review + '\', CUSTOMER_RATING=' + rating + ' WHERE ORDER_ID=\'' + orderId + '\';';
+    if (role === 1) {
+      q = 'UPDATE ORDERS SET REVIEW=\'' + review + '\', COOK_RATING=' + rating + ' WHERE ORDER_ID=\'' + orderId + '\';';
     }
-    else if (role === 1) {
-      q = 'UPDATE ORDERS SET COOK_RATING=' + rating + ' WHERE ORDER_ID=\'' + orderId + '\';';
+    else if (role === 2) {
+      q = 'UPDATE ORDERS SET CUSTOMER_RATING=' + rating + ' WHERE ORDER_ID=\'' + orderId + '\';';
     }
     connection.query(q, function (err, rows) {
       if (err) throw err;
