@@ -59,6 +59,10 @@ class Requests extends Component {
             return 'Well';
         }
     }
+
+    //SELECT COOK_EMAIL, CUSTOMER_EMAIL, ITEM_NAME, ITEM_DESCRIPTION, STATUS, FIRST_NAME FROM REQUESTS, USER WHERE REQUESTS.COOK_EMAIL = USER.EMAIL;
+    //SELECT COOK_EMAIL, CUSTOMER_EMAIL, ITEM_NAME, ITEM_DESCRIPTION, STATUS, FIRST_NAME FROM REQUESTS, USER WHERE REQUESTS.CUSTOMER_EMAIL = USER.EMAIL;
+
   
   render() {
     //console.log("status below")
@@ -73,7 +77,7 @@ class Requests extends Component {
                   <p>{item.itemName} from {item.cook} </p>                  
                   <p>{item.itemDescription}</p>                                  
                 </div>
-                <Button className="submit-button request-button">Pending</Button>                 
+                <Button className="submit-button request-button">{this.renderSwitch(item.status)}</Button>                 
             </ListGroup.Item>
           ))}
         </ListGroup>
