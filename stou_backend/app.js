@@ -101,7 +101,7 @@ const uuidv4 = require('uuid/v4');
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
 app.use('/shareapp', function(req,res,next){
-  let email = req.body['data']['email'];
+  let email = req.param('email')//req.body['data']['email'];
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
@@ -111,7 +111,8 @@ app.use('/shareapp', function(req,res,next){
       if (rows.length === 0) {
         o['code'] = 202;
         res.status(202);
-        let text = 'App link, Enjoy 10% off on your order with this promo code' + generatePromoCode;
+        let a  = generatePromoCode();
+        let text = 'App link, Enjoy 10% off on your order with this promo code' + a;
         sendEmail(email, "", text, 'ENJOY STOU');
         o['message'] = 'Shared App Successfully';
         res.send(o);
@@ -245,7 +246,7 @@ app.use('/usepromocode', function (req, res, next) {
   });
 });
 
- generatePromoCode = function (req, res, next) {
+ function generatePromoCode() {
   var o = {};
   let promoCode = uuidv4();
   con.getConnection(function (err, connection) {
