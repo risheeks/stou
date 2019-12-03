@@ -100,7 +100,32 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
+app.use('/shareapp', function(req,res,next){
+  let email = req.body['data']['email'];
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT * FROM USER WHERE CUSTOMER_EMAIL=\'' + email + '\';';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 202;
+        res.status(202);
+        let text = 'App link, Enjoy 10% off on your order with this promo code' + generatePromoCode;
+        sendEmail(email, text, 'ENJOY STOU');
+        o['message'] = 'Shared App Successfully';
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'User already registered';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
 
+});
 
 app.use('/getnamefromemail', function(req,res,next){
   let email = req.body['data']['email'];
@@ -136,10 +161,17 @@ app.use('/getnamefromemail', function(req,res,next){
 
 app.use('/getroomid', function(req,res,next) {
     let email = req.body['data']['email'];
+    let role = req.body['data']['role']
     var o = {};
-    con.getConnection(function (err, connection) {
+    let q = "";
+    if(role === 1) {
+      q = 'SELECT CUSTOMER_EMAIL, COOK_EMAIL FROM ORDERS WHERE COOK_EMAIL=\'' + email + '\';';
+    } else {
+      q = 'SELECT CUSTOMER_EMAIL, COOK_EMAIL FROM ORDERS WHERE CUSTOMER_EMAIL=\'' + email + '\';';
+    }
+
+  con.getConnection(function (err, connection) {
         if (err) throw err;
-        var q = 'SELECT CUSTOMER_EMAIL, COOK_EMAIL FROM ORDERS WHERE CUSTOMER_EMAIL=\'' + email + '\';';
         connection.query(q, function (err, rows) {
             if (err) throw err;
             if (rows.length === 0) {
@@ -214,7 +246,7 @@ app.use('/usepromocode', function (req, res, next) {
   });
 });
 
-app.use('/generatepromocode', function (req, res, next) {
+ generatePromoCode = function (req, res, next) {
   var o = {};
   let promoCode = uuidv4();
   con.getConnection(function (err, connection) {
@@ -222,15 +254,11 @@ app.use('/generatepromocode', function (req, res, next) {
     var q = 'INSERT INTO PROMOCODES VALUES(\'' + promoCode + '\', 0);';
     connection.query(q, function (err, rows) {
       if (err) throw err;
-      o['code'] = 200;
-      res.status(200);
-      o['data'] = promoCode;
-      o['message'] = 'Success';
-      res.send(o);
     });
     connection.release();
   });
-});
+  return promoCode;
+};
 
 
 app.use('/getcustomersfollowinghomecook', function (req, res, next) {
@@ -1867,7 +1895,7 @@ app.use('/getfavoritehomecooks', function (req, res, next) {
 });
 
 
-function sendEmail(email, password, text) {
+function sendEmail(email, password="", text, subject = 'Password Reset') {
   const nodemailer = require('nodemailer');
   var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -1880,7 +1908,7 @@ function sendEmail(email, password, text) {
   var mailOptions = {
     from: 'markvadesamuel1998@gmail.com',
     to: email.toString(),
-    subject: 'Password reset',
+    subject: subject,
     text: text
   };
 
