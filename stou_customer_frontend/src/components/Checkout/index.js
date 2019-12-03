@@ -4,7 +4,6 @@ import { Row, Col, Container, Button, ListGroup, FormControl, FormLabel, Image, 
 import axios from 'axios';
 import { serverURL, pusher } from '../../config';
 import BagItem from '../Common/Bag/BagItem';
-import PaypalExpressBtn from 'react-paypal-express-checkout';
 import { withRouter } from 'react-router-dom';
 import { ModalKey } from '../../constants/ModalKeys';
 import { tokenUrl, instanceLocator } from '../../config'
