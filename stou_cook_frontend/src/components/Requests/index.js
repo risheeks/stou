@@ -4,6 +4,8 @@ import {Button, ListGroup, Container} from "react-bootstrap";
 import axios from 'axios';
 import "../../styles/Main.css";
 import { serverURL } from '../../config';
+import { pusher } from '../../config';
+import notificationSound from '../../constants/sounds/notification.mp3';
 
 
 class Requests extends Component {
@@ -33,8 +35,8 @@ class Requests extends Component {
             this.setState({
                 requests: Array.from(res.data.data)
             });
-        };
-    }
+        }
+    })
   }   
   
     acceptRequest = (e) => {
