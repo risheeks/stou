@@ -409,7 +409,7 @@ app.use('/getreviewrating', function (req, res, next) {
         obList.push(ob);
         con.getConnection(function (err, connection) {
           if (err) throw err;
-          var q = 'SELECT FIRST_NAME, LAST_NAME, REVIEW, ORDERS.RATING FROM ORDERS, USER WHERE CUSTOMER_EMAIL=EMAIL AND COOK_EMAIL=\'' + email + '\' AND ORDERS.RATING IS NOT NULL;'
+          var q = 'SELECT FIRST_NAME, LAST_NAME, REVIEW, ORDERS.RATING FROM ORDERS, USER WHERE CUSTOMER_EMAIL=EMAIL AND COOK_EMAIL=\'' + email + '\''
           connection.query(q, function (err, rows) {
             if (err) throw err;
             if (rows.length === 0) {

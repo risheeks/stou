@@ -9,6 +9,7 @@ import { withRouter } from 'react-router-dom';
 import { ModalKey } from '../../constants/ModalKeys';
 import { tokenUrl, instanceLocator } from '../../config'
 import { ChatManager, TokenProvider } from '@pusher/chatkit-client'
+import { PayPalButton } from "react-paypal-button-v2";
 
 
 const CLIENT = {
@@ -255,6 +256,10 @@ class Checkout extends Component {
         
     }
 
+    onSuccessPaypal = () => {
+
+    }
+
     render() {
         //console.log(this.state.time)
         let env = 'sandbox';
@@ -302,20 +307,32 @@ class Checkout extends Component {
                                 </div>
                             </ListGroup.Item>
                         </ListGroup>
+                        <br/>
                         <div className="paypal-button-div" style={{ visibility: this.validate(this.state.street, this.state.city, this.state.state, this.state.zipcode) }}>
-                            <PaypalExpressBtn
-                                // className="paypal-button"
-                                env={env}
-                                client={client}
-                                currency={currency}
-                                total={total}
-                                onError={this.onError}
-                                onSuccess={this.onSuccess}
-                                onCancel={this.onCancel}
-                                style={{ layout: "vertical", shape: "rect", size: "large" }}
+                            <PayPalButton
+                            className="paypal-button"
+                            amount={total}
+                            onSuccess={(details, data) =>  {
+                                alert("Transaction completed by " + details.payer.name.given_name);
+                                const { clearOrder } = this.props;
+                                this.placeOrder(data.orderID);
+                                clearOrder();
+                                this.props.history.push('/');
+                                console.log(data.orderID)
+                                return fetch("/paypal-transaction-complete", {
+                                    method: "post",
+                                    body: JSON.stringify({
+                                        orderID: data.orderID
+                                    })
+                                });
+                            }}
+                            options={{
+                                clientId: "AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC"
+                            }}
                             />
                         </div>
                         <Button variant="primary" onClick={this.onTest}>Checkout</Button>
+                        
                     </div>
                     <div className="delivery-container">
                         <div className="address-div">
