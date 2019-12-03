@@ -101,7 +101,7 @@ const uuidv4 = require('uuid/v4');
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
 
-<<<<<<< HEAD
+
 app.use('/getnamefromemail', function(req,res,next){
   let email = req.body['data']['email'];
   let role = req.body['data']['role'];
