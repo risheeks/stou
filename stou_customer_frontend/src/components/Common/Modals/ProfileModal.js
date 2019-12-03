@@ -60,7 +60,7 @@ class ProfileModal extends Component {
                 </Modal.Body>
                 <Modal.Footer className="profile-footer-modal">
                 <div className="footer-review-top">
-                    <CustomRating rating="0" readonly={true} bowlSize="30px"/> 
+                    {/* <CustomRating rating="0" readonly={true} bowlSize="30px"/>  */}
                     <div className="footer-review">
                         <Button
                             className = "footer-review-button"
@@ -72,55 +72,7 @@ class ProfileModal extends Component {
                         </Button>
                         
                         <div className="">
-                        {/* <Collapse in={open}>
-                        <Container className="Review-container">
-                            <ListGroup>
-                            <ListGroup.Item className="food-option-view-menu">
-                            <div className="food-option-inner">
-                                <div className="review-info">
-                                    <div className="reviewer-name">
-                                        <Form.Label>
-                                            <p>Siddhant patel</p>
-                                        </Form.Label>
-                                    </div>
-                                    <div className="vfo-description wrapped-review-text">
-                                        <p>Amazing food. Tasty and healthy
-                                        </p>
-                                    </div>
-                                    <div className="review-bowl">
-                                        <p><b><CustomRating rating="2" readonly={true} bowlSize="20px"/></b></p>
-                                    </div>
-                                </div>
-                            </div>
-                            </ListGroup.Item>
-                            </ListGroup>
-                        </Container>
-                        </Collapse>
-                        <Collapse in={open}>
-                        <Container className="ViewFoodOptions">
-                            <ListGroup>
-                            <ListGroup.Item className="food-option-view-menu">
-                            <div className="food-option-inner">
-                                <div className="review-info">
-                                    <div className="reviewer-name">
-                                        <Form.Label>
-                                            <p>Siddhant patel</p>
-                                        </Form.Label>
-                                    </div>
-                                    <div className="vfo-description wrapped-review-text">
-                                        <p>Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus
-                                        terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer
-                                        </p>
-                                    </div>
-                                    <div className="review-bowl">
-                                        <p><b><CustomRating rating="2" readonly={true} bowlSize="20px"/></b></p>
-                                    </div>
-                                </div>
-                            </div>
-                            </ListGroup.Item>
-                            </ListGroup>
-                        </Container>
-                        </Collapse> */}
+                       
                         {this.state.reviewRating.map(item => (
                             <Collapse in={open}>
                             <Container className="ViewFoodOptions">

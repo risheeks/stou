@@ -20,8 +20,7 @@ const style = {
     color: 'gold',
     shape: 'rect',
     label: 'checkout',
-    tagline: 'true',
-    promo_code: ''
+    tagline: 'true'
 };
 
 class Checkout extends Component {
@@ -41,7 +40,9 @@ class Checkout extends Component {
             instructions: '',
             time: 0,
             isOn: false,
-            start: 0
+            start: 0,
+            promo_code: '',
+            promo_code_success: ''
         };
         this.startTimer = this.startTimer.bind(this)
         this.stopTimer = this.stopTimer.bind(this)
@@ -170,6 +171,17 @@ class Checkout extends Component {
         axios.post(`${serverURL}/placeorder`, { data: data })
             .then(res => {
                 console.log(email + "-" + baggedItems[0].email)
+                if(this.state.isApplied) {
+                    axios.post(`${serverURL}/usepromocode`, {
+                        data: {
+                            promoCode:this.state.promo_code_success,
+                            status:1
+                        }
+                    })
+                    .then(res => {
+                        console.log(res.data.code);
+                    })
+                }
 
             })
     }
@@ -215,19 +227,32 @@ class Checkout extends Component {
     applyDiscount = (e) => {
         //TODO: Server call for promo_code
         let { promo_code, origTotal, total, isApplied } = this.state;
+     
         if (promo_code == '' || !promo_code) {
             this.setState({ total: origTotal });
             this.setState({ discount: 0 });
             this.setState({ isApplied: false });
             return;
         }
-        console.log(promo_code)
-        if (!isApplied) {
-            this.setState({ discount: "-" + (total / 10).toFixed(2) });
-            let newTotal = (total - total / 10).toFixed(2);
-            this.setState({ total: newTotal });
-            this.setState({ isApplied: true });
-        }
+        axios.post(`${serverURL}/checkpromocode`, {
+            data: {
+                promoCode:promo_code,
+            }
+        })
+        .then(res => {
+            console.log(res.data.code);
+            if(res.data.code === 200) {
+                console.log(promo_code)
+                if (!isApplied) {
+                    this.setState({ discount: "-" + (total / 10).toFixed(2) });
+                    let newTotal = (total - total / 10).toFixed(2);
+                    this.setState({ total: newTotal });
+                    this.setState({ isApplied: true });
+                    this.setState({promo_code_success:promo_code})
+                }
+            }
+        })
+        
     }
 
     render() {

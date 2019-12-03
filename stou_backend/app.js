@@ -100,13 +100,39 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
+app.use('/checkpromocode', function (req, res, next) {
+  let promoCode = req.body['data']['promoCode'];
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT * FROM PROMOCODES WHERE PROMO_CODE=\'' + promoCode + '\' AND STATUS=0;';
+   console.log(q)
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'Promo Code Not Found';
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Promo Code valid';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
 app.use('/usepromocode', function (req, res, next) {
   let promoCode = req.body['data']['promoCode'];
   let status = req.body['data']['status']
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'UPDATE PROMOCODES SET STATUS=' + status + ' WHERE PROMO_CODE=\'' + promoCode + ';';
+    var q = 'UPDATE PROMOCODES SET STATUS=' + status + ' WHERE PROMO_CODE=\'' + promoCode + '\';';
+    console.log(q)
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
