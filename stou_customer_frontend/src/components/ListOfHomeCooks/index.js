@@ -35,6 +35,7 @@ class ListOfHomeCooks extends Component {
                     homecooks: Array.from(res.data.data)
 				});
 			});
+			
 	}
 
 
