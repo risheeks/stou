@@ -425,7 +425,7 @@ app.use('/getreviewrating', function (req, res, next) {
                 tempOb = {
                   'customer': rows[i].FIRST_NAME + " " + rows[i].LAST_NAME,
                   'review': rows[i].REVIEW,
-                  'rating': rows[i].RATING
+                  'rating': rows[i].CUSTOMER_RATING
                 };
                 tempList.push(tempOb);
                 tempOb = {};
