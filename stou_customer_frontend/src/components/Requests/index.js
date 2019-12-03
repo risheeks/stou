@@ -10,7 +10,7 @@ class Requests extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      requests: [{cook: 'Cook1', customer: 'Customer1', itemName: 'Name1', itemDescription: 'Blah Blah Description Blah Blah', status: 'Pending'}, {cook: 'Cook2', customer: 'Customer2', itemName: 'Name2', itemDescription: 'Blah Blah Description Blah Blah', status: 'Pending'}],
+      requests: [{cook: 'Cook1', customer: 'Customer1', itemName: 'Name1', itemDescription: 'Blah Blah Description Blah Blah', status: 'Pending'}, {cook: 'Cook2', customer: 'Customer2', itemName: 'Name2', itemDescription: 'Blah Blah Description Blah Blah', status: 'Pending'}]
     };
   }
 
@@ -25,7 +25,7 @@ class Requests extends Component {
 
     axios.post(`${serverURL}/getrequest`, {
         data: {
-            customerEmail: this.props.cookEmail,
+            customerEmail: this.props.customerEmail,
             role: 2            
         }
     })
@@ -34,7 +34,7 @@ class Requests extends Component {
             this.setState({
                 requests: Array.from(res.data.data)
             });
-        });
+        };
     }
   }
 
@@ -54,7 +54,7 @@ class Requests extends Component {
                   <p>{item.itemName} from {item.cook} </p>                  
                   <p>{item.itemDescription}</p>                                  
                 </div>
-                <Button className="submit-button request-button" >{item.status}</Button>                 
+                <Button className="submit-button request-button">{item.status}</Button>                 
             </ListGroup.Item>
           ))}
         </ListGroup>
