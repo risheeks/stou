@@ -100,7 +100,9 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
-app.get('/getroomid', function(req,res,next) {
+
+
+app.use('/getroomid', function(req,res,next) {
     let email = req.body['data']['email'];
     var o = {};
     con.getConnection(function (err, connection) {
@@ -360,7 +362,7 @@ app.use('/addrequest', function (req, res, next) {
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'INSERT INTO REQUESTS VALUES (\'' + cookEmail + '\', \'' + customerEmail + '\', \'' + itemName + '\', \'' + itemDescription + '\', STATUS=0);';
+    var q = 'INSERT INTO REQUESTS VALUES (\'' + cookEmail + '\', \'' + customerEmail + '\', \'' + itemName + '\', \'' + itemDescription + '\', 0);';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
