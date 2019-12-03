@@ -144,7 +144,7 @@ class UserList extends Component {
 
   handleUserClick = user => {
     const { openModal } = this.props;
-    openModal(ModalKey.BAN_PROFILE, { ...user, role: this.state.userRole, reloadAfterBan: this.reloadAfterBan });
+    openModal(ModalKey.BAN_PROFILE, { ...user, role: this.state.userRole, reloadAfterBan: this.reloadAfterBan, openModal});
   }
 
   getShownPages = () => {
