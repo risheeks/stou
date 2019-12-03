@@ -1,37 +1,23 @@
 import React, { Component } from 'react';
 import { Accordion, Card, Button } from 'react-bootstrap';
+import axios from 'axios';
+import { serverURL } from '../../config';
 
 class Feedback extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            feedbackList: [
-                {
-                    name: 'Soumil Uppal',
-                    email: 'soumil.barca@gmail.com',
-                    feedback: 'I think the website is too clunky and can look better.',
-                    time: '06 Nov, 2016'
-                },
-                {
-                    name: 'Soumil Uppal',
-                    email: 'soumil.barca@gmail.com',
-                    feedback: 'I think the website is too clunky and can look better.',
-                    time: '06 Nov, 2016'
-                },
-                {
-                    name: 'Soumil Uppal',
-                    email: 'soumil.barca@gmail.com',
-                    feedback: 'I think the website is too clunky and can look better.',
-                    time: '06 Nov, 2016'
-                },
-                {
-                    name: 'Soumil Uppal',
-                    email: 'soumil.barca@gmail.com',
-                    feedback: 'I think the website is too clunky and can look better.',
-                    time: '06 Nov, 2016'
-                }
-            ]
+            feedbackList: []
         }
+    }
+
+    componentDidMount() {
+        axios.get(`${serverURL}/getfeedback`)
+            .then(res => {
+                this.setState({
+                    feedbackList: Array.from(res.data.data)
+                });
+            })
     }
 
     render() {
@@ -44,7 +30,7 @@ class Feedback extends Component {
                         <Card className="feedback-card">
                             <Card.Header className="feedback-card-header">
                                 <Accordion.Toggle as={Button} variant="link" eventKey={index.toString()}>
-                                    <p className="feedback-card-header-text">Feedback from <b>{feedback.name} - {feedback.email}</b></p>
+                                    <p className="feedback-card-header-text">Feedback from <b>{feedback.email}</b></p>
                                 </Accordion.Toggle>
                             </Card.Header>
                             <Accordion.Collapse eventKey={index.toString()}>
