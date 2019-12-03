@@ -100,6 +100,35 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
+app.get('/getroomid', function(req,res,next) {
+    let email = req.body['data']['email'];
+    var o = {};
+    con.getConnection(function (err, connection) {
+        if (err) throw err;
+        var q = 'SELECT CUSTOMER_EMAIL, COOK_EMAIL FROM ORDERS WHERE CUSTOMER_EMAIL=\'' + email + '\';';
+        connection.query(q, function (err, rows) {
+            if (err) throw err;
+            if (rows.length === 0) {
+                o['code'] = 404;
+                res.status(404);
+                o['message'] = 'No Orders Found';
+                res.send(o);
+            } else {
+                let idSet = new Set();
+                for(i=0; i < rows.length; i++) {
+                    idSet.add(rows[i].CUSTOMER_EMAIL+"-"+rows[i].COOK_EMAIL);
+                }
+                o['data'] = Array.from(idSet.values())
+                o['code'] = 200;
+                res.status(200);
+                o['message'] = 'Success';
+                res.send(o);
+            }
+        });
+        connection.release();
+    });
+});
+
 app.use('/checkpromocode', function (req, res, next) {
   let promoCode = req.body['data']['promoCode'];
   var o = {};
