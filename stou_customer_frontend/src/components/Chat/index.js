@@ -116,8 +116,10 @@ class Chat extends React.Component {
             })
             chatManager.connect({
                 onAddedToRoom: room => {
-                    console.log(`Added to room ${room.name}`)
-                    //Edit to fit UI
+                    this.getRooms()
+                },
+                onRemovedFromRoom: room => {
+                    this.getRooms()
                 }
             })
                 .then(currentUser => {
@@ -131,6 +133,15 @@ class Chat extends React.Component {
     getRooms() {
         const rooms = this.state.currentUser.rooms;
         const messages = this.state.messages;
+        console.log(rooms.length);
+        if(rooms && rooms.length < 1) {
+            this.setState({
+                messages: {},
+                roomId: '',
+                joinedRooms: []
+            })
+            return;
+        }
         for (let i = 0; i < rooms.length; i++) {
             messages[rooms[i].id] = [];
         }

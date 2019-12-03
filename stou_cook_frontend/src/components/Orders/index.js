@@ -41,15 +41,15 @@ class Orders extends Component {
                 userId: this.props.email,
                 tokenProvider: new TokenProvider({
                     url: tokenUrl,
-    
+
                 })
             })
             chatManager.connect()
-            .then(currentUser => {
-                this.setState({currentUser})
-                // this.getRooms()
-            })
-            .catch(err => console.log('error on connecting: ', err))
+                .then(currentUser => {
+                    this.setState({ currentUser })
+                    // this.getRooms()
+                })
+                .catch(err => console.log('error on connecting: ', err))
         }
     }
 
@@ -80,32 +80,24 @@ class Orders extends Component {
     }
 
     handleOrder = (e, order) => {
-        this.props.openModal(ModalKey.ORDER_STATUS, { order, setOrders: this.setOrders});
+        this.props.openModal(ModalKey.ORDER_STATUS, { order, setOrders: this.setOrders });
     }
 
-    async setOrderStatus(orderStatus, order) {
-        if (orderStatus === "in_progress") {
-            let { customerEmail, cookEmail } = "";
-                customerEmail = order.customerEmail;
-                cookEmail = order.cookEmail;
-                this.state.currentUser.createRoom({
-                    id: customerEmail + "-" + cookEmail,
-                    name: customerEmail + "-" + cookEmail,
-                    private: true,
-                    addUserIds: [customerEmail, cookEmail]
-                });
-                this.state.currentUser.addUserToRoom({
-                    userId: customerEmail,
-                    roomId: customerEmail + "-" + cookEmail
-                })
-                this.state.currentUser.addUserToRoom({
-                    userId: cookEmail,
-                    roomId: customerEmail + "-" + cookEmail
-                })
-        }
+    setOrderStatus = (orderStatus, order) => {
         const data = {
             orderStatus,
             orderId: order.orderId
+        }
+        if (orderStatus === "in_progress") {
+            let { customerEmail, cookEmail } = "";
+            customerEmail = order.customerEmail;
+            cookEmail = order.cookEmail;
+            this.state.currentUser.createRoom({
+                id: customerEmail + "-" + cookEmail,
+                name: customerEmail + "-" + cookEmail,
+                private: true,
+                addUserIds: [customerEmail, cookEmail]
+            });
         }
         axios.post(`${serverURL}/setorderstatus`, { data })
             .then(res => {

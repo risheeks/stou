@@ -42,27 +42,19 @@ class OrderAlert extends Component {
             orderStatus,
             orderId: order.orderId
         }
+        if (orderStatus === "in_progress") {
+            let { customerEmail, cookEmail } = "";
+            customerEmail = order.customerEmail;
+            cookEmail = order.cookEmail;
+            this.state.currentUser.createRoom({
+                id: customerEmail + "-" + cookEmail,
+                name: customerEmail + "-" + cookEmail,
+                private: true,
+                addUserIds: [customerEmail, cookEmail]
+            });
+        }
         axios.post(`${serverURL}/setorderstatus`, { data })
             .then(res => {
-                if (orderStatus === "in_progress") {
-                    let { customerEmail, cookEmail } = "";
-                    customerEmail = order.customerEmail;
-                    cookEmail = order.cookEmail;
-                    this.state.currentUser.createRoom({
-                        id: customerEmail + "-" + cookEmail,
-                        name: customerEmail + "-" + cookEmail,
-                        private: true,
-                        addUserIds: [customerEmail, cookEmail]
-                    });
-                    this.state.currentUser.addUserToRoom({
-                        userId: customerEmail,
-                        roomId: customerEmail + "-" + cookEmail
-                    })
-                    this.state.currentUser.addUserToRoom({
-                        userId: cookEmail,
-                        roomId: customerEmail + "-" + cookEmail
-                    })
-                }
                 this.props.closeModal();
             })
     }

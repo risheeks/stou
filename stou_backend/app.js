@@ -556,7 +556,6 @@ app.use('/getfeedback', function (req, res, next) {
 });
 
 app.use('/setorderstatus', function (req, res, next) {
-  console.log(req.body.data);
   const orderId = req.body['data']['orderId'];
   const newOrderStatus = req.body['data']['orderStatus'];
   let o = {};
@@ -572,6 +571,7 @@ app.use('/setorderstatus', function (req, res, next) {
       } else {
         const currentOrderStatus = rows[0].ORDER_STATUS;
         const customerEmail = rows[0].CUSTOMER_EMAIL;
+        const cookEmail = rows[0].COOK_EMAIL;
         let update = false;
         if (newOrderStatus === 'in_progress' && currentOrderStatus === 'placed') {
           update = true;
@@ -591,7 +591,6 @@ app.use('/setorderstatus', function (req, res, next) {
           con.getConnection(function (err, connection) {
             if (err) throw err;
             var q = 'UPDATE ORDERS SET ORDER_STATUS=\'' + newOrderStatus + '\' where ORDER_ID=\'' + orderId + '\';';
-            console.log(q);
             connection.query(q, function (err, newRows) {
               if (err) {
                 o['code'] = 400;
@@ -599,23 +598,41 @@ app.use('/setorderstatus', function (req, res, next) {
                 o['message'] = 'Failed to update status';
                 res.send(o);
               } else {
+                if (currentOrderStatus === 'placed' && newOrderStatus === 'in_progress') {
+                  chatkit.addUsersToRoom({
+                    roomId: customerEmail + "-" + cookEmail,
+                    userIds: [cookEmail, customerEmail],
+                  })
+                }
+                if (newOrderStatus === 'delivered') {
+                  var q = `SELECT * FROM ORDERS WHERE COOK_EMAIL="${cookEmail}" AND CUSTOMER_EMAIL="${customerEmail}" AND ORDER_STATUS NOT IN("delivered", "cancelled") AND ORDER_ID != "${orderId}";`;
+                  connection.query(q, function (err, nRows) {
+                    console.log(nRows[0])
+                    if (nRows.length < 1) {
+                      chatkit.removeUsersFromRoom({
+                        roomId: customerEmail + "-" + cookEmail,
+                        userIds: [cookEmail, customerEmail],
+                      })
+                    }
+                  });
+                }
                 pusher.trigger(`customer-${customerEmail}`, 'order-update', {
-                  "message": "Order status changed",
-                  "order": {
-                    "orderId": orderId,
-                    "orderStatus": newOrderStatus,
-                    "name": rows[0].FIRST_NAME + " " + rows[0].LAST_NAME,
-                    "orderedAt": rows[0].ORDERED_AT,
-                    "orderAddress": rows[0].ORDER_ADDRESS,
-                    "rating": rows[0].RATING
-                  }
-                });
-                o['code'] = 200;
-                res.status(200);
-                o['message'] = 'Status update successful';
-                res.send(o);
-              }
-            });
+                    "message": "Order status changed",
+                    "order": {
+                      "orderId": orderId,
+                      "orderStatus": newOrderStatus,
+                      "name": rows[0].FIRST_NAME + " " + rows[0].LAST_NAME,
+                      "orderedAt": rows[0].ORDERED_AT,
+                      "orderAddress": rows[0].ORDER_ADDRESS,
+                      "rating": rows[0].RATING
+                    }
+                  });
+                  o['code'] = 200;
+                  res.status(200);
+                  o['message'] = 'Status update successful';
+                  res.send(o);
+                }
+              });
             connection.release();
           });
         }
@@ -664,7 +681,6 @@ app.use('/getallorders', function (req, res, next) {
           ord['rating'] = rows[i].CUSTOMER_RATING;
           obj.push(ord);
         }
-        console.log(rows);
         o = obj;
         o['code'] = 200;
         o['message'] = 'Success';
@@ -742,7 +758,7 @@ app.use('/getcustomerorders', function (req, res, next) {
           ord['rating'] = rows[i].COOK_RATING;
           obj.push(ord);
         }
-        console.log(rows);
+
         o = obj;
         o['code'] = 200;
         o['message'] = 'Success';
@@ -785,7 +801,7 @@ app.use('/getrecentorders', function (req, res, next) {
           ord['rating'] = rows[i].COOK_RATING;
           obj.push(ord);
         }
-        console.log(rows);
+
         o = obj;
         o['code'] = 200;
         o['message'] = 'Success';
@@ -1630,7 +1646,7 @@ app.use('/forgotpassword', function (req, res, next) {
     if (err) throw err;
     var q = 'UPDATE USER SET PASSWORD = "' + encPassword + '" WHERE EMAIL="' + encEmail + '";';
     connection.query(q, function (err, rows) {
-      // console.log(rows);
+      // 
       if (err) {
         console.log("reset failed");
         o['code'] = 404;
@@ -1920,7 +1936,7 @@ app.use('/register', function (req, res, next) {
     var q = 'SELECT FIRST_NAME, LAST_NAME FROM USER WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC = "' + role + '");';
     connection.query(q, function (err, rows) {
       console.log(q);
-      console.log(rows);
+
       if (err) {
         console.log(err);
         o['code'] = 400;
