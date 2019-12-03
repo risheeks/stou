@@ -360,7 +360,7 @@ app.use('/addrequest', function (req, res, next) {
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'INSERT INTO REQUESTS VALUES (\'' + cookEmail + '\', \'' + customerEmail + '\', \'' + itemName + '\', \'' + itemDescription + '\', STATUS=0);';
+    var q = 'INSERT INTO REQUESTS VALUES (\'' + cookEmail + '\', \'' + customerEmail + '\', \'' + itemName + '\', \'' + itemDescription + '\', 0);';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
