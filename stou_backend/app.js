@@ -100,7 +100,9 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
-app.get('/getroomid', function(req,res,next) {
+
+
+app.use('/getroomid', function(req,res,next) {
     let email = req.body['data']['email'];
     var o = {};
     con.getConnection(function (err, connection) {
