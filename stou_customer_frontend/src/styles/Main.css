@@ -634,6 +634,17 @@ textarea {
   align-self: center;
 }
 
+.notification-toast {
+  position: fixed;
+  top: 4rem;
+  left: 76%;
+  width: 300px;
+}
+
+.notification-picture {
+  width: 30px;
+}
+
 @media all and (min-width: 480px) {
     .Register {
       border: 1px solid rgb(202, 202, 202);
