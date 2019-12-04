@@ -26,6 +26,7 @@ class FeedbackModal extends Component {
         })
         .then(res => {
           console.log(res.data);
+          this.props.closeModal();
         })
       }
     handleChange = e => {
