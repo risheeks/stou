@@ -83,6 +83,7 @@ class Requests extends Component {
             </ListGroup.Item>
           ))}
         </ListGroup>
+        </Container>
       </Container>
     )
   }
