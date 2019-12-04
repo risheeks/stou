@@ -249,6 +249,21 @@ textarea {
   height: 8rem;
 }
 
+.food-option-view-menu-top {
+  height: 8rem;
+  /* box-shadow: radial-gradient( #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
+                radial-gradient( #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%); */
+  
+}
+
+.rating-profile {
+  margin-top: -7px;
+}
+
+.review-button-margin {
+  margin-top: 8px;
+}
+
   .vfo-image {
     width: 6.5rem;
     height: 6.5rem;
@@ -732,12 +747,13 @@ textarea {
 }
 
 .text-profile-name-modal {
-  font-size: 1.3em;
+  font-size: 1.2em;
 }
 
 .text-profile-description-modal {
   color: grey;
   font-size: 15.5px;
+  margin-top: 5px;
 }
 .center-col {
   height: 200px;

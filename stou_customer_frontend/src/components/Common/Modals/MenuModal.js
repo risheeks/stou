@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { Row, Col, Container, FormGroup, FormControl, FormLabel, Image, ListGroup, Form } from "react-bootstrap";
-import CustomRating from '../../Common/CustomRating';
+import { Image, ListGroup, Form } from "react-bootstrap";
 import NavLink from 'react-bootstrap/NavLink';
 import { ModalKey } from '../../../constants/ModalKeys';
 class ProfileModal extends Component {
@@ -10,12 +9,12 @@ class ProfileModal extends Component {
         this.state = {
 
         };
-        console.log("MENUMODAL=")
-        console.log(this.props)
+        // console.log("MENUMODAL=" + this.props.topFood)
+        
     }
     
     handleFoodName = (e, foodItem) => {
-        console.log(foodItem);
+        
         const { openModal, addToOrder, baggedItems, clearOrder } = this.props;
         e.preventDefault();
         openModal(ModalKey.FOOD_ITEM, { item: foodItem, addToOrder: this.props.addToOrder, baggedItems: baggedItems, clearOrder: clearOrder });
@@ -25,13 +24,11 @@ class ProfileModal extends Component {
         //console.log(request);
         const { openModal} = this.props;
         e.preventDefault();
-        console.log('customerEmail below')
-        console.log(this.props.customerEmail)
         openModal(ModalKey.REQUEST, {email: this.props.customerEmail, cookEmail: this.props.cookEmail, openModal});
     }
 
     render() {
-        let { showModal, closeModal } = this.props;
+        let { showModal, closeModal, topFood} = this.props;
 
         return (
             <Modal show={showModal} onHide={() => closeModal()}>
@@ -39,8 +36,32 @@ class ProfileModal extends Component {
                     <Form.Label className='text-profile-modal'><h1 className='text-profile-name-modal'>{this.props.name}'s menu</h1></Form.Label>
                 </Modal.Header>
                 <Modal.Body>
+                    <p><b>Top Food</b></p>
                     {this.props.fooditems ? (
                         <div>
+                        <ListGroup>
+                        <ListGroup.Item className="food-option-view-menu-top">
+                            <div className="food-option-inner">
+                                <div>
+                                    <NavLink className="food-link-name" onClick={e => this.handleFoodName(e, "")}>
+                                        <Image rounded className="vfo-image" src={topFood.picture}/>
+                                    </NavLink>
+                                </div>
+                                <div className="vfo-info">
+                                    <div className="vfo-foodname">
+                                        <NavLink className="food-link-name" onClick={e => this.handleFoodName(e, "")}>
+                                            <p>{topFood.itemName}</p>
+                                        </NavLink>
+                                    </div>
+                                    <div className="vfo-description">
+                                        <p>{topFood.description}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </ListGroup.Item>
+                    </ListGroup>
+                        <br/>
+                        <p><b>Menu</b></p>
                         <ListGroup>
                             {this.props.fooditems.map(item => (
                                 <ListGroup.Item className="food-option-view-menu">
@@ -59,19 +80,13 @@ class ProfileModal extends Component {
                                             <div className="vfo-description">
                                                 <p>Calories: {item.calories}</p>
                                             </div>
-                                            {/* <div className="vfo-chefname">
-                                <p>by </p><NavLink className="food-link-chef" onClick={this.clickProfile}>{item.homecook}</NavLink>
-                            </div> */}
-                                            {/* <div className="vfo-estimatedTime">
-                                <p>Estimated time: {item.delivery_time ? item.delivery_time.toString(): "-"}</p>
-                            </div> */}
                                         </div>
                                         <p className="vfo-price">${item.price}</p>
                                     </div>
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
-
+                        <br/>
                         <Button block bsSize="large" className="submit-button" onClick={e => this.handleRequest(e)}>Request Food</Button>
                         </div>
                     ) : (
