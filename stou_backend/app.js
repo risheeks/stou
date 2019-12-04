@@ -100,6 +100,43 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
+
+app.use('/logtofile', function (req, res, next) {
+  let data = req.body['data']['data'];
+  let role = req.body['data']['role'];
+  let logFile;
+  if(role === "Customer") logFile = "log/log_customer";
+  else logFile = "log/log_cook"
+  
+  var currentdate = new Date(); 
+  var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear();
+  data = datetime.toString() + " - " + data.toString() + "\n";
+  const fs = require('fs');
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+
+    fs.appendFile(logFile, data, function (err) {
+      if (err) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'Cook Not Found';
+        res.send(o);
+        throw err;
+      }
+      console.log('Saved!');
+      o['code'] = 200;
+      res.status(200);
+      o['message'] = 'Success';
+      res.send(o);
+    });
+    connection.release();
+  });
+});
+
+
 app.use('/gettopfood', function (req, res, next) {
   let cookEmail = req.body['data']['cookEmail'];
   let q = 'SELECT * FROM FOOD JOIN (SELECT FOOD_ID, COUNT(*) AS ORDER_COUNT FROM ORDER_FOOD JOIN (SELECT * FROM ORDERS WHERE COOK_EMAIL=\'' + cookEmail + '\') AS NEW_ORDERS ON NEW_ORDERS.ORDER_ID=ORDER_FOOD.ORDER_ID GROUP BY FOOD_ID ORDER BY ORDER_COUNT LIMIT 1) AS FOOD_COUNTER ON FOOD_COUNTER.FOOD_ID=FOOD.FOOD_ID;';
