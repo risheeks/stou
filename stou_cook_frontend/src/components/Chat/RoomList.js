@@ -63,15 +63,21 @@ class RoomList extends React.Component {
                             Chat with Us
                         </Button>
                     </ChatListItem>
-                    {rooms.map((room) =>
-                        <ChatListItem onClick={e => this.changeRoomId(room.id)} >
-                            <Avatar imgUrl={this.props.ownId !== room.users[0].id ? room.users[0].avatarURL : room.users[1].avatarURL} style={{ height: '40px', width: '40px' }} />
-                            <Column fill>
-                                <Row justify>
-                                    <Title ellipsis>{this.props.ownId === room.users[0].id ? room.users[1].name : room.users[0].name}</Title>
-                                </Row>
-                            </Column>
-                        </ChatListItem>
+                    {rooms.map((room) => {
+                        if (room.users.length >= 2) {
+                            return (
+                                <ChatListItem onClick={e => this.changeRoomId(room.id)} style={this.props.roomId === room.id ? {background: "lightgray"} : {}}>
+                                    <Avatar imgUrl={this.props.ownId !== room.users[0].id ? room.users[0].avatarURL : room.users[1].avatarURL} style={{ height: '40px', width: '40px' }} />
+                                    <Column fill>
+                                        <Row justify>
+                                            <Title ellipsis>{this.props.ownId === room.users[0].id ? room.users[1].name : room.users[0].name}</Title>
+                                        </Row>
+                                    </Column>
+                                </ChatListItem>
+                            );
+                        }
+                        return null;
+                    }
                     )}
                 </ChatList>
             );

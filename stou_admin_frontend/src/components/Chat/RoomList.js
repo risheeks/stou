@@ -46,6 +46,21 @@ class RoomList extends React.Component {
         this.props.changeRoomId(id);
     }
 
+    leaveRoom = () => {
+        const { rooms } = this.props;
+        const userId = this.props.ownId === rooms[this.props.roomId].users[0].id ? rooms[this.props.roomId].users[1].id : rooms[this.props.roomId].users[0].id;
+        this.state.currentUser.removeUsersFromRoom({
+            roomId: this.props.roomId,
+            userId: userId
+        })
+            .then(res => {
+                this.props.leaveRoom();
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }
+
     renderRooms() {
         const { rooms } = this.props;
         let checkRooms = true;

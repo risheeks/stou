@@ -190,6 +190,12 @@ class Chat extends React.Component {
         })
     }
 
+    leaveRoom = () => {
+        this.state.currentUser.leaveRoom({
+            roomId: this.state.roomId
+        })
+    }
+
     render() {
         return (
             <ThemeProvider theme={themes['elegantTheme']}>
@@ -210,6 +216,7 @@ class Chat extends React.Component {
                             messages={this.state.roomId && this.state.roomId !== '' ? this.state.messages[this.state.roomId] : []}
                             sendMessage={this.sendMessage}
                             ownId={'admin'}
+                            leaveRoom={this.leaveRoom}
                         />
                     </FixedWrapper.Maximized>
                     <FixedWrapper.Minimized>

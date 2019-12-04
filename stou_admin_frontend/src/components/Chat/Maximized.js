@@ -29,6 +29,7 @@ import {
 	ChatList,
 	ChatListItem
 } from '@livechat/ui-kit'
+import { Button } from 'react-bootstrap';
 
 const getAvatarForUser = (userId, users) => {
 	const foundUser = users[userId]
@@ -154,9 +155,12 @@ class Maximized extends React.Component {
 									</Message>
 								</Row>
 						)}
+						
 					</MessageList>
 				</div>
+				<Button className="leaveRoom-button" variant="secondary" onClick={this.props.leaveRoom}>Done chatting</Button>
 				<TextComposer onSend={this.props.sendMessage}>
+					
 					<Row align="center">
 						<Fill>
 							<TextInput />

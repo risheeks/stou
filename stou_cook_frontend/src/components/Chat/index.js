@@ -120,6 +120,12 @@ class Chat extends React.Component {
                 },
                 onRemovedFromRoom: room => {
                     this.getRooms();
+                },
+                onUserLeftRoom: (room, user) => {
+                    this.getRooms();
+                },
+                onUserJoRoom: (room, user) => {
+                    this.getRooms();
                 }
             })
                 .then(currentUser => {
@@ -136,6 +142,15 @@ class Chat extends React.Component {
             name: "admin" + "-" + this.props.email + "-" + "cook",
             private: true,
             addUserIds: ['admin', this.props.email]
+        })
+        .catch(err => {
+            this.state.currentUser.addUserToRoom({
+                roomId: "admin" + "-" + this.props.email + "-" + "cook",
+                userId: 'admin'
+            })
+                .then(res => {
+                    this.getRooms();
+                })
         })
     }
 
@@ -217,6 +232,7 @@ class Chat extends React.Component {
                             changeRoomId={this.changeRoomId}
                             ownId={this.props.email}
                             createAdminChat={this.createAdminChat}
+                            roomId={this.state.roomId}
                         />
                         <Maximized
                             messages={this.state.roomId && this.state.roomId !== '' ? this.state.messages[this.state.roomId] : []}
