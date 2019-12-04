@@ -213,15 +213,15 @@ class Checkout extends Component {
     }
     validate = (street, city, state, zipcode) => {
         if (street.length === 0) {
-            return "hidden"
+            return false
         } else if (city.length === 0) {
-            return "hidden"
+            return false
         } else if (state.length === 0) {
-            return "hidden"
+            return false
         } else if (parseInt(zipcode) !== parseInt(this.props.zipcode)) {
-            return "hidden"
+            return false
         }
-        return ""
+        return true
 
     }
     applyDiscount = (e) => {
@@ -307,8 +307,10 @@ class Checkout extends Component {
                             </ListGroup.Item>
                         </ListGroup>
                         <br/>
-                        <div className="paypal-button-div" style={{ visibility: this.validate(this.state.street, this.state.city, this.state.state, this.state.zipcode) }}>
+                        {this.validate(this.state.street, this.state.city, this.state.state, this.state.zipcode) ?
+                        <div className="paypal-button-div">
                             <PayPalButton
+                            
                             className="paypal-button"
                             amount={total}
                             onSuccess={(details, data) =>  {
@@ -329,7 +331,7 @@ class Checkout extends Component {
                                 clientId: "AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC"
                             }}
                             />
-                        </div>
+                        </div> : null}
                         <Button variant="primary" onClick={this.onTest}>Checkout</Button>
                         
                     </div>
