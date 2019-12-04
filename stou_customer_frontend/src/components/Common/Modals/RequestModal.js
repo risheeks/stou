@@ -49,7 +49,7 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
             const audio = new Audio(notificationSound);
             audio.play();
             openModal(ModalKey.NEW_ORDER, {...data});
-            });*/
+            });
         })
     }
 
