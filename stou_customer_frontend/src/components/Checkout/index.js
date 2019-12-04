@@ -380,6 +380,7 @@ class Checkout extends Component {
                                     </Col>
                                     <Col>
                                         <Button variant="primary" onClick={(e) => this.applyDiscount(e)}>Enter</Button>
+                                        
                                     </Col>
                                 </Row>
                             </Form.Group>
