@@ -12,7 +12,8 @@ class HomeCook extends Component {
         this.state = {
             isFavoriteHomeCook : false,
             cook_email: this.props.cook_email,
-            fooditems:[]
+            fooditems:[],
+            topFood:[]
 		};
     }
     componentDidMount = () => {
@@ -58,6 +59,24 @@ class HomeCook extends Component {
         })
     }
 
+    topPastFood =() => {
+        axios.post(`${serverURL}/gettopfood`, { 
+            data: {
+                cookEmail:this.state.cook_email,
+            }
+        })
+        .then(res => {
+            console.log(res.data.data)
+            this.setState({
+                topFood: res.data.data
+            });
+            //console.log("TOP FOOD=" + this.state.topFood)
+            
+        }).catch(function (error) {
+            console.log("ERROR gettopfood")
+        });
+    }
+
     clickMenu = e => {
         e.preventDefault()
         const self = this;
@@ -71,10 +90,26 @@ class HomeCook extends Component {
             this.setState({
                 fooditems: Array.from(res.data.data)
             });
-            const { openModal, addToOrder, name, clearOrder, baggedItems } = this.props;
+            axios.post(`${serverURL}/gettopfood`, { 
+                data: {
+                    cookEmail:this.state.cook_email,
+                }
+            })
+            .then(res => {
+                console.log(res.data.data)
+                this.setState({
+                    topFood: res.data.data
+                });
+                const { openModal, addToOrder, name, clearOrder, baggedItems } = this.props;
             const {fooditems} = this.state
             
-            openModal(ModalKey.MENU, {fooditems,addToOrder,openModal, name, baggedItems: baggedItems, clearOrder: clearOrder, customerEmail: this.props.email, cookEmail: this.state.cook_email});
+            openModal(ModalKey.MENU, {fooditems,addToOrder,openModal, name, baggedItems: baggedItems, topFood:res.data.data, clearOrder: clearOrder, customerEmail: this.props.email, cookEmail: this.state.cook_email});
+                
+            }).catch(function (error) {
+                console.log("ERROR gettopfood")
+            });
+            
+            
             //console.log(this.state.fooditems)   
             
         }).catch(function (error) {
