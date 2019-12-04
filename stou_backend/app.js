@@ -487,7 +487,8 @@ app.use('/getreviewrating', function (req, res, next) {
                   'review': rows[i].REVIEW,
                   'rating': rows[i].CUSTOMER_RATING
                 };
-                tempList.push(tempOb);
+                if(rows[i].CUSTOMER_RATING !== null)
+                  tempList.push(tempOb);
                 tempOb = {};
               }
               obList.push(tempList);
