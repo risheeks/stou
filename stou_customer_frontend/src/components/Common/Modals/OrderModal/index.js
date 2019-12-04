@@ -47,9 +47,9 @@ class OrderModal extends Component {
     }
 
     render() {
-        const { showModal, closeModal, order } = this.props;
+        const { showModal, closeModal, order, setOrders } = this.props;
         const { items } = this.state;
-
+        console.log(order.rating)
         return (
             <Modal show={showModal} onHide={() => closeModal()}>
                 <Modal.Header closeButton>
@@ -58,8 +58,8 @@ class OrderModal extends Component {
                 <Modal.Body>
                     {this.renderOrderInfo(order)}
                     <OrderProgress status={order.orderStatus} />
-                    {order.orderStatus == 'delivered' ?
-                        <Rate /> : null
+                    {order.orderStatus == 'delivered' && !order.rating ?
+                        <Rate order={order} closeModal={closeModal} setOrders={setOrders}/> : null
                     }
                     <ListGroup className="bag-itemlist-container">
                         <ListGroup.Item>

@@ -100,6 +100,251 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
+app.use('/shareapp', function(req,res,next){
+  let email = req.body['data']['email'];
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT * FROM USER WHERE EMAIL=\'' + email + '\' AND ROLE=2;';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 202;
+        res.status(202);
+        let a  = generatePromoCode();
+        let text = 'App link, Enjoy 10% off on your order with this promo code ' + a;
+        sendEmail(email, "", text, 'ENJOY STOU');
+        o['message'] = 'Shared App Successfully';
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'User already registered';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+app.use('/getnamefromemail', function(req,res,next){
+  let email = req.body['data']['email'];
+  let role = req.body['data']['role'];
+  let q = "";
+  if(role === 1) {
+    q = 'SELECT FIRST_NAME,LAST_NAME FROM USER WHERE COOK_EMAIL=\'' + email + '\';';
+  } else {
+    q = 'SELECT FIRST_NAME,LAST_NAME FROM USER WHERE CUSTOMER_EMAIL=\'' + email + '\';';
+  }
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'User Not Found';
+        res.send(o);
+      } else {
+        o['data'] = rows[0].FIRST_NAME + ' ' + rows[0].LAST_NAME;
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Success';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+
+app.use('/getroomid', function(req,res,next) {
+    let email = req.body['data']['email'];
+    let role = req.body['data']['role']
+    var o = {};
+    let q = "";
+    if(role === 1) {
+      q = 'SELECT CUSTOMER_EMAIL, COOK_EMAIL FROM ORDERS WHERE COOK_EMAIL=\'' + email + '\';';
+    } else {
+      q = 'SELECT CUSTOMER_EMAIL, COOK_EMAIL FROM ORDERS WHERE CUSTOMER_EMAIL=\'' + email + '\';';
+    }
+
+  con.getConnection(function (err, connection) {
+        if (err) throw err;
+        connection.query(q, function (err, rows) {
+            if (err) throw err;
+            if (rows.length === 0) {
+                o['code'] = 404;
+                res.status(404);
+                o['message'] = 'No Orders Found';
+                res.send(o);
+            } else {
+                let idSet = new Set();
+                for(i=0; i < rows.length; i++) {
+                    idSet.add(rows[i].CUSTOMER_EMAIL+"-"+rows[i].COOK_EMAIL);
+                }
+                o['data'] = Array.from(idSet.values())
+                o['code'] = 200;
+                res.status(200);
+                o['message'] = 'Success';
+                res.send(o);
+            }
+        });
+        connection.release();
+    });
+});
+
+app.use('/checkpromocode', function (req, res, next) {
+  let promoCode = req.body['data']['promoCode'];
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT * FROM PROMOCODES WHERE PROMO_CODE=\'' + promoCode + '\' AND STATUS=0;';
+    console.log(q)
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'Promo Code Not Found';
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Promo Code valid';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+app.use('/usepromocode', function (req, res, next) {
+  let promoCode = req.body['data']['promoCode'];
+  let status = req.body['data']['status']
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'UPDATE PROMOCODES SET STATUS=' + status + ' WHERE PROMO_CODE=\'' + promoCode + '\';';
+    console.log(q)
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'Promo Code Not Found';
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Promo Code Used';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+ function generatePromoCode() {
+  var o = {};
+  let promoCode = uuidv4();
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'INSERT INTO PROMOCODES VALUES(\'' + promoCode.substring(0,7) + '\', 0);';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+    });
+    connection.release();
+  });
+  return promoCode.substring(0,7);
+};
+
+
+app.use('/getcustomersfollowinghomecook', function (req, res, next) {
+  const cookEmail = req.body['data']['cookEmail'];
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT * from FAVORITE_HOMECOOKS where COOK_EMAIL=\'' + cookEmail + '\');';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'Cook Not Found';
+        res.send(o);
+      } else {
+        let list = [];
+        for (i = 0; i < rows.length; i++) {
+          list.push(rows[i].CUSTOMER_EMAIL);
+        }
+        o['code'] = 200;
+        res.status(200);
+        o['data'] = list;
+        o['message'] = 'Success';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+
+
+app.use('/changebanstatus', function (req, res, next) {
+  const email = req.body['data']['email'];
+  let role = req.body['data']['role'];
+  let status = req.body['data']['status'];
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'UPDATE USER SET BANNED=' + status + ' WHERE EMAIL="' + email + '" AND ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'User Not Found';
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Status changed successfully';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+app.use('/getbanstatus', function (req, res, next) {
+  const email = req.body['data']['email'];
+  let role = req.body['data']['role'];
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    var q = 'SELECT BANNED from USER where EMAIL=\'' + email + '\' AND ROLE=' + role + ');';
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'User Not Found';
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200);
+        o['data'] = { 'bannedStatus': rows[0].BANNED };
+        o['message'] = 'Success';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
+
 app.use('/changerequeststatus', function (req, res, next) {
   const cookEmail = req.body['data']['cookEmail'];
   const customerEmail = req.body['data']['customerEmail'];
@@ -109,7 +354,7 @@ app.use('/changerequeststatus', function (req, res, next) {
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'UPDATE REQUESTS SET STATUS=' + status + ' WHERE COOK_EMAIL=\'' + cookEmail +'\' AND CUSTOMER_EMAIL=\'' + customerEmail +'\' AND ITEM_NAME=\'' + itemName +'\';';
+    var q = 'UPDATE REQUESTS SET STATUS=' + status + ' WHERE COOK_EMAIL=\'' + cookEmail + '\' AND CUSTOMER_EMAIL=\'' + customerEmail + '\' AND ITEM_NAME=\'' + itemName + '\';';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -134,10 +379,10 @@ app.use('/getrequest', function (req, res, next) {
   const email = req.body['data']['email'];
   const role = req.body['data']['role'];
   let q = '';
-  if(role === 1){
-    q = 'SELECT * FROM REQUESTS WHERE COOK_EMAIL=\'' + email +'\'';
+  if (role === 1) {
+    q = 'SELECT * FROM REQUESTS WHERE COOK_EMAIL=\'' + email + '\'';
   } else {
-    q = 'SELECT * FROM REQUESTS WHERE CUSTOMER_EMAIL=\'' + email +'\'';
+    q = 'SELECT * FROM REQUESTS WHERE CUSTOMER_EMAIL=\'' + email + '\'';
   }
   var o = {};
   con.getConnection(function (err, connection) {
@@ -153,8 +398,8 @@ app.use('/getrequest', function (req, res, next) {
       else {
         let obList = [];
         var ob = {};
-        for(i = 0; i < rows.length; i++) {
-          ob = { 'cookEmail' : rows[i].COOK_EMAIL, 'customerEmail' : rows[i].CUSTOMER_EMAIL, 'itemName' : rows[i].ITEM_NAME, 'itemDescription' : rows[i].ITEM_DESCRIPTION, 'status' : rows[i].STATUS};
+        for (i = 0; i < rows.length; i++) {
+          ob = { 'cookEmail': rows[i].COOK_EMAIL, 'customerEmail': rows[i].CUSTOMER_EMAIL, 'itemName': rows[i].ITEM_NAME, 'itemDescription': rows[i].ITEM_DESCRIPTION, 'status': rows[i].STATUS };
           obList.push(ob);
           ob = {};
         }
@@ -177,7 +422,7 @@ app.use('/addrequest', function (req, res, next) {
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'INSERT INTO REQUESTS VALUES (\'' + cookEmail + '\', \'' + customerEmail + '\', \'' + itemName +'\', \'' + itemDescription +'\', STATUS=0);';
+    var q = 'INSERT INTO REQUESTS VALUES (\'' + cookEmail + '\', \'' + customerEmail + '\', \'' + itemName + '\', \'' + itemDescription + '\', 0);';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -205,7 +450,7 @@ app.use('/getreviewrating', function (req, res, next) {
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT FIRST_NAME, LAST_NAME, RATING FROM USER WHERE EMAIL=\'' + email +'\' AND ROLE=' + role + ';';
+    var q = 'SELECT FIRST_NAME, LAST_NAME, RATING FROM USER WHERE EMAIL=\'' + email + '\' AND ROLE=' + role + ';';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -217,12 +462,14 @@ app.use('/getreviewrating', function (req, res, next) {
       else {
         let obList = [];
 
-        let ob = {'name' : rows[0].FIRST_NAME + ' ' + rows[0].LAST_NAME,
-                   'averageRating' : rows[0].RATING };
+        let ob = {
+          'name': rows[0].FIRST_NAME + ' ' + rows[0].LAST_NAME,
+          'averageRating': rows[0].RATING
+        };
         obList.push(ob);
         con.getConnection(function (err, connection) {
           if (err) throw err;
-          var q = 'SELECT CUSTOMER_EMAIL, REVIEW, RATING WHERE COOK_EMAIL=\'' + email +'\';';
+          var q = 'SELECT FIRST_NAME, LAST_NAME, REVIEW, ORDERS.COOK_RATING FROM ORDERS, USER WHERE CUSTOMER_EMAIL=EMAIL AND COOK_EMAIL=\'' + email + '\''
           connection.query(q, function (err, rows) {
             if (err) throw err;
             if (rows.length === 0) {
@@ -234,12 +481,15 @@ app.use('/getreviewrating', function (req, res, next) {
             else {
               let tempList = [];
               let tempOb = {};
-              for(i = 0; i < rows.length; i++) {
-                 tempOb = {'customer' : rows[i].CUSTOMER_EMAIL,
-                            'review' : rows[i].REVIEW,
-                            'rating' : rows[i].RATING};
-                 tempList.push(tempOb);
-                 tempOb = {};
+              for (i = 0; i < rows.length; i++) {
+                tempOb = {
+                  'customer': rows[i].FIRST_NAME + " " + rows[i].LAST_NAME,
+                  'review': rows[i].REVIEW,
+                  'rating': rows[i].COOK_RATING
+                };
+                if(rows[i].CUSTOMER_RATING !== null)
+                  tempList.push(tempOb);
+                tempOb = {};
               }
               obList.push(tempList);
               o['data'] = obList;
@@ -260,14 +510,23 @@ app.use('/getreviewrating', function (req, res, next) {
 
 app.use('/setreviewrating', function (req, res, next) {
 
+
   const email = req.body['data']['email'];
   let rating = req.body['data']['rating'];
   let role = req.body['data']['role'];
   let orderId = req.body['data']['orderId'];
   let review = req.body['data']['review'];
+
+  // console.log(email + " " + rating + " " + role + " " + orderId + review)
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'UPDATE ORDERS SET REVIEW=\'' + review + '\', RATING=' + rating + ' WHERE ORDER_ID=\'' + orderId +'\';';
+    var q = '';
+    if (role === 1) {
+      q = 'UPDATE ORDERS SET REVIEW=\'' + review + '\', COOK_RATING=' + rating + ' WHERE ORDER_ID=\'' + orderId + '\';';
+    }
+    else if (role === 2) {
+      q = 'UPDATE ORDERS SET CUSTOMER_RATING=' + rating + ' WHERE ORDER_ID=\'' + orderId + '\';';
+    }
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -283,7 +542,7 @@ app.use('/setreviewrating', function (req, res, next) {
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT RATING, NUMRATINGS from USER where EMAIL=\'' + email +'\' AND ROLE=' + role +';';
+    var q = 'SELECT RATING, NUMRATINGS from USER where EMAIL=\'' + email + '\' AND ROLE=' + role + ';';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -295,16 +554,16 @@ app.use('/setreviewrating', function (req, res, next) {
       else {
         let currentRating = 0;
         let numRatings = 0;
-        if(rows[0].RATING !== null) {
+        if (rows[0].RATING !== null) {
           currentRating = rows[0].RATING;
         }
-        if(rows[0].NUMRATINGS !== null) {
+        if (rows[0].NUMRATINGS !== null) {
           numRatings = rows[0].NUMRATINGS;
         }
         let newRating = ((parseFloat(currentRating) * parseInt(numRatings)) + parseFloat(rating)) / parseInt(numRatings + 1);
         con.getConnection(function (err, connection) {
           if (err) throw err;
-          var q = 'UPDATE USER SET RATING=' + newRating +', NUMRATINGS='+ (numRatings + 1) +' WHERE EMAIL=\'' + email +'\' AND ROLE='+role+';';
+          var q = 'UPDATE USER SET RATING=' + newRating + ', NUMRATINGS=' + (numRatings + 1) + ' WHERE EMAIL=\'' + email + '\' AND ROLE=' + role + ';';
           connection.query(q, function (err, rows) {
             if (err) throw err;
             if (rows.length === 0) {
@@ -373,8 +632,8 @@ app.use('/getfeedback', function (req, res, next) {
       else {
         let obList = [];
         var ob = {};
-        for(i = 0; i < rows.length; i++) {
-          ob = { 'email' : rows[i].EMAIL, 'feedback' : rows[i].FEEDBACK};
+        for (i = 0; i < rows.length; i++) {
+          ob = { 'email': rows[i].EMAIL, 'feedback': rows[i].FEEDBACK };
           obList.push(ob);
           ob = {};
         }
@@ -389,13 +648,12 @@ app.use('/getfeedback', function (req, res, next) {
 });
 
 app.use('/setorderstatus', function (req, res, next) {
-  console.log(req.body.data);
   const orderId = req.body['data']['orderId'];
   const newOrderStatus = req.body['data']['orderStatus'];
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT ORDER_STATUS, CUSTOMER_EMAIL from ORDERS where ORDER_ID=\'' + orderId + '\';';
+    var q = 'SELECT * from ORDERS where ORDER_ID=\'' + orderId + '\';';
     connection.query(q, function (err, rows) {
       if (err || rows.length === 0) {
         o['code'] = 400;
@@ -405,6 +663,7 @@ app.use('/setorderstatus', function (req, res, next) {
       } else {
         const currentOrderStatus = rows[0].ORDER_STATUS;
         const customerEmail = rows[0].CUSTOMER_EMAIL;
+        const cookEmail = rows[0].COOK_EMAIL;
         let update = false;
         if (newOrderStatus === 'in_progress' && currentOrderStatus === 'placed') {
           update = true;
@@ -424,27 +683,48 @@ app.use('/setorderstatus', function (req, res, next) {
           con.getConnection(function (err, connection) {
             if (err) throw err;
             var q = 'UPDATE ORDERS SET ORDER_STATUS=\'' + newOrderStatus + '\' where ORDER_ID=\'' + orderId + '\';';
-            console.log(q);
-            connection.query(q, function (err, rows) {
+            connection.query(q, function (err, newRows) {
               if (err) {
                 o['code'] = 400;
                 res.status(400);
                 o['message'] = 'Failed to update status';
                 res.send(o);
               } else {
+                if (currentOrderStatus === 'placed' && newOrderStatus === 'in_progress') {
+                  chatkit.addUsersToRoom({
+                    roomId: customerEmail + "-" + cookEmail,
+                    userIds: [cookEmail, customerEmail],
+                  })
+                }
+                if (newOrderStatus === 'delivered') {
+                  var q = `SELECT * FROM ORDERS WHERE COOK_EMAIL="${cookEmail}" AND CUSTOMER_EMAIL="${customerEmail}" AND ORDER_STATUS NOT IN("delivered", "cancelled") AND ORDER_ID != "${orderId}";`;
+                  connection.query(q, function (err, nRows) {
+                    console.log(nRows[0])
+                    if (nRows.length < 1) {
+                      chatkit.removeUsersFromRoom({
+                        roomId: customerEmail + "-" + cookEmail,
+                        userIds: [cookEmail, customerEmail],
+                      })
+                    }
+                  });
+                }
                 pusher.trigger(`customer-${customerEmail}`, 'order-update', {
-                  "message": "Order status changed",
-                  "order": {
-                    "orderId": orderId,
-                    "orderStatus": newOrderStatus
-                  }
-                });
-                o['code'] = 200;
-                res.status(200);
-                o['message'] = 'Status update successful';
-                res.send(o);
-              }
-            });
+                    "message": "Order status changed",
+                    "order": {
+                      "orderId": orderId,
+                      "orderStatus": newOrderStatus,
+                      "name": rows[0].FIRST_NAME + " " + rows[0].LAST_NAME,
+                      "orderedAt": rows[0].ORDERED_AT,
+                      "orderAddress": rows[0].ORDER_ADDRESS,
+                      "rating": rows[0].RATING
+                    }
+                  });
+                  o['code'] = 200;
+                  res.status(200);
+                  o['message'] = 'Status update successful';
+                  res.send(o);
+                }
+              });
             connection.release();
           });
         }
@@ -490,9 +770,9 @@ app.use('/getallorders', function (req, res, next) {
           ord['deliveryTime'] = rows[i].DELIVERY_TIME;
           ord['orderAddress'] = rows[i].ORDER_ADDRESS;
           ord['orderStatus'] = rows[i].ORDER_STATUS;
+          ord['rating'] = rows[i].CUSTOMER_RATING;
           obj.push(ord);
         }
-        console.log(rows);
         o = obj;
         o['code'] = 200;
         o['message'] = 'Success';
@@ -544,7 +824,7 @@ app.use('/getcustomerorders', function (req, res, next) {
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    let q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.COOK_EMAIL AND USER.ROLE=1 AND CUSTOMER_EMAIL="' + customerEmail + '" ORDER BY ORDERED_AT DESC;';
+    let q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.COOK_EMAIL AND USER.ROLE=1 AND CUSTOMER_EMAIL="' + customerEmail + '"AND ORDERS.CUSTOMER_RATING IS NULL ORDER BY ORDERED_AT DESC;';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -567,9 +847,10 @@ app.use('/getcustomerorders', function (req, res, next) {
           ord['orderAddress'] = rows[i].ORDER_ADDRESS;
           ord['orderStatus'] = rows[i].ORDER_STATUS;
           ord['picture'] = rows[i].PICTURE;
+          ord['rating'] = rows[i].COOK_RATING;
           obj.push(ord);
         }
-        console.log(rows);
+
         o = obj;
         o['code'] = 200;
         o['message'] = 'Success';
@@ -609,9 +890,10 @@ app.use('/getrecentorders', function (req, res, next) {
           ord['orderAddress'] = rows[i].ORDER_ADDRESS;
           ord['orderStatus'] = rows[i].ORDER_STATUS;
           ord['picture'] = rows[i].PICTURE;
+          ord['rating'] = rows[i].COOK_RATING;
           obj.push(ord);
         }
-        console.log(rows);
+
         o = obj;
         o['code'] = 200;
         o['message'] = 'Success';
@@ -641,12 +923,13 @@ app.use('/getdetailsbyorder', function (req, res, next) {
       } else {
         // console.log(rows[0]);
         var ord = {};
-          ord['orderedAt'] = rows[0].ORDERED_AT;
-          ord['orderAddress'] = rows[0].ORDER_ADDRESS;
-          ord['cookEmail'] = rows[0].COOK_EMAIL;
-          ord['customerEmail'] = rows[0].CUSTOMER_EMAIL;
-          ord['cookName'] = rows[0].FIRST_NAME + " " + rows[0].LAST_NAME;
-          ord['orderStatus'] = rows[0].ORDER_STATUS;
+        ord['orderedAt'] = rows[0].ORDERED_AT;
+        ord['orderAddress'] = rows[0].ORDER_ADDRESS;
+        ord['cookEmail'] = rows[0].COOK_EMAIL;
+        ord['customerEmail'] = rows[0].CUSTOMER_EMAIL;
+        ord['cookName'] = rows[0].FIRST_NAME + " " + rows[0].LAST_NAME;
+        ord['orderStatus'] = rows[0].ORDER_STATUS;
+        ord['rating'] = rows[0].COOK_RATING;
         o['code'] = 200;
         o['message'] = 'Success';
         o['data'] = ord
@@ -708,7 +991,7 @@ app.use('/placeorder', function (req, res, next) {
   console.log(req.body.data);
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'Insert into ORDERS (ORDER_ID, ORDERED_AT, COOK_EMAIL, CUSTOMER_EMAIL, INSTRUCTIONS, DELIVERY_TIME, ORDER_ADDRESS, ORDER_STATUS, PAYMENT_KEY) values("'+ orderID + '", "' + Date.now() + '", "' + cookEmail + '", "' + customerEmail + '", "' + instructions + '", ' + deliveryTime + ', "' + orderAddress + '", "' + orderStatus + '", "' + paymentId + '");';
+    var q = 'Insert into ORDERS (ORDER_ID, ORDERED_AT, COOK_EMAIL, CUSTOMER_EMAIL, INSTRUCTIONS, DELIVERY_TIME, ORDER_ADDRESS, ORDER_STATUS, PAYMENT_KEY) values("' + orderID + '", "' + Date.now() + '", "' + cookEmail + '", "' + customerEmail + '", "' + instructions + '", ' + deliveryTime + ', "' + orderAddress + '", "' + orderStatus + '", "' + paymentId + '");';
     // console.log('MEssage:' + q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
@@ -735,7 +1018,9 @@ app.use('/placeorder', function (req, res, next) {
             "orderId": orderID,
             "orderAddress": orderAddress,
             "instructions": instructions,
-            "orderedAt": Date.now()
+            "orderedAt": Date.now(),
+            "customerEmail": customerEmail,
+            "cookEmail": cookEmail
           }
         });
         o['code'] = 200;
@@ -874,17 +1159,17 @@ app.use('/removefavoritefood', function (req, res, next) {
   });
 });
 
-app.use('/getpastfoodcook', function(req, res, next){
+app.use('/getpastfoodcook', function (req, res, next) {
   let cookEmail = req.body['data']['email'];
   let o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
 
     if (err) console.log(err);
-    var q = 'SELECT FOOD.PICTURE, FOOD.FOOD_ID, USER1.EMAIL, FOOD.TITLE, FOOD.DESCRIPTION, FOOD.CUISINE, FOOD.PRICE, FOOD.CALORIES, FOOD.DELIVERY_TIME, USER1.FIRST_NAME, USER1.LAST_NAME FROM FOOD, USER AS USER1 WHERE USER1.EMAIL=FOOD.COOK_EMAIL AND USER1.ROLE=1 AND FOOD.COOK_EMAIL=\''+cookEmail+'\' AND valid=\'true\'';
+    var q = 'SELECT FOOD.PICTURE, FOOD.FOOD_ID, USER1.EMAIL, FOOD.TITLE, FOOD.DESCRIPTION, FOOD.CUISINE, FOOD.PRICE, FOOD.CALORIES, FOOD.DELIVERY_TIME, USER1.FIRST_NAME, USER1.LAST_NAME FROM FOOD, USER AS USER1 WHERE USER1.EMAIL=FOOD.COOK_EMAIL AND USER1.ROLE=1 AND FOOD.COOK_EMAIL=\'' + cookEmail + '\' AND valid=\'true\'';
 
     console.log(q);
     connection.query(q, function (err, result) {
-      console.log("Yo: "+ result)
+      console.log("Yo: " + result)
       if (err || result.length === 0) {
         o['code'] = 400;
         res.status(400)
@@ -894,7 +1179,7 @@ app.use('/getpastfoodcook', function(req, res, next){
       else {
         let obj = [];
         let ob = {};
-        for(var i = 0; i < result.length; i++){
+        for (var i = 0; i < result.length; i++) {
           var row = result[i];
           // console.log(row);
           ob['name'] = row.TITLE;
@@ -907,14 +1192,14 @@ app.use('/getpastfoodcook', function(req, res, next){
           ob['picture'] = row.PICTURE;
           ob['food_id'] = row.FOOD_ID;
           ob['delivery_time'] = row.DELIVERY_TIME;
-          if(ob['delivery_time'] === null){
+          if (ob['delivery_time'] === null) {
             ob['delivery_time'] = '2019-10-29 01:47:45';
           }
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         o['data'] = obj;
         console.log(o);
-        if(obj.length !== 0)
+        if (obj.length !== 0)
           res.send(o);
 
       }
@@ -924,10 +1209,10 @@ app.use('/getpastfoodcook', function(req, res, next){
 });
 
 
-app.use('/getpastfood', function(req, res, next){
+app.use('/getpastfood', function (req, res, next) {
   let email = req.body['data']['email'];
   let o = {};
-  con.getConnection(function(err, connection) {
+  con.getConnection(function (err, connection) {
     if (err) console.log(err);
     var q = 'SELECT DISTINCT FOOD.PICTURE, FOOD.FOOD_ID, USER1.EMAIL, FOOD.TITLE, FOOD.DESCRIPTION, FOOD.CUISINE, FOOD.PRICE, FOOD.CALORIES, FOOD.DELIVERY_TIME, USER1.FIRST_NAME, USER1.LAST_NAME, EXISTS(SELECT * FROM FAVORITE_FOOD WHERE FAVORITE_FOOD.FOOD_ID=FOOD.FOOD_ID AND FAVORITE_FOOD.EMAIL="' + email + '") AS IS_FAVORITE FROM FOOD, USER AS USER1, ORDERS, ORDER_FOOD WHERE USER1.EMAIL=ORDERS.COOK_EMAIL AND USER1.ROLE=1 AND ORDER_FOOD.ORDER_ID=ORDERS.ORDER_ID AND ORDER_FOOD.FOOD_ID=FOOD.FOOD_ID AND ORDERS.CUSTOMER_EMAIL="' + email + '";';
     console.log(q);
@@ -941,7 +1226,7 @@ app.use('/getpastfood', function(req, res, next){
       else {
         let obj = [];
         let ob = {};
-        for(var i = 0; i < result.length; i++){
+        for (var i = 0; i < result.length; i++) {
           var row = result[i];
           // console.log(row);
           ob['name'] = row.TITLE;
@@ -955,14 +1240,14 @@ app.use('/getpastfood', function(req, res, next){
           ob['picture'] = row.PICTURE;
           ob['food_id'] = row.FOOD_ID;
           ob['delivery_time'] = row.DELIVERY_TIME;
-          if(ob['delivery_time'] === null){
+          if (ob['delivery_time'] === null) {
             ob['delivery_time'] = '2019-10-29 01:47:45';
           }
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         o['data'] = obj;
         console.log(o);
-        if(obj.length !== 0)
+        if (obj.length !== 0)
           res.send(o);
 
       }
@@ -972,12 +1257,12 @@ app.use('/getpastfood', function(req, res, next){
 });
 
 
-app.use('/getallfood', function(req, res, next){
+app.use('/getallfood', function (req, res, next) {
   let location = req.body['data']['location'];
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) console.log(err);
-    var q = 'SELECT FOOD.PICTURE, FOOD_ID, COOK_EMAIL, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, DELIVERY_TIME, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL AND USER.ROLE=1 AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) + 2) + ');';
+    var q = 'SELECT FOOD.PICTURE, FOOD_ID, COOK_EMAIL, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, DELIVERY_TIME, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL AND USER.online=1 AND USER.ROLE=1 AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) + 2) + ');';
     console.log(q);
     connection.query(q, function (err, result) {
       if (err) {
@@ -1008,7 +1293,7 @@ app.use('/getallfood', function(req, res, next){
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         o['data'] = obj;
-        if(obj.length !== 0)
+        if (obj.length !== 0)
           res.send(o);
 
       }
@@ -1112,13 +1397,13 @@ app.use('/getallusers', function (req, res, next) {
   const searchQuery = req.body['data']['searchQuery'];
   const start = (page - 1) * 10;
   const end = page * 10;
-  if(role === 'Homecook') {
+  if (role === 'Homecook') {
     role = 'COOK';
   }
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT * FROM USER WHERE ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '") AND (FIRST_NAME LIKE "%'+ searchQuery + '%" OR EMAIL LIKE "%'+ searchQuery + '%" OR LAST_NAME LIKE "%'+ searchQuery + '%") ORDER BY FIRST_NAME, LAST_NAME LIMIT ' + start + ', ' + end + ';';
+    var q = 'SELECT * FROM USER WHERE ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '") AND (FIRST_NAME LIKE "%' + searchQuery + '%" OR EMAIL LIKE "%' + searchQuery + '%" OR LAST_NAME LIKE "%' + searchQuery + '%") ORDER BY FIRST_NAME, LAST_NAME LIMIT ' + start + ', ' + end + ';';
     connection.query(q, function (err, result) {
       if (err) console.log(err);
       if (result.length === 0) {
@@ -1139,6 +1424,7 @@ app.use('/getallusers', function (req, res, next) {
           ob['rating'] = row.RATING;
           ob['aboutMe'] = row.ABOUT_ME;
           ob['picture'] = row.PICTURE;
+          ob['banStatus'] = row.BANNED;
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         // console.log(obj);
@@ -1155,13 +1441,13 @@ app.use('/getallusers', function (req, res, next) {
 app.use('/getnumberofusers', function (req, res, next) {
   let role = req.body['data']['role'];
   const searchQuery = req.body['data']['searchQuery'];
-  if(role === 'Homecook') {
+  if (role === 'Homecook') {
     role = 'COOK';
   }
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT COUNT(*) AS numusers FROM USER WHERE ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '") AND (FIRST_NAME LIKE "%'+ searchQuery + '%" OR EMAIL LIKE "%'+ searchQuery + '%" OR LAST_NAME LIKE "%'+ searchQuery + '%");';
+    var q = 'SELECT COUNT(*) AS numusers FROM USER WHERE ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '") AND (FIRST_NAME LIKE "%' + searchQuery + '%" OR EMAIL LIKE "%' + searchQuery + '%" OR LAST_NAME LIKE "%' + searchQuery + '%");';
     connection.query(q, function (err, result) {
       if (err) console.log(err);
       if (result.length === 0) {
@@ -1174,7 +1460,7 @@ app.use('/getnumberofusers', function (req, res, next) {
         let obj = [];
         let ob = {};
         let cookEmail;
-        ob['numUsers'] = Math.ceil(result[0].numusers/10);
+        ob['numUsers'] = Math.ceil(result[0].numusers / 10);
         // console.log(obj);
         o['data'] = JSON.parse(JSON.stringify(ob));
         // console.log(o);
@@ -1284,10 +1570,10 @@ app.use('/addfooditem', function (req, res, next) {
         for (var i = 0; i < allergens.length; i++) {
           var q = 'INSERT INTO FOOD_ALLERGEN (FOOD_ID, ALLERGEN) VALUES ("' + food_id + '", "' + allergens[i] + '");';
           connection.query(q, function (err, result) {
-              if (err) console.log(err);
-            });
-          }
-          connection.release();
+            if (err) console.log(err);
+          });
+        }
+        connection.release();
       });
     }
 
@@ -1337,6 +1623,13 @@ app.use('/editProfile', function (req, res, next) {
         console.log(err)
         res.send(o);
       } else {
+        chatkit.updateUser({
+          id: email,
+          avatarURL: profilePicture
+        })
+          .then(res => {
+            console.log("Chatkit user updated.");
+          })
         o['code'] = 200;
         res.status(200)
         o['message'] = 'Successfully updated';
@@ -1382,56 +1675,56 @@ app.use('/profile', function (req, res, next) {
   });
 });
 
-app.use('/filter', function(req, res, next) {
-    console.log('in filter')
-    const json = req.body['data'];
-    const cuisines = json['cuisines'];
-    const allergenList = json['allergens'];
-    var o = {};
-    
-    con.getConnection(function (err, connection) {
-        if (err) console.log(err);
-        var q = 'SELECT * FROM FOOD, FOOD_ALLERGEN, USER WHERE USER.EMAIL=FOOD.COOK_EMAIL AND FOOD.FOOD_ID=FOOD_ALLERGEN.FOOD_ID AND INSTR("' + cuisines + '",FOOD.CUISINE)>0 AND INSTR("' + allergenList + '",FOOD_ALLERGEN.ALLERGEN)=0';
-        // var q = 'select * from FOOD, FOOD_ALLERGEN where FOOD.CUISNE like \'' + cuisines + '\' AND Allergen NOT LIKE \'' + allergenList + '\';';
-        connection.query(q, function (err, result) {
-            console.log(result);
-            if (err) console.log(err);
-            if (result.length === 0) {
-                o['code'] = 400;
-                res.status(400);
-                o['message'] = 'No FoodItems available';
-                res.send(o);
-            } else {
-                var ob = {};
-                var obj = [];
-                var row = result[0];
-                for (let i = 0; i < result.length; i++) {
-                    row = result[i];
-                    ob['name'] = row.TITLE;
-                    ob['homecook'] = row.FIRST_NAME + " " + row.LAST_NAME;
-                    ob['email'] = row.COOK_EMAIL;
-                    ob['description'] = row.DESCRIPTION;
-                    ob['price'] = row.PRICE;
-                    ob['cuisine'] = row.CUISINE;
-                    ob['calories'] = row.CALORIES;
-                    ob['picture'] = row.PICTURE;
-                    ob['food_id'] = row.FOOD_ID;
-                    ob['delivery_time'] = row.DELIVERY_TIME;
-                    if (ob['delivery_time'] === null) {
-                      ob['delivery_time'] = '2019-10-29 01:47:45';
-                    }
-                    obj.push(JSON.parse(JSON.stringify(ob)));
-                }
-                console.log(obj);
-                o['data'] = obj;
-                o['code'] = 200;
-                o['message'] = 'Filter results'
-                res.status(200);
-                res.send(o);
-            }
-        });
-        connection.release();
+app.use('/filter', function (req, res, next) {
+  console.log('in filter')
+  const json = req.body['data'];
+  const cuisines = json['cuisines'];
+  const allergenList = json['allergens'];
+  var o = {};
+
+  con.getConnection(function (err, connection) {
+    if (err) console.log(err);
+    var q = 'SELECT * FROM FOOD, FOOD_ALLERGEN, USER WHERE USER.EMAIL=FOOD.COOK_EMAIL AND FOOD.FOOD_ID=FOOD_ALLERGEN.FOOD_ID AND INSTR("' + cuisines + '",FOOD.CUISINE)>0 AND INSTR("' + allergenList + '",FOOD_ALLERGEN.ALLERGEN)=0';
+    // var q = 'select * from FOOD, FOOD_ALLERGEN where FOOD.CUISNE like \'' + cuisines + '\' AND Allergen NOT LIKE \'' + allergenList + '\';';
+    connection.query(q, function (err, result) {
+      console.log(result);
+      if (err) console.log(err);
+      if (result.length === 0) {
+        o['code'] = 400;
+        res.status(400);
+        o['message'] = 'No FoodItems available';
+        res.send(o);
+      } else {
+        var ob = {};
+        var obj = [];
+        var row = result[0];
+        for (let i = 0; i < result.length; i++) {
+          row = result[i];
+          ob['name'] = row.TITLE;
+          ob['homecook'] = row.FIRST_NAME + " " + row.LAST_NAME;
+          ob['email'] = row.COOK_EMAIL;
+          ob['description'] = row.DESCRIPTION;
+          ob['price'] = row.PRICE;
+          ob['cuisine'] = row.CUISINE;
+          ob['calories'] = row.CALORIES;
+          ob['picture'] = row.PICTURE;
+          ob['food_id'] = row.FOOD_ID;
+          ob['delivery_time'] = row.DELIVERY_TIME;
+          if (ob['delivery_time'] === null) {
+            ob['delivery_time'] = '2019-10-29 01:47:45';
+          }
+          obj.push(JSON.parse(JSON.stringify(ob)));
+        }
+        console.log(obj);
+        o['data'] = obj;
+        o['code'] = 200;
+        o['message'] = 'Filter results'
+        res.status(200);
+        res.send(o);
+      }
     });
+    connection.release();
+  });
 });
 
 app.use('/forgotpassword', function (req, res, next) {
@@ -1445,7 +1738,7 @@ app.use('/forgotpassword', function (req, res, next) {
     if (err) throw err;
     var q = 'UPDATE USER SET PASSWORD = "' + encPassword + '" WHERE EMAIL="' + encEmail + '";';
     connection.query(q, function (err, rows) {
-      // console.log(rows);
+      // 
       if (err) {
         console.log("reset failed");
         o['code'] = 404;
@@ -1603,7 +1896,7 @@ app.use('/getfavoritehomecooks', function (req, res, next) {
 });
 
 
-function sendEmail(email, password, text) {
+function sendEmail(email, password="", text, subject = 'Password Reset') {
   const nodemailer = require('nodemailer');
   var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -1616,7 +1909,7 @@ function sendEmail(email, password, text) {
   var mailOptions = {
     from: 'markvadesamuel1998@gmail.com',
     to: email.toString(),
-    subject: 'Password reset',
+    subject: subject,
     text: text
   };
 
@@ -1656,46 +1949,52 @@ app.use('/resetpassword', function (req, res, next) {
 });
 
 
-app.use('/checklogin', function(req, res, next){
-  const o = checkLogin(req.body['data']['email'],req.body['data']['token']);
+app.use('/checklogin', function (req, res, next) {
+  const o = checkLogin(req.body['data']['email'], req.body['data']['token']);
   res.status(o['code']);
   res.send(o);
 });
 
 
- function checkLogin(email, token) {
-   var o = {};
-   const tok = revLoginTokens[email];
-   if (tok === token) {
-     o['code'] = 200;
-     o['message'] = '';
-     o['token'] = token;
-   } else {
-     o['code'] = 401;
-     o['message'] = 'Unauthorized client error';
-   }
-   return o;
- }
+function checkLogin(email, token) {
+  var o = {};
+  const tok = revLoginTokens[email];
+  if (tok === token) {
+    o['code'] = 200;
+    o['message'] = '';
+    o['token'] = token;
+  } else {
+    o['code'] = 401;
+    o['message'] = 'Unauthorized client error';
+  }
+  return o;
+}
 
-app.use('/login', function(req, res, next){
+app.use('/login', function (req, res, next) {
   const email = req.body['data']['email'];
   const password = req.body['data']['password'];
   let role = req.body['data']['role'];
   if (role === 'Homecook') role = 'cook';
   var o = {};
-
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT FIRST_NAME, LAST_NAME FROM USER WHERE EMAIL = "' + email + '" AND PASSWORD = "' + password + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC = "' + role + '");';
+    var q = 'SELECT FIRST_NAME, LAST_NAME, BANNED FROM USER WHERE EMAIL = "' + email + '" AND PASSWORD = "' + password + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC = "' + role + '");';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
-        o['code'] = 400;
+        o['code'] = 401;
         o['message'] = 'Invalid login credentials';
-        res.status(400);
+        res.status(401);
         console.log(o);
         res.send(o);
-      } else {
+      }
+      else if (rows[0].BANNED) {
+        o['code'] = 401;
+        o['message'] = 'Sorry, you have been banned for misconduct. Please contact customer support if you think this is a mistake.';
+        res.status(401);
+        res.send(o);
+      }
+      else {
         o['code'] = 200;
         o['message'] = 'Login successful';
         o['token'] = uuidv4();
@@ -1729,7 +2028,7 @@ app.use('/register', function (req, res, next) {
     var q = 'SELECT FIRST_NAME, LAST_NAME FROM USER WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC = "' + role + '");';
     connection.query(q, function (err, rows) {
       console.log(q);
-      console.log(rows);
+
       if (err) {
         console.log(err);
         o['code'] = 400;
@@ -1759,11 +2058,6 @@ app.use('/register', function (req, res, next) {
 });
 
 function registerUser(firstName, lastName, email, password, role, cuisines) {
-  console.log(role);
-  chatkit.createUser({
-    id: email,
-    name: firstName + " " + lastName,
-  })
 
   let pic = '';
   if (role === 'Homecook') role = 'COOK';
@@ -1772,9 +2066,14 @@ function registerUser(firstName, lastName, email, password, role, cuisines) {
   } else {
     pic = 'https://firebasestorage.googleapis.com/v0/b/stou-79b9a.appspot.com/o/4.png?alt=media&token=47d52479-c8cf-46a1-8116-e5f1bc8765f7';
   }
+  chatkit.createUser({
+    id: email,
+    name: firstName + " " + lastName,
+    avatarURL: pic
+  })
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'INSERT INTO USER (PICTURE, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, ROLE) values("' + pic + '", "' + firstName + '", "' + lastName + '", "' + email + '", "' + password + '", (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '"));';
+    var q = 'INSERT INTO USER (PICTURE, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, ROLE, BANNED) values("' + pic + '", "' + firstName + '", "' + lastName + '", "' + email + '", "' + password + '", (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '"), 0);';
     connection.query(q, function (err, rows) {
       if (err) {
         console.log(err);
@@ -1830,9 +2129,9 @@ function registerUser(firstName, lastName, email, password, role, cuisines) {
 }
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-res.status(404);
-res.send();
+app.use(function (req, res, next) {
+  res.status(404);
+  res.send();
 });
 
 // error handler

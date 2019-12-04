@@ -15,18 +15,16 @@ class ShareappModal extends Component {
 
 
     shareApp = () => {
-        console.log("SHARE APP")
-    //     console.log(this.state.feedback)
-    //     axios.post(`${serverURL}/setfeedback`, {
-    //       data: {
-    //         email: this.props.email,
-    //         feedback: this.state.feedback,
-    //       }
-    //     })
-    //     .then(res => {
-    //       console.log(res.data);
-    //     })
-    //   }
+        // console.log("SHARE APP")
+        axios.post(`${serverURL}/shareapp`, {
+          data: {
+            email: this.state.share_email
+          }
+        })
+        .then(res => {
+          console.log(res.data);
+          this.props.closeModal();
+        })
     }
     handleChange = e => {
         this.setState({ [e.target.id]: e.target.value })

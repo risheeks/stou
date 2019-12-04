@@ -34,8 +34,8 @@ class ListOfHomeCooks extends Component {
                 this.setState({
                     homecooks: Array.from(res.data.data)
 				});
-				//console.log(this.state.homecooks)
 			});
+			
 	}
 
 

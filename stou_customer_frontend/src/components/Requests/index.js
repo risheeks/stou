@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import {Button, ListGroup, Container} from "react-bootstrap";
+import { Button, ListGroup, Container } from "react-bootstrap";
 import axios from 'axios';
 import "../../styles/Main.css";
 import { serverURL } from '../../config';
@@ -12,6 +12,7 @@ class Requests extends Component {
     this.state = {
       //requests: [{cook: 'Cook1', customer: 'Customer1', itemName: 'Name1', itemDescription: 'Blah Blah Description Blah Blah', status: 'Pending'}, {cook: 'Cook2', customer: 'Customer2', itemName: 'Name2', itemDescription: 'Blah Blah Description Blah Blah', status: 'Pending'}]
         requests: []
+
     };
   }
 
@@ -68,11 +69,12 @@ class Requests extends Component {
     //console.log("status below")
     //console.log(this.state.requests.status[0])
     return (
-      <Container className="orders-container master_container">
-        <ListGroup className="orders-list">
-          {this.state.requests.map(item => (
-            <ListGroup.Item className="">
-              
+      <Container className="master-container">
+        <Container className="orders-container">
+          <ListGroup className="orders-list">
+            {this.state.requests.map(item => (
+              <ListGroup.Item className="">
+
                 <div className="request_texts">
                   <p>{item.itemName} from {item.cook} </p>                  
                   <p>{item.itemDescription}</p>                                  
@@ -83,8 +85,8 @@ class Requests extends Component {
         </ListGroup>
       </Container>
     )
-  } 
-  
+  }
+
 }
 
 

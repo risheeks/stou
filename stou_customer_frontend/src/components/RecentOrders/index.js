@@ -20,7 +20,7 @@ class RecentOrders extends Component {
         }
         axios.post(`${serverURL}/getrecentorders`, { data: data })
             .then(res => {
-                console.log(res.data)
+                //console.log(res.data)
                 // console.log(Array.from(res.data.data));
                 this.setState({
                     recent: Array.from(res.data)
@@ -54,11 +54,30 @@ class RecentOrders extends Component {
         }
     }
 
+    setOrders = () => {
+        const data = {
+            customerEmail: this.props.email
+        }
+        axios.post(`${serverURL}/getrecentorders`, { data: data })
+            .then(res => {
+                console.log(res.data)
+                // console.log(Array.from(res.data.data));
+                this.setState({
+                    recent: Array.from(res.data)
+                });
+            })
+            .catch(err => {
+                this.setState({
+                    recent: []
+                });
+            })
+    }
+
     handleOrderClick = (e, order) => {
         // console.log(this.props);
         const { openModal } = this.props;
         e.preventDefault();
-        this.props.openModal(ModalKey.ORDER_STATUS, { order });
+        this.props.openModal(ModalKey.ORDER_STATUS, { order, setOrders: this.setOrders });
     }
 
     render() {

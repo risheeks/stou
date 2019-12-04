@@ -128,14 +128,27 @@ class UserList extends Component {
     })
   }
 
+  reloadAfterBan = e => {
+    const data = {
+      role: this.state.userRole,
+      page: this.state.page,
+      searchQuery: this.state.search
+    }
+    axios.post(`${serverURL}/getallusers`, { data })
+      .then(res => {
+        this.setState({
+          users: Array.from(res.data.data)
+        });
+      })
+  }
+
   handleUserClick = user => {
     const { openModal } = this.props;
-    openModal(ModalKey.BAN_PROFILE, { ...user });
+    openModal(ModalKey.BAN_PROFILE, { ...user, role: this.state.userRole, reloadAfterBan: this.reloadAfterBan, openModal});
   }
 
   getShownPages = () => {
     const { page, lastPage } = this.state;
-    console.log(lastPage)
     let pages = [];
     if(page <= 1 && lastPage <= 1) {
       return [1];
@@ -159,7 +172,6 @@ class UserList extends Component {
   render() {
     const { search, users, userRole, page, lastPage } = this.state;
     const pages = this.getShownPages();
-    console.log(pages);
     return (
       <div className="userlist-container">
         <div className="searchbar-container">

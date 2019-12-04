@@ -87,7 +87,7 @@ class Main extends Component {
     }
 
     async componentDidUpdate(prevProps) {
-        if (prevProps.zipcode !== this.props.zipcode) {
+        if (prevProps.zipcode !== this.props.zipcode || prevProps.email !== this.props.email) {
             const { auth_token, email, zipcode, openModal } = this.props;
             const loggedIn = auth_token && auth_token.length > 0;
             let channel = pusher.subscribe(`customer-${email}`);
@@ -156,6 +156,7 @@ class Main extends Component {
                         auth_token={auth_token}
                         email={email}
                         getToken={getToken}
+                        openModal={openModal}
                     />}
                 />
                 <Route path="/register" render={() =>
@@ -163,6 +164,7 @@ class Main extends Component {
                         auth_token={auth_token}
                         email={email}
                         getToken={getToken}
+                        openModal={openModal}
                     />}
                 />
                 <Route path="/favoriteHomecooks" render={() =>

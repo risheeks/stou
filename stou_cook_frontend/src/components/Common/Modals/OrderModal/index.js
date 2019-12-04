@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { Modal, Button, Image, ListGroup } from 'react-bootstrap';
 import OrderProgress from './OrderProgress';
 import axios from 'axios';
-import { serverURL } from '../../../../config';
+import { serverURL, tokenUrl, instanceLocator } from '../../../../config';
 import { ModalKey } from '../../../../constants/ModalKeys';
+import { ChatManager, TokenProvider } from '@pusher/chatkit-client';
+import Rate from './Rate';
 
 class OrderModal extends Component {
     constructor(props) {
@@ -31,6 +33,25 @@ class OrderModal extends Component {
             })
     }
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.order !== this.props.order) {
+            const chatManager = new ChatManager({
+                instanceLocator: instanceLocator,
+                userId: this.props.order.cookEmail,
+                tokenProvider: new TokenProvider({
+                    url: tokenUrl,
+
+                })
+            })
+            chatManager.connect()
+                .then(currentUser => {
+                    this.setState({ currentUser })
+                    // this.getRooms()
+                })
+                .catch(err => console.log('error on connecting: ', err))
+        }
+    }
+
     getSubtotal = () => {
         const { items } = this.state;
         let sum = 0;
@@ -55,6 +76,17 @@ class OrderModal extends Component {
         const data = {
             orderStatus,
             orderId: order.orderId
+        }
+        if (orderStatus === "in_progress") {
+            let { customerEmail, cookEmail } = "";
+            customerEmail = order.customerEmail;
+            cookEmail = order.cookEmail;
+            this.state.currentUser.createRoom({
+                id: customerEmail + "-" + cookEmail,
+                name: customerEmail + "-" + cookEmail,
+                private: true,
+                addUserIds: [customerEmail, cookEmail]
+            });
         }
         axios.post(`${serverURL}/setorderstatus`, { data })
             .then(res => {
@@ -147,13 +179,16 @@ class OrderModal extends Component {
         const { items, order } = this.state;
 
         return (
-            <Modal show={showModal} onHide={() => closeModal()}>
-                <Modal.Header closeButton>
-                    <b>{order.orderStatus === 'request_cancel'? order.name + " is requesting order cancellation" : "Order details"}</b>
+            <Modal show={showModal} onHide={order.orderStatus !== 'delivered' || order.rating ? () => closeModal() : () => {return}}>
+                <Modal.Header closeButton={order.orderStatus !== 'delivered' || order.rating}>
+                    <b>{order.orderStatus === 'request_cancel' ? order.name + " is requesting order cancellation" : "Order details"}</b>
                 </Modal.Header>
                 <Modal.Body>
                     {this.renderOrderInfo(order)}
                     <OrderProgress status={order.orderStatus} />
+                    {order.orderStatus == 'delivered' && !order.rating ?
+                        <Rate order={order} closeModal={closeModal} setOrders={this.props.setOrders}/> : null
+                    }
                     <ListGroup className="bag-itemlist-container">
                         <ListGroup.Item>
                             <b>Order items</b>
@@ -170,8 +205,8 @@ class OrderModal extends Component {
                         </ListGroup.Item>
                     </ListGroup>
                 </Modal.Body>
-                    {this.renderOrders()}
-            </Modal>
+                {this.renderOrders()}
+            </Modal >
         );
     }
 }

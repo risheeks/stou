@@ -1,10 +1,17 @@
-.master_container {
+body, .modal-content {
+  background-color: #f7fbfc;
+}
+
+.master-container {
   min-height: 100vh;
 }
 
 textarea {
   resize: none;
-  height: 7rem !important;
+}
+
+.text-about-me {
+  height: 8rem !important;
 }
 
 .basic-checkbox {
@@ -129,7 +136,7 @@ textarea {
     width: 600px;
     border: 1px solid rgb(202, 202, 202);
     padding: 60px;
-    background-color:#f7fbfc;
+    background-color: white;
 }
 .text-about-me-label {
   /* width: 400px; */
@@ -410,6 +417,7 @@ textarea {
   border: solid lightgray 0.5px;
   border-radius: 1%;
   padding: 2%;
+  background-color: white;
 }
 
 .input-row {
@@ -769,3 +777,10 @@ textarea {
   /* width: 50%; */
 }
 
+.alert-fixed {
+  position: fixed; 
+  top: 60px; 
+  left: 25%;
+  z-index: 9999; 
+  width: 50%;
+}

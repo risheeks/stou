@@ -11,6 +11,7 @@ import RatingModal from './RatingModal';
 import FeedbackModal from './FeedbackModal';
 import ShareappModal from './ShareappModal';
 import PrivacyModal from './PrivacyModal';
+import ErrorModal from './ErrorModal';
 
 class MyModal extends Component {
     render() {
@@ -39,6 +40,8 @@ class MyModal extends Component {
                 return <ShareappModal {...this.props} />;
             case ModalKey.PRIVACY:
                 return <PrivacyModal {...this.props} />; 
+            case ModalKey.ERROR_MODAL:
+                return <ErrorModal {...this.props} />; 
             default:
                 return null;
         }

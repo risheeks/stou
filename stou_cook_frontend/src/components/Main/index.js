@@ -110,7 +110,6 @@ class Main extends Component {
     render() {
         const { signOut, auth_token, email, getToken, openModal, closeModal, showModal, modalKey, modalProps, changeLocation } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
-        console.log(modalProps);
         return (
             <Router>
                 <Header signOut={signOut} loggedIn={loggedIn} openModal={openModal} email={email} changeLocation={changeLocation}/>
