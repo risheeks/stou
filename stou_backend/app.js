@@ -114,7 +114,19 @@ app.use('/gettopfood', function (req, res, next) {
         o['message'] = 'Cook Not Found';
         res.send(o);
       } else {
-        o['data'] = { 'itemName': rows[0].TITLE, 'picture': rows[0].PICTURE, 'description': rows[0].DESCRIPTION };
+        let ob = {};
+        row = rows[0];
+        ob['name'] = row.TITLE;
+        ob['price'] = row.PRICE;
+        ob['cuisine'] = row.CUISINE;
+        ob['calories'] = row.CALORIES;
+        ob['picture'] = row.PICTURE;
+        ob['email'] = row.COOK_EMAIL;
+        ob['description'] = row.DESCRIPTION;
+        ob['food_id'] = row.FOOD_ID;
+        ob['delivery_time'] = row.DELIVERY_TIME;
+        o['data'] = ob;
+
         o['code'] = 200;
         res.status(200);
         o['message'] = 'Success';
@@ -1807,7 +1819,7 @@ app.use('/setstatus', function (req, res, next) {
             connection.query(q, function (err, rows) {
               if (err) throw err;
               if (rows.length === 0) {
-                
+
               }
               else {
                 for (i = 0; i < rows.length; i++) {

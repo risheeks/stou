@@ -99,7 +99,7 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
                         <Button 
                             block
                             bsSize="large"
-                            className="submit-button"
+                            variant="danger"
                             onClick={this.AddRequest}
                             >
                             Submit

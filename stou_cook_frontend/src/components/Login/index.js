@@ -84,7 +84,7 @@ export class Login extends Component {
           <div>
             <Button
               block
-              className="submit-button"
+              variant="danger"
               disabled={!this.validateForm()}
               onClick={this.handleSubmit}
             >
