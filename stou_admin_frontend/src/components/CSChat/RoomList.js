@@ -29,9 +29,13 @@ import {
     ChatList,
     ChatListItem
 } from '@livechat/ui-kit'
-import { Button } from "react-bootstrap";
-import { tokenUrl, instanceLocator } from '../../config'
-import { ChatManager, TokenProvider } from '@pusher/chatkit-client'
+import { Button, FormGroup, FormControl, FormLabel, Form} from "react-bootstrap";
+import { serverURL } from '../../config';
+import { ModalKey } from '../../constants/ModalKeys';
+import { tokenUrl, instanceLocator } from '../../config';
+import { ChatManager, TokenProvider } from '@pusher/chatkit-client';
+import Toggle from 'react-bootstrap-toggle';
+
 
 const parseUrl = (url) => url && 'https://' + url.replace(/^(http(s)?\:\/\/)/, '').replace(/^\/\//, '')
 
@@ -41,67 +45,58 @@ class RoomList extends React.Component {
         super()
         this.state = {
             textMessage: '',
+            newRoom: '',
+            role: 'COOK'
         }
     }
 
-    // componentDidMount() {
-    //     console.log(this.props.email)
-    //         const chatManager = new ChatManager({
-    //             instanceLocator: instanceLocator,
-    //             userId: this.props.email,
-    //             tokenProvider: new TokenProvider({
-    //                 url: tokenUrl,
+    componentDidMount() {
+        const chatManager = new ChatManager({
+            instanceLocator: instanceLocator,
+            userId: 'admin',
+            tokenProvider: new TokenProvider({
+                url: tokenUrl,
 
-    //             })
-    //         })
-    //         chatManager.connect({
-    //             onAddedToRoom: room => {
-    //                 this.getRooms()
-    //             },
-    //             onRemovedFromRoom: room => {
-    //                 this.getRooms()
-    //             }
-    //         })
-    //             .then(currentUser => {
-    //                 this.setState({ currentUser })
-    //                 this.getRooms()
-    //             })
-    //             .catch(err => console.log('error on connecting: ', err))
-    // }
+            })
+        })
+        chatManager.connect({
+            onAddedToRoom: room => {
+                this.props.maximize()
+            }
+        })
+        .then(currentUser => {
+            this.setState({currentUser})
+            // this.getRooms()
+        })
+        .catch(err => console.log('error on connecting: ', err))
+    }
 
-    // componentDidUpdate(prevProps) {
-    //     if (this.props.email !== prevProps.email && this.props.email !== null) {
-    //         console.log(this.props.email)
-    //         const chatManager = new ChatManager({
-    //             instanceLocator: instanceLocator,
-    //             userId: this.props.email,
-    //             tokenProvider: new TokenProvider({
-    //                 url: tokenUrl,
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.orders_type !== this.state.orders_type || prevProps.email !== this.props.email) {
+            const chatManager = new ChatManager({
+                instanceLocator: instanceLocator,
+                userId: 'admin',
+                tokenProvider: new TokenProvider({
+                    url: tokenUrl,
 
-    //             })
-    //         })
-    //         chatManager.connect({
-    //             onAddedToRoom: room => {
-    //                 this.getRooms()
-    //             },
-    //             onRemovedFromRoom: room => {
-    //                 this.getRooms()
-    //             }
-    //         })
-    //             .then(currentUser => {
-    //                 this.setState({ currentUser })
-    //                 // this.getRooms()
-    //             })
-    //             .catch(err => console.log('error on connecting: ', err))
-    //     }
-    // }
+                })
+            })
+            chatManager.connect({
+                onAddedToRoom: room => {
+                    this.props.maximize()
+                }
+            })
+                .then(currentUser => {
+                    this.setState({ currentUser })
+                    // this.getRooms()
+                })
+                .catch(err => console.log('error on connecting: ', err))
+        }
+    }
+
 
     changeRoomId = (id) => {
         this.props.changeRoomId(id);
-    }
-
-    cSChat = e => {
-        this.props.cSChat();
     }
 
     renderRooms() {
@@ -110,37 +105,20 @@ class RoomList extends React.Component {
         if (rooms[0] && rooms.length > 0 && rooms[0].users && rooms[0].users.length > 0) {
             return (
                 <ChatList style={{ width: 200 }}>
-                    <ChatListItem>
-                        <Button
-                            style={{ width: 162 }}
-                            onClick={this.cSChat}>
-                            Chat with Us
-                    </Button>
-                    </ChatListItem>
-                    {(rooms[0] && rooms.length > 0 && rooms[0].users && rooms[0].users.length > 0) ? rooms.map((room) =>
+                    {rooms.map((room) =>
                         <ChatListItem onClick={e => this.changeRoomId(room.id)} >
-                            {console.log(room.users)}
-                            <Avatar imgUrl={this.props.ownId !== room.users[0].id ? room.users[0].avatarURL : room.users[0].avatarURL} style={{ height: '40px', width: '40px' }} />
+                            <Avatar imgUrl={this.props.ownId !== room.users[0].id ? room.users[0].avatarURL : room.users[1].avatarURL}  style={{height: '40px', width: '40px'}}/>
                             <Column fill>
                                 <Row justify>
                                     <Title ellipsis>{this.props.ownId === room.users[0].id ? room.users[1].name : room.users[0].name}</Title>
                                 </Row>
                             </Column>
                         </ChatListItem>
-                    ) : null}
+                    )}
                 </ChatList>
             );
         }
-        return (
-            <ChatList style={{ width: 200 }}>
-                <ChatListItem>
-                    <Button
-                        style={{ width: 162 }}
-                        onClick={this.cSChat}>
-                        Chat with Us
-                </Button>
-                </ChatListItem>
-            </ChatList>);
+        return null;
     }
 
     render() {

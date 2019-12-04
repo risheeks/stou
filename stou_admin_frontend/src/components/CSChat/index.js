@@ -80,7 +80,7 @@ const themePurpleButton = {
     color: '#fff',
 }
 
-class Chat extends React.Component {
+class CSChat extends React.Component {
 
     constructor() {
         super()
@@ -104,11 +104,37 @@ class Chat extends React.Component {
         })
     }
 
+    componentDidMount() {
+        // if (this.props.email !== prevProps.email && this.props.email !== null) {
+            const chatManager = new ChatManager({
+                instanceLocator: instanceLocator,
+                userId: 'admin',
+                tokenProvider: new TokenProvider({
+                    url: tokenUrl,
+
+                })
+            })
+            chatManager.connect({
+                onAddedToRoom: room => {
+                    this.getRooms()
+                },
+                onRemovedFromRoom: room => {
+                    this.getRooms()
+                }
+            })
+                .then(currentUser => {
+                    this.setState({ currentUser })
+                    this.getRooms()
+                })
+                .catch(err => console.log('error on connecting: ', err))
+        // }
+    }
+
     componentDidUpdate(prevProps) {
         if (this.props.email !== prevProps.email && this.props.email !== null) {
             const chatManager = new ChatManager({
                 instanceLocator: instanceLocator,
-                userId: this.props.email,
+                userId: 'admin',
                 tokenProvider: new TokenProvider({
                     url: tokenUrl,
 
@@ -130,23 +156,11 @@ class Chat extends React.Component {
         }
     }
 
-    cSChat = () => {
-        this.state.currentUser.createRoom({
-            id: "admin" + "-" + this.props.email + "-" + this.props.role,
-            name: "admin" + "-" + this.props.email + "-" + this.props.role,
-            private: true,
-            addUserIds: ['admin', this.props.email]
-        })
-            .then(() => {
-                this.getRooms();
-            })
-        
-    }
-
     getRooms() {
         const rooms = this.state.currentUser.rooms;
+        console.log(rooms);
         const messages = this.state.messages;
-        console.log(rooms.length);
+        // console.log(rooms.length);
         if(rooms && rooms.length < 1) {
             this.setState({
                 messages: {},
@@ -219,7 +233,6 @@ class Chat extends React.Component {
                             rooms={this.state.joinedRooms}
                             changeRoomId={this.changeRoomId}
                             ownId={this.props.email}
-                            cSChat={this.cSChat}
                         />
                         <Maximized
                             messages={this.state.roomId && this.state.roomId !== '' ? this.state.messages[this.state.roomId] : []}
@@ -236,4 +249,4 @@ class Chat extends React.Component {
     }
 }
 
-export default Chat
+export default CSChat
