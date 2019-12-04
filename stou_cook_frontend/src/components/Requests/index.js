@@ -12,8 +12,8 @@ class Requests extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        requests: [{cook: 'Cook1', customer: 'Customer1', itemName: 'Name1', itemDescription: 'Blah Blah Description Blah Blah', status: 'Pending'}, {cook: 'Cook2', customer: 'Customer2', itemName: 'Name2', itemDescription: 'Blah Blah Description Blah Blah', status: 'Pending'}],
-        //requests: []
+        //requests: [{cook: 'Cook1', customer: 'Customer1', itemName: 'Name1', itemDescription: 'Blah Blah Description Blah Blah', status: 'Pending'}, {cook: 'Cook2', customer: 'Customer2', itemName: 'Name2', itemDescription: 'Blah Blah Description Blah Blah', status: 'Pending'}],
+        requests: []
     };
   }
 
@@ -22,32 +22,40 @@ class Requests extends Component {
   }
 
   getRequests = () => {
+    //console.log("my email below on Requests")
+    //console.log(this.props.email)
     //console.log(this.state.feedback)
     const { openModal} = this.props;
+    console.log("cook email below from request cookside")
+    console.log(this.props.email)
 
     axios.post(`${serverURL}/getrequest`, {
         data: {
-            cookEmail: this.props.cookEmail,
+            email: this.props.email,
             role: 1            
         }
     })
     .then(res => {
-        if (res.data.name.length > 0) {
+        if (res.data.data.length > 0) {
             this.setState({
                 requests: Array.from(res.data.data)
             });
+
+            //console.log(Array.from(res.data.data))
+        }
+        else{
+            //console.log("missing")
         }
     })
-  }   
-  
-    acceptRequest = (e) => {
-        //console.log(request);
+  }
+
+    acceptRequest (email, name, e) {         //console.log(request);
         e.preventDefault();
         axios.post(`${serverURL}/changerequeststatus`, {
             data: {
-                cookEmail: this.props.cookEmail,
-                customerEmail: this.props.customerEmail,
-                itemName: this.state.request,
+                cookEmail: this.props.email,
+                customerEmail: email,
+                itemName: name,
                 status: 1            
             }
         })
@@ -62,15 +70,14 @@ class Requests extends Component {
         })
     }
 
-    rejectRequest = (e) => {
+    rejectRequest (email, name, e) {
         //console.log(request);
         e.preventDefault();
-                e.preventDefault();
         axios.post(`${serverURL}/changerequeststatus`, {
             data: {
-                cookEmail: this.props.cookEmail,
-                customerEmail: this.props.customerEmail,
-                itemName: this.state.request,
+                cookEmail: this.props.email,
+                customerEmail: email,
+                itemName: name,
                 status: 2            
             }
         })
@@ -93,12 +100,21 @@ class Requests extends Component {
             <ListGroup.Item className="">
               
                 <div className="request_texts">
-                  <p>{item.name} for {item.customer}</p>                  
-                  <p>{item.description}</p>                                  
+                  <p>{item.itemName} for {item.customer}</p>                  
+                  <p>{item.itemDescription}</p>                                  
                 </div>
-                <Button className="margined-buttons request-button" onClick={e => this.rejectRequest(e)} variant="danger">Reject</Button>    
-                <Button className="margined-buttons request-button" onClick={e => this.acceptRequest(e)} variant="success">Accept</Button>    
-               
+                
+
+                { (item.status == 0) ? 
+                    <div>
+                        <Button className="margined-buttons request-button" onClick={e => this.rejectRequest(item.customerEmail, item.itemName, e)} variant="danger">Reject</Button>    
+                        <Button className="margined-buttons request-button" onClick={e => this.acceptRequest(item.customerEmail, item.itemName, e)} variant="success">Accept</Button>    
+                    </div> :
+                    <div className="request_status">
+                        <p>Request Updated</p>
+                    </div>
+
+                }
               
             </ListGroup.Item>
           ))}

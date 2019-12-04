@@ -46,8 +46,8 @@ class Requests extends Component {
   }
 
     renderSwitch (status) {
-        console.log("status below")
-        console.log(status)
+        //console.log("status below")
+        //console.log(status)
         switch(status) {
             case 0:
             return 'Pending';
@@ -56,7 +56,7 @@ class Requests extends Component {
             case 2:
             return 'Declined';
             default:
-            return 'Well';
+            return 'Pending';
         }
     }
 
