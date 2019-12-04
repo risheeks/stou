@@ -233,6 +233,7 @@ textarea {
 .ViewFoodOptions {
     border-radius: 3px;
     max-width: 100%;
+
 }
 
 .Review-container {
@@ -773,6 +774,8 @@ textarea {
 .footer-review {
   display: flex;
   flex-direction: column;
+  max-height: 300px;
+  overflow-y: scroll;
   /* width: 50%; */
 }
 
