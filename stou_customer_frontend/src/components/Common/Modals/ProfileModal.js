@@ -39,6 +39,8 @@ class ProfileModal extends Component {
         })
     }
 
+
+
     render() {
         let { showModal, closeModal, description} = this.props;
         let {open} = this.state

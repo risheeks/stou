@@ -219,6 +219,21 @@ textarea {
   color: red;
 }
 
+.eyeViews {
+    float: left;
+    margin: 10px;
+    color: red;
+    width: 20px;
+    height: 20px;
+}
+
+.eyeViews-text {
+    float: left;
+    text-align: left;
+    line-height: 2.5;
+    font-size: 11;
+}
+
 #profile-container {
     width: 150px;
     height: 150px;
