@@ -257,7 +257,7 @@ app.use('/usepromocode', function (req, res, next) {
     });
     connection.release();
   });
-  return promoCode;
+  return promoCode.substring(0,7);
 };
 
 
