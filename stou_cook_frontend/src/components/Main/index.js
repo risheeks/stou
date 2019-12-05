@@ -18,11 +18,12 @@ import PrivacyPolicy from '../PrivacyPolicy';
 import { openModal, closeModal } from '../../actions/modal.action';
 import { ModalKey } from '../../constants/ModalKeys';
 import axios from 'axios';
-import { serverURL } from '../../config';
+import { serverURL, pusher } from '../../config';
 import { ROLE } from '../../constants';
 import Orders from '../Orders';
 import Requests from '../Requests';
 import MenuModal from '../Common/Modals/MenuModal.js'
+import notificationSound from '../../constants/sounds/notification.mp3';
 
 function mapStateToProps(state) {
     return {
@@ -78,6 +79,15 @@ class Main extends Component {
         if (prevProps !== this.props) {
             const { auth_token, email, zipcode } = this.props;
             const loggedIn = auth_token && auth_token.length > 0;
+            let channel = pusher.subscribe(`cook-${email}`);
+            
+            channel.bind('request_added', function (data) {
+                
+                const audio = new Audio(notificationSound);
+                audio.play();
+                openModal(ModalKey.REQUEST_MODAL, { ...data });
+                console.log("Reached here")
+            });
             if (loggedIn) {
                 const newLocation = await this.getLocation();
                 if (!newLocation || newLocation === '') {
@@ -88,6 +98,7 @@ class Main extends Component {
                 }
             }
         }
+
     }
 
     getLocation = async () => {

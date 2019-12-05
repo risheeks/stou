@@ -97,10 +97,19 @@ class Main extends Component {
                 openModal(ModalKey.ORDER_UPDATE, { ...data });
             });
             channel.bind('cook-online', function(data) {
-                console.log("HIHIHI")
                 const audio = new Audio(notificationSound);
                 audio.play();
                 openModal(ModalKey.COOK_ONLINE, { ...data });
+            });
+            channel.bind('request_accepted', function(data) {
+                const audio = new Audio(notificationSound);
+                audio.play();
+                openModal(ModalKey.REQUEST_ACCEPTED, { ...data });
+            });
+            channel.bind('request_declined', function(data) {
+                const audio = new Audio(notificationSound);
+                audio.play();
+                openModal(ModalKey.REQUEST_DECLINED, { ...data });
             });
             if (loggedIn) {
                 const newLocation = await this.getLocation();
