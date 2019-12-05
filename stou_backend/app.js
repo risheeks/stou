@@ -105,7 +105,7 @@ app.listen(app.settings.port, () => console.log("Listening on port " + app.setti
 app.use('/setViews', function(req,res,next) {
     let cookEmail = req.body['data']['cookEmail'];
     let numViews = req.body['data']['numViews'];
-    let q = 'UPDATE USER SET NUMVIEWS=' + numViews + ' WHERE COOK_EMAIL=\'' + cookEmail + '\' AND ROLE=1';
+    let q = 'UPDATE USER SET NUMVIEWS=' + numViews + ' WHERE EMAIL=\'' + cookEmail + '\' AND ROLE=1';
     var o = {};
     con.getConnection(function (err, connection) {
         if (err) throw err;
