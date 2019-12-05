@@ -13,9 +13,7 @@ import ShareappModal from './ShareappModal';
 import PrivacyModal from './PrivacyModal';
 import ErrorModal from './ErrorModal';
 import CookOnline from './CookOnline';
-import RequestAccepted from './AcceptRequestModal';
-import RequestDeclined from './DeclineRequestModal';
-
+import RequestUpdateModal from './RequestUpdateModal';
 
 class MyModal extends Component {
     render() {
@@ -47,10 +45,8 @@ class MyModal extends Component {
                 return <ErrorModal {...this.props} />;
             case ModalKey.COOK_ONLINE:
                 return <CookOnline {...this.props} />;
-            case ModalKey.REQUEST_ACCEPTED:
-                return <RequestAccepted {...this.props} />;
-            case ModalKey.REQUEST_DECLINED:
-                return <RequestDeclined {...this.props} />;
+            case ModalKey.REQUEST_UPDATE:
+                return <RequestUpdateModal {...this.props} />;
             default:
                 return null;
         }

@@ -102,42 +102,42 @@ const uuidv4 = require('uuid/v4');
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
 
-app.use('/setViews', function(req,res,next) {
-    let cookEmail = req.body['data']['cookEmail'];
-    let numViews = req.body['data']['numViews'];
-    let q = 'UPDATE USER SET NUMVIEWS=' + numViews + ' WHERE EMAIL=\'' + cookEmail + '\' AND ROLE=1';
-    var o = {};
-    con.getConnection(function (err, connection) {
-        if (err) throw err;
-        connection.query(q, function (err, rows) {
-            if (err) throw err;
-            if (rows.length === 0) {
-                o['code'] = 404;
-                res.status(404);
-                o['message'] = 'Cook Not Found';
-                res.send(o);
-            } else {
-                o['code'] = 200;
-                res.status(200);
-                o['message'] = 'Success';
-                res.send(o);
-            }
-        });
-        connection.release();
+app.use('/setViews', function (req, res, next) {
+  let cookEmail = req.body['data']['cookEmail'];
+  let numViews = req.body['data']['numViews'];
+  let q = 'UPDATE USER SET NUMVIEWS=' + numViews + ' WHERE EMAIL=\'' + cookEmail + '\' AND ROLE=1';
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'Cook Not Found';
+        res.send(o);
+      } else {
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Success';
+        res.send(o);
+      }
     });
+    connection.release();
+  });
 });
 
 app.use('/logtofile', function (req, res, next) {
   let data = req.body['data']['data'];
   let role = req.body['data']['role'];
   let logFile;
-  if(role === "Customer") logFile = "log/log_customer";
+  if (role === "Customer") logFile = "log/log_customer";
   else logFile = "log/log_cook"
-  
-  var currentdate = new Date(); 
+
+  var currentdate = new Date();
   var datetime = currentdate.getDate() + "/"
-                + (currentdate.getMonth()+1)  + "/" 
-                + currentdate.getFullYear();
+    + (currentdate.getMonth() + 1) + "/"
+    + currentdate.getFullYear();
   data = datetime.toString() + " - " + data.toString() + "\n";
   const fs = require('fs');
   var o = {};
@@ -199,9 +199,9 @@ app.use('/gettopfood', function (req, res, next) {
   });
 });
 
-app.use('/getviews', function(req, res, next){
+app.use('/getviews', function (req, res, next) {
   let cookEmail = req.body['data']['cookEmail'];
-  let q = 'SELECT * FROM USER WHERE EMAIL=\'' + cookEmail +'\' AND ROLE=1';
+  let q = 'SELECT * FROM USER WHERE EMAIL=\'' + cookEmail + '\' AND ROLE=1';
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
@@ -489,24 +489,21 @@ app.use('/changerequeststatus', function (req, res, next) {
         res.send(o);
       }
       else {
-        if(status === 1){
-            pusher.trigger('customer-'+customerEmail, 'request_accepted', {
-              "message": "Request Accepted",
-              "request_item": {
-                "email": customerEmail,
-                "name": itemName,
-              }
-            });
-        }
-        else if(status === 2){
-          pusher.trigger('customer-'+customerEmail, 'request_declined', {
-              "message": "Request Declined",
-              "request_item": {
-                "email": customerEmail,
-                "name": itemName,
-              }
-          });  
-        }
+        var q = `SELECT * FROM USER WHERE EMAIL=${cookEmail} AND ROLE=1;`;
+        let cookInfo = {}
+        connection.query(q, function (err, newRows) {
+          cookInfo = newRows[0]
+        });
+        pusher.trigger('customer-' + customerEmail, 'request-update', {
+          "message": "Request Accepted",
+          "request_item": {
+            "email": cookEmail,
+            "name": itemName,
+            "status": status,
+            "cookName": cookInfo.name,
+            "picture": cookInfo.picture
+          }
+        });
         o['code'] = 200;
         res.status(200);
         o['message'] = 'Status changed';
@@ -517,7 +514,7 @@ app.use('/changerequeststatus', function (req, res, next) {
   });
 });
 
-    
+
 
 app.use('/getrequest', function (req, res, next) {
   const email = req.body['data']['email'];
@@ -576,15 +573,15 @@ app.use('/addrequest', function (req, res, next) {
         res.send(o);
       }
       else {
-        pusher.trigger('cook-'+cookEmail, 'request_added', {
+        pusher.trigger('cook-' + cookEmail, 'request_added', {
           "message": "New Request",
           "request_item": {
-                "cookEmail": cookEmail,
-                "customerEmail": customerEmail,
-                "name": itemName,
-                "description": itemDescription
-              }
-          });
+            "cookEmail": cookEmail,
+            "customerEmail": customerEmail,
+            "name": itemName,
+            "description": itemDescription
+          }
+        });
         o['code'] = 200;
         res.status(200);
         o['message'] = 'Request added';
@@ -1504,7 +1501,7 @@ app.use('/gethomecooks', function (req, res, next) {
           ob['isFavorite'] = row.IS_FAVORITE;
           ob['profilePicture'] = row.PICTURE;
           ob['numViews'] = row.NUMVIEWS;
-          if(ob['numViews'] === null) {
+          if (ob['numViews'] === null) {
             ob['numViews'] = 0;
           }
           obj.push(JSON.parse(JSON.stringify(ob)));
