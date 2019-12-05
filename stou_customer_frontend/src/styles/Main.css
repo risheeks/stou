@@ -6,6 +6,10 @@ body, .modal-content {
   min-height: 100vh;
 }
 
+.page-title {
+  font-size: 150%;
+}
+
 textarea {
   resize: none;
 }
@@ -524,7 +528,7 @@ textarea {
   max-height: 500px;
   align-self: center;
   overflow-y: scroll;
-  margin-top: 20px;
+  /* margin-top: 20px; */
   }
   
   .order-item-button-div {
