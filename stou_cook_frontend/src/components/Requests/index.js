@@ -102,7 +102,9 @@ class Requests extends Component {
 
   render() {
     return (
-      <Container className="orders-container">
+      
+      <Container className="orders-container margin-container">
+        <p className="page-title"><b>Requests</b></p>
         <ListGroup className="orders-list">
           {this.state.requests.map(item => (
             <ListGroup.Item className="">
@@ -126,7 +128,9 @@ class Requests extends Component {
             </ListGroup.Item>
           ))}
         </ListGroup>
+      
       </Container>
+      
     )
   }
 
