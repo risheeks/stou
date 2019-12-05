@@ -543,7 +543,7 @@ app.use('/getrequest', function (req, res, next) {
         let obList = [];
         var ob = {};
         for (i = 0; i < rows.length; i++) {
-          ob = { 'cookEmail': rows[i].COOK_EMAIL, 'customerEmail': rows[i].CUSTOMER_EMAIL, 'itemName': rows[i].ITEM_NAME, 'itemDescription': rows[i].ITEM_DESCRIPTION, 'status': rows[i].STATUS };
+          ob = { 'cookEmail': rows[i].COOK_EMAIL, 'customerEmail': rows[i].CUSTOMER_EMAIL, 'itemName': rows[i].ITEM_NAME, 'itemDescription': rows[i].ITEM_DESCRIPTION, 'status': rows[i].STATUS, 'requestId' : rows[i].REQUEST_ID };
           obList.push(ob);
           ob = {};
         }
@@ -558,6 +558,7 @@ app.use('/getrequest', function (req, res, next) {
 });
 
 app.use('/addrequest', function (req, res, next) {
+  const requestId = uuidv4();
   const cookEmail = req.body['data']['cookEmail'];
   const customerEmail = req.body['data']['customerEmail'];
   const itemName = req.body['data']['itemName'];
@@ -566,7 +567,7 @@ app.use('/addrequest', function (req, res, next) {
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'INSERT INTO REQUESTS VALUES (\'' + cookEmail + '\', \'' + customerEmail + '\', \'' + itemName + '\', \'' + itemDescription + '\', 0);';
+    var q = 'INSERT INTO REQUESTS VALUES (\'' + cookEmail + '\', \'' + customerEmail + '\', \'' + itemName + '\', \'' + itemDescription + '\', 0,\'' + requestId +'\');';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
