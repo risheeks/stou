@@ -11,10 +11,10 @@ class UserList extends Component {
     super(props);
 
     this.state = {
-      search: "",
+      search: '',
       page: 1,
       users: [],
-      userRole: "COOK",
+      userRole: 'COOK',
       pages: [],
       lastPage: 1
     }
@@ -22,7 +22,8 @@ class UserList extends Component {
 
   componentDidMount() {
     let data = {
-      role: this.state.userRole
+      role: this.state.userRole,
+      searchQuery: this.state.search
     }
     axios.post(`${serverURL}/getnumberofusers`, { data })
       .then(res => {
@@ -33,7 +34,8 @@ class UserList extends Component {
       })
     data = {
       role: this.state.userRole,
-      page: 1
+      page: 1,
+      searchQuery: this.state.search
     }
     axios.post(`${serverURL}/getallusers`, { data })
       .then(res => {
@@ -46,7 +48,8 @@ class UserList extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevState.userRole !== this.state.userRole) {
       let data = {
-        role: this.state.userRole
+        role: this.state.userRole,
+        searchQuery: this.state.search
       }
       axios.post(`${serverURL}/getnumberofusers`, { data })
         .then(res => {
@@ -57,7 +60,8 @@ class UserList extends Component {
         })
       data = {
         role: this.state.userRole,
-        page: this.state.page
+        page: this.state.page,
+        searchQuery: this.state.search
       }
       axios.post(`${serverURL}/getallusers`, { data })
         .then(res => {
@@ -69,7 +73,8 @@ class UserList extends Component {
     else if(prevState.page !== this.state.page) {
       const data = {
         role: this.state.userRole,
-        page: this.state.page
+        page: this.state.page,
+        searchQuery: this.state.search
       }
       axios.post(`${serverURL}/getallusers`, { data })
         .then(res => {
@@ -86,6 +91,31 @@ class UserList extends Component {
     })
   }
 
+  handleSearchSubmit = e => {
+    let data = {
+      role: this.state.userRole,
+      searchQuery: this.state.search
+    }
+    axios.post(`${serverURL}/getnumberofusers`, { data })
+        .then(res => {
+          this.setState({
+            lastPage: res.data.data.numUsers,
+            page: 1
+          });
+        })
+      data = {
+        role: this.state.userRole,
+        page: this.state.page,
+        searchQuery: this.state.search
+      }
+      axios.post(`${serverURL}/getallusers`, { data })
+        .then(res => {
+          this.setState({
+            users: Array.from(res.data.data)
+          });
+        })
+  }
+
   handleRoleChange = e => {
     this.setState({
       userRole: e
@@ -98,14 +128,27 @@ class UserList extends Component {
     })
   }
 
+  reloadAfterBan = e => {
+    const data = {
+      role: this.state.userRole,
+      page: this.state.page,
+      searchQuery: this.state.search
+    }
+    axios.post(`${serverURL}/getallusers`, { data })
+      .then(res => {
+        this.setState({
+          users: Array.from(res.data.data)
+        });
+      })
+  }
+
   handleUserClick = user => {
     const { openModal } = this.props;
-    openModal(ModalKey.BAN_PROFILE, { ...user });
+    openModal(ModalKey.BAN_PROFILE, { ...user, role: this.state.userRole, reloadAfterBan: this.reloadAfterBan, openModal});
   }
 
   getShownPages = () => {
     const { page, lastPage } = this.state;
-    console.log(lastPage)
     let pages = [];
     if(page <= 1 && lastPage <= 1) {
       return [1];
@@ -129,14 +172,13 @@ class UserList extends Component {
   render() {
     const { search, users, userRole, page, lastPage } = this.state;
     const pages = this.getShownPages();
-    console.log(pages);
     return (
       <div className="userlist-container">
         <div className="searchbar-container">
           <InputGroup className="mb-3" className="searchbar-input">
             <FormControl type="text" placeholder="Search" onChange={this.handleSearchChange} value={search} />
             <InputGroup.Append>
-              <Button className="searchbar-button" variant="outline-secondary">Search</Button>
+              <Button className="searchbar-button" variant="outline-secondary" onClick={this.handleSearchSubmit}>Search</Button>
             </InputGroup.Append>
           </InputGroup>
           <ToggleButtonGroup defaultValue="COOK" className="multi-checkbox-div" name="user_role" type="radio" value={userRole} onChange={this.handleRoleChange}>

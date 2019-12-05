@@ -6,10 +6,11 @@ import OrderAlert from './OrderAlert';
 import OrderModal from './OrderModal';
 import MenuModal from './MenuModal'
 import ResetPasswordModal from './ResetPasswordModal';
+import ErrorModal from './ErrorModal';
+import RequestModal from './RequestModal';
 
 class MyModal extends Component {
     render() {
-        console.log(this.props);
         const { modalKey } = this.props;
         switch (modalKey) {
             case ModalKey.ZIPCODE:
@@ -24,6 +25,10 @@ class MyModal extends Component {
                 return <MenuModal {...this.props} />;
             case ModalKey.RESET_PASSWORD:
                 return <ResetPasswordModal {...this.props} />;
+            case ModalKey.ERROR_MODAL:
+                return <ErrorModal {...this.props} />;
+            case ModalKey.REQUEST_MODAL:
+                return <RequestModal {...this.props} />;
             default:
                 return null;
         }

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { withRouter } from 'react-router-dom';
+import { ModalKey } from '../../constants/ModalKeys';
 
 export class Login extends Component {
   constructor(props) {
@@ -17,7 +18,7 @@ export class Login extends Component {
 
   componentDidMount() {
     console.log(this.props.auth_token);
-    if(this.props.auth_token && this.props.auth_token.length > 0) {
+    if (this.props.auth_token && this.props.auth_token.length > 0) {
       this.props.history.push('/');
     }
   }
@@ -44,50 +45,63 @@ export class Login extends Component {
       }
     })
       .then(res => {
+        // axios.post(`${serverURL}/logtofile`, {
+        //   data: {
+        //     data: 'First message',
+        //     role: "Customer"
+        //   }
+        // })
+        // .then(res => {
+        //   console.log(res);
+        // })
         console.log(res);
         this.props.getToken(res.data['token'], email);
         this.props.history.push('/');
       })
       .catch(err => {
-        console.log(err);
+        if(err.response.data.code === 401) {
+          this.props.openModal(ModalKey.ERROR_MODAL, {...err.response.data})
+        }
       })
   }
 
   render() {
     return (
-      <div className="Login container">
-        { this.props.auth_token ? this.props.history.push('/') : null}
-        <form onSubmit={this.handleSubmit}>
-          <FormGroup controlId="email" bsSize="large">
-            <FormLabel>Email</FormLabel>
-            <FormControl className="email"
-              autoFocus
-              type="email"
-              value={this.state.email}
-              onChange={this.handleChange}
-            />
-          </FormGroup>
-          <FormGroup controlId="password" bsSize="large">
-            <FormLabel>Password</FormLabel>
-            <FormControl
-              value={this.state.password}
-              onChange={this.handleChange}
-              type="password"
-            />
-          </FormGroup>
-          <div>
-            <Button
-              block
-              bsSize="large"
-              className="submit-button"
-              disabled={!this.validateForm()}
-              onClick={this.handleSubmit}
-            >
-              Login
+      <div className="master-container">
+        <div className="Login container">
+          {this.props.auth_token ? this.props.history.push('/') : null}
+          <form onSubmit={this.handleSubmit}>
+            <FormGroup controlId="email" bsSize="large">
+              <FormLabel>Email</FormLabel>
+              <FormControl className="email"
+                autoFocus
+                type="email"
+                value={this.state.email}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+            <FormGroup controlId="password" bsSize="large">
+              <FormLabel>Password</FormLabel>
+              <FormControl
+                value={this.state.password}
+                onChange={this.handleChange}
+                type="password"
+              />
+            </FormGroup>
+            <div>
+              <Button
+                block
+                bsSize="large"
+                variant="danger"
+                disabled={!this.validateForm()}
+                onClick={this.handleSubmit}
+              >
+                Login
             </Button>
-            <Link to="/register" className="btn btn-link">Register</Link>
-          </div>
-        </form>
+              <Link to="/register" className="btn btn-link">Register</Link>
+            </div>
+          </form>
+        </div>
       </div>
     );
   }

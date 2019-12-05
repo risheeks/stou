@@ -31,7 +31,6 @@ class ResetPasswordModal extends Component {
       encPassword: encPassword
     }})
       .then(res => {
-        console.log(res.data);
         this.props.closeModal();
       })
       .catch(err => {

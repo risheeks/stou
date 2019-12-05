@@ -9,10 +9,8 @@ class MenuModal extends Component {
       this.state = {
         
       };
-    console.log("MENUMODAL="+this.props.fooditems)
     }
     handleFoodName = (e, foodItem) => {
-        // console.log(this.props);
         const { openModal, addToOrder } = this.props;
         e.preventDefault();
         openModal(ModalKey.MENU_MODAL, {item: foodItem, addToOrder: this.props.addToOrder});

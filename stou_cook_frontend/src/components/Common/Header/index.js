@@ -39,15 +39,13 @@ export class Header extends Component {
             }
         })
         .then(res => {
-            console.log(res.data)
             this.setState({
                 fooditems: Array.from(res.data.data)
             });
             const { openModal, addToOrder, name} = this.props;
             const {fooditems} = this.state
             
-            openModal(ModalKey.MENU_MODAL, {fooditems,addToOrder,openModal, name});
-            console.log(this.state.fooditems)   
+            openModal(ModalKey.MENU_MODAL, {fooditems,addToOrder,openModal, name}); 
         }).catch(function (error) {
             const { openModal, name} = self.props;
             openModal(ModalKey.MENU_MODAL, {openModal, name});
@@ -81,12 +79,14 @@ export class Header extends Component {
                         {this.props.loggedIn ?
                             <Nav.Link as={Link} className="nav-link" to="/homecookmenu" onClick={this.clickMenu}>Menu</Nav.Link> : null}
                         {this.props.loggedIn ?
+                            <Nav.Link as={Link} className="nav-link" to="/homecookrequest">Requests</Nav.Link> : null}
+                        {this.props.loggedIn ?
                             <Nav.Link as={Link} className="nav-link" to="/" onClick={this.handleSignOut}>Sign Out</Nav.Link> : null}
                     </Nav>
-                    <OnlineStatus
+                    {this.props.loggedIn ?<OnlineStatus
                             email={email}
                             openModal={openModal}
-                        />
+                        />: null}
                 </Navbar.Collapse>
             </Navbar>
         );

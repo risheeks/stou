@@ -3,6 +3,8 @@ import { ToggleButtonGroup, ToggleButton, ListGroup, Button } from 'react-bootst
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { ModalKey } from '../../constants/ModalKeys';
+import { tokenUrl, instanceLocator } from '../../config';
+import { ChatManager, TokenProvider } from '@pusher/chatkit-client';
 
 class Orders extends Component {
     constructor(props) {
@@ -15,11 +17,39 @@ class Orders extends Component {
 
     componentDidMount() {
         this.setOrders();
+        const chatManager = new ChatManager({
+            instanceLocator: instanceLocator,
+            userId: this.props.email,
+            tokenProvider: new TokenProvider({
+                url: tokenUrl,
+
+            })
+        })
+        chatManager.connect()
+        .then(currentUser => {
+            this.setState({currentUser})
+            // this.getRooms()
+        })
+        .catch(err => console.log('error on connecting: ', err))
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevState.orders_type !== this.state.orders_type || prevProps.email !== this.props.email) {
             this.setOrders();
+            const chatManager = new ChatManager({
+                instanceLocator: instanceLocator,
+                userId: this.props.email,
+                tokenProvider: new TokenProvider({
+                    url: tokenUrl,
+
+                })
+            })
+            chatManager.connect()
+                .then(currentUser => {
+                    this.setState({ currentUser })
+                    // this.getRooms()
+                })
+                .catch(err => console.log('error on connecting: ', err))
         }
     }
 
@@ -57,6 +87,17 @@ class Orders extends Component {
         const data = {
             orderStatus,
             orderId: order.orderId
+        }
+        if (orderStatus === "in_progress") {
+            let { customerEmail, cookEmail } = "";
+            customerEmail = order.customerEmail;
+            cookEmail = order.cookEmail;
+            this.state.currentUser.createRoom({
+                id: customerEmail + "-" + cookEmail,
+                name: customerEmail + "-" + cookEmail,
+                private: true,
+                addUserIds: [customerEmail, cookEmail]
+            });
         }
         axios.post(`${serverURL}/setorderstatus`, { data })
             .then(res => {

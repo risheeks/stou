@@ -15,16 +15,16 @@ class FavoriteHomeCooksList extends Component {
 
 	getFavHomecooks = () => {
 
-        axios.post(`${serverURL}/getfavoritehomecooks`, { 
+		axios.post(`${serverURL}/getfavoritehomecooks`, {
 			data: {
-				email:this.props.email,
+				email: this.props.email,
 			}
 		})
-            .then(res => {
-                console.log(res.data)
-                this.setState({
-                    favhomecooks: Array.from(res.data)
-                });
+			.then(res => {
+				console.log(res.data)
+				this.setState({
+					favhomecooks: Array.from(res.data)
+				});
 			});
 		console.log(this.state.favhomecooks)
 	}
@@ -35,18 +35,20 @@ class FavoriteHomeCooksList extends Component {
 	}
 	render() {
 		return (
-			<Container className="homecook-container">
+			<Container className="master-container">
+				<Container className="homecook-container">
 					{this.state.favhomecooks.map(item => (
-						<FavoriteHomeCook 
+						<FavoriteHomeCook
 							openModal={this.props.openModal}
-							email = {this.props.email}
-							cook_email = {item.email}
+							email={this.props.email}
+							cook_email={item.email}
 							name={item.cook_name}
 							picture={item.cook_picture}
 							description={item.cook_description}
 							rating={item.rating}
 						/>
 					))}
+				</Container>
 			</Container>
 		)
 	}

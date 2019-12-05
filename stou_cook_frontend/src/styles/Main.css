@@ -1,3 +1,11 @@
+textarea {
+  resize: none;
+}
+
+.text-about-me {
+  height: 8rem !important;
+}
+
 .navbar-logo {
   max-width: 5rem;
 }
@@ -248,6 +256,43 @@ align-self: center;
   width: 100%;
 }
 
+.alert-fixed {
+  position: fixed; 
+  top: 60px; 
+  left: 25%;
+  z-index: 9999; 
+  width: 50%;
+}
+
+.rating-modal-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center !important;
+  margin-bottom: 15px;
+}
+
+.custom-rating {
+  width: fit-content;
+  align-self: center;
+}
+
+.rate-orders-heading {
+  margin-top: 15px;
+  font-size: 20px;
+}
+
+.rate-submit-div {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.rate-submit {
+  width: 100%;
+  align-self: center;
+}
+
 @media all and (min-width: 480px) {
   .Login {
     padding: 60px 0;
@@ -364,7 +409,7 @@ align-self: center;
 }
 
 .online-status-position {
-  float: right;
+  text-align: right;
 }
 
 .text-profile-name-modal {
@@ -415,3 +460,15 @@ align-self: center;
     margin-left: 4%;
     width: 80%;
   }
+
+  .request-button {
+  float: right;
+
+  }
+
+  .request_texts {
+  display: inline-block;
+  float: left;
+  text-align: left;
+  }
+

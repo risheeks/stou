@@ -31,7 +31,7 @@ class Orders extends Component {
         axios.post(`${serverURL}/setorderstatus`, { data })
             .then(res => {
                 order.orderStatus = orderStatus
-                this.props.openModal(ModalKey.ORDER_STATUS, {order, setOrders: this.setOrders});
+                this.props.openModal(ModalKey.ORDER_STATUS, { order, setOrders: this.setOrders });
             })
     }
 
@@ -54,7 +54,7 @@ class Orders extends Component {
     }
 
     handleOrder = (e, order) => {
-        this.props.openModal(ModalKey.ORDER_STATUS, { order });
+        this.props.openModal(ModalKey.ORDER_STATUS, { order, setOrders: this.setOrders });
     }
 
     renderOrderInfo = order => {
@@ -91,9 +91,11 @@ class Orders extends Component {
         const { orders_type } = this.state;
 
         return (
-            <div className="orders-container">
-                <h3>Your Orders</h3>
-                {this.renderOrders()}
+            <div className="master-container">
+                <div className="orders-container">
+                    <h3>Your Orders</h3>
+                    {this.renderOrders()}
+                </div>
             </div>
         );
     }

@@ -8,6 +8,7 @@ import Login from '../Login';
 import Register from '../Register';
 import Home from '../Home';
 import Header from '../Common/Header';
+import Footer from '../Common/Footer';
 import Profile from '../Profile';
 import FavoriteHomeCooksList from '../FavoriteHomeCooks';
 import '../../styles/Main.css';
@@ -22,7 +23,9 @@ import axios from 'axios';
 import { serverURL, pusher } from '../../config';
 import { ROLE } from '../../constants';
 import Orders from '../Orders';
+import Chat from '../Chat';
 import notificationSound from '../../constants/sounds/notification.mp3';
+import Requests from '../Requests'
 
 function mapStateToProps(state) {
     return {
@@ -72,7 +75,6 @@ class Main extends Component {
         }
         const { auth_token, email, zipcode } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
-        this.props.openModal(ModalKey.RATING)
         if (loggedIn) {
             const newLocation = await this.getLocation();
             if (!newLocation || newLocation === '') {
@@ -85,15 +87,29 @@ class Main extends Component {
     }
 
     async componentDidUpdate(prevProps) {
-        if (prevProps.zipcode !== this.props.zipcode) {
+        if (prevProps.zipcode !== this.props.zipcode || prevProps.email !== this.props.email) {
             const { auth_token, email, zipcode, openModal } = this.props;
             const loggedIn = auth_token && auth_token.length > 0;
             let channel = pusher.subscribe(`customer-${email}`);
             channel.bind('order-update', function (data) {
                 const audio = new Audio(notificationSound);
                 audio.play();
-                console.log(openModal)
                 openModal(ModalKey.ORDER_UPDATE, { ...data });
+            });
+            channel.bind('cook-online', function(data) {
+                const audio = new Audio(notificationSound);
+                audio.play();
+                openModal(ModalKey.COOK_ONLINE, { ...data });
+            });
+            channel.bind('request_accepted', function(data) {
+                const audio = new Audio(notificationSound);
+                audio.play();
+                openModal(ModalKey.REQUEST_ACCEPTED, { ...data });
+            });
+            channel.bind('request_declined', function(data) {
+                const audio = new Audio(notificationSound);
+                audio.play();
+                openModal(ModalKey.REQUEST_DECLINED, { ...data });
             });
             if (loggedIn) {
                 const newLocation = await this.getLocation();
@@ -154,6 +170,7 @@ class Main extends Component {
                         auth_token={auth_token}
                         email={email}
                         getToken={getToken}
+                        openModal={openModal}
                     />}
                 />
                 <Route path="/register" render={() =>
@@ -161,10 +178,18 @@ class Main extends Component {
                         auth_token={auth_token}
                         email={email}
                         getToken={getToken}
+                        openModal={openModal}
                     />}
                 />
                 <Route path="/favoriteHomecooks" render={() =>
                     <FavoriteHomeCooksList
+                        openModal={openModal}
+                        auth_token={auth_token}
+                        email={email}
+                    />}
+                />
+                <Route path="/requests" render={() =>
+                    <Requests
                         openModal={openModal}
                         auth_token={auth_token}
                         email={email}
@@ -195,7 +220,13 @@ class Main extends Component {
                         zipcode={zipcode}
                     />}
                 />
+                <Footer
+                openModal={openModal}
+                email={email}
+                loggedIn={loggedIn}
+                />
                 <MyModal {...modalProps} closeModal={closeModal} />
+                <Chat auth_token={auth_token} email={email} />
             </Router>
         );
     }

@@ -1,6 +1,17 @@
+body, .modal-content {
+  background-color: #f7fbfc;
+}
+
+.master-container {
+  min-height: 100vh;
+}
+
 textarea {
   resize: none;
-  height: 7rem !important;
+}
+
+.text-about-me {
+  height: 8rem !important;
 }
 
 .basic-checkbox {
@@ -9,6 +20,14 @@ textarea {
 
 .navbar-logo {
     max-width: 5rem;
+}
+
+.feedback-button {
+  color: white;
+  
+}
+.feedback-button:hover {
+  color: white;
 }
 
 .navbar {
@@ -28,6 +47,17 @@ textarea {
 
 .navbar-content > .nav-link {
     color: white !important;
+}
+
+.navbar-content-footer > .nav-link {
+  color: black !important;
+  font-size: 80%;
+}
+
+.navbar-footer {
+  background-color: #fec0ae;
+  padding-left: 2rem;
+  padding-right: 2rem;
 }
 
 .navbar-content > .active {
@@ -106,7 +136,7 @@ textarea {
     width: 600px;
     border: 1px solid rgb(202, 202, 202);
     padding: 60px;
-    background-color:#f7fbfc;
+    background-color: white;
 }
 .text-about-me-label {
   /* width: 400px; */
@@ -189,6 +219,21 @@ textarea {
   color: red;
 }
 
+.eyeViews {
+    float: left;
+    margin: 10px;
+    color: red;
+    width: 20px;
+    height: 20px;
+}
+
+.eyeViews-text {
+    float: left;
+    text-align: left;
+    line-height: 2.5;
+    font-size: 11;
+}
+
 #profile-container {
     width: 150px;
     height: 150px;
@@ -203,6 +248,7 @@ textarea {
 .ViewFoodOptions {
     border-radius: 3px;
     max-width: 100%;
+
 }
 
 .Review-container {
@@ -216,6 +262,20 @@ textarea {
 }
 .food-option-view-menu {
   height: 8rem;
+}
+
+.food-option-view-menu-top {
+  height: 8rem;
+  box-shadow: 0px 0px 5px 2px orange;
+  
+}
+
+.rating-profile {
+  margin-top: -7px;
+}
+
+.review-button-margin {
+  margin-top: 8px;
 }
 
   .vfo-image {
@@ -274,6 +334,23 @@ textarea {
     text-align: left;
     margin-left: 4%;
     width: 80%;
+}
+
+.vfo-info-modal {
+  text-align: left;
+  margin-left: 4%;
+  width: 200px;
+}
+
+.fire-icon {
+  color: orange;
+  width: 25px;
+  height: 25px;
+}
+
+.fire-text {
+  display: flex;
+  line-height: 1.8;
 }
 
 .review-info {
@@ -387,6 +464,7 @@ textarea {
   border: solid lightgray 0.5px;
   border-radius: 1%;
   padding: 2%;
+  background-color: white;
 }
 
 .input-row {
@@ -602,6 +680,17 @@ textarea {
   align-self: center;
 }
 
+.notification-toast {
+  position: fixed;
+  top: 4rem;
+  left: 76%;
+  width: 300px;
+}
+
+.notification-picture {
+  width: 30px;
+}
+
 @media all and (min-width: 480px) {
     .Register {
       border: 1px solid rgb(202, 202, 202);
@@ -700,12 +789,13 @@ textarea {
 }
 
 .text-profile-name-modal {
-  font-size: 1.3em;
+  font-size: 1.2em;
 }
 
 .text-profile-description-modal {
   color: grey;
   font-size: 15.5px;
+  margin-top: 5px;
 }
 .center-col {
   height: 200px;
@@ -717,6 +807,17 @@ textarea {
 
 .hidden { 
   display:none; 
+}
+
+.request-button {
+  float: right;
+
+}
+
+.request_texts {
+  display: inline-block;
+  float: left;
+  text-align: left;
 }
 
 .profile-footer-modal {  
@@ -732,6 +833,15 @@ textarea {
 .footer-review {
   display: flex;
   flex-direction: column;
+  max-height: 300px;
+  overflow-y: scroll;
   /* width: 50%; */
 }
 
+.alert-fixed {
+  position: fixed; 
+  top: 60px; 
+  left: 25%;
+  z-index: 9999; 
+  width: 50%;
+}

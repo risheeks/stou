@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Card, Button, Image } from 'react-bootstrap';
 import CustomRating from '../Common/CustomRating';
-import { FaHeart, FaRegHeart } from "react-icons/fa"; 
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { IoMdEye } from "react-icons/io"
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { ModalKey } from '../../constants/ModalKeys';
@@ -12,11 +13,13 @@ class HomeCook extends Component {
         this.state = {
             isFavoriteHomeCook : false,
             cook_email: this.props.cook_email,
-            fooditems:[]
+            fooditems:[],
+            views: this.props.numViews
 		};
     }
     componentDidMount = () => {
         this.setState({isFavoriteHomeCook : this.props.isFav})
+        //this.axiosGetViews(this.state.cook_email);
     }
 
     ChangeSaveFavHomeCookStatus =(e)=> {
@@ -41,6 +44,7 @@ class HomeCook extends Component {
             }
         })
         .then(res => {
+            
         })
     }
 
@@ -57,6 +61,24 @@ class HomeCook extends Component {
         })
     }
 
+    topPastFood =() => {
+        axios.post(`${serverURL}/gettopfood`, { 
+            data: {
+                cookEmail:this.state.cook_email,
+            }
+        })
+        .then(res => {
+            console.log(res.data.data)
+            this.setState({
+                topFood: res.data.data
+            });
+            //console.log("TOP FOOD=" + this.state.topFood)
+            
+        }).catch(function (error) {
+            console.log("ERROR gettopfood")
+        });
+    }
+
     clickMenu = e => {
         e.preventDefault()
         const self = this;
@@ -70,39 +92,89 @@ class HomeCook extends Component {
             this.setState({
                 fooditems: Array.from(res.data.data)
             });
-            const { openModal, addToOrder, name, clearOrder, baggedItems } = this.props;
+            axios.post(`${serverURL}/gettopfood`, { 
+                data: {
+                    cookEmail:this.state.cook_email,
+                }
+            })
+            .then(res => {
+                console.log(res.data.data)
+                this.setState({
+                    topFood: res.data.data
+                });
+                const { openModal, addToOrder, name, clearOrder, baggedItems } = this.props;
             const {fooditems} = this.state
             
-            openModal(ModalKey.MENU, {fooditems,addToOrder,openModal, name, baggedItems: baggedItems, clearOrder: clearOrder});
+            openModal(ModalKey.MENU, {fooditems,addToOrder,openModal, name, baggedItems: baggedItems, topFood:res.data.data, clearOrder: clearOrder, customerEmail: this.props.email, cookEmail: this.state.cook_email});
+                
+            }).catch(function (error) {
+                console.log("ERROR gettopfood")
+            });
+            
+            
             //console.log(this.state.fooditems)   
+            
         }).catch(function (error) {
             const { openModal, name} = self.props;
-            openModal(ModalKey.MENU, {openModal, name});
+            openModal(ModalKey.MENU, {openModal, name, customerEmail: this.props.email, cookEmail: this.state.cook_email});
         });
     }
 
     clickProfile = e => {
         const { name, description, picture, rating, openModal, cook_email} = this.props;
         //console.log(this.props);
+        this.state.views = this.state.views + 1;
+        this.axiosCall(this.state.views);
         openModal(ModalKey.PROFILE, {name, description, picture, rating,cook_email});
     }
 
 
+    axiosGetViews = (email) => {
+        axios.post(`${serverURL}/getviews`, {
+            data: {
+                cookEmail: this.props.cook_email,
+            }
+        })
+            .then(res => {
+                let numviews = 0
+                if(res.data.data !== null) {
+                    numviews = res.data.data;
+                }
+                this.setState({
+                    views : numviews
+                });
+            })
+    }
+     axiosCall = (views) => {
+        axios.post(`${serverURL}/setViews`, {
+            data: {
+                cookEmail: this.props.cook_email,
+                numViews: views
+            }
+        })
+            .then(res => {
+
+            })
+    }
+
     render() {
         const { name, description, picture, rating } = this.props;
-
+        console.log(this.state.isFavoriteHomeCook)
         return (
             <Card className="homecook-card" style={{ width: '18rem' }}>
-                <div onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'none' : 'block' }}>
-                	<i><FaRegHeart className="saveOpenHeart"/></i> 
+
+                <div>
+                    <div>
+                    <i className="eyeViews-text"><IoMdEye className="eyeViews"/>{this.state.views} Views</i>
+                     </div>
+                     {this.state.isFavoriteHomeCook ?
+                     <i onClick={this.ChangeSaveFavHomeCookStatus}><FaHeart className="saveHeart"/></i> :
+                    <i onClick={this.ChangeSaveFavHomeCookStatus}><FaRegHeart className="saveOpenHeart"/></i>
+                    }
                 </div>
-                <div onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'block' : 'none' }}>
-                	<i><FaHeart className="saveHeart"/></i>
-                </div>
-                <Card.Img className="cook-image" variant="top" src={picture} onClick={this.clickProfile} style={{maxHeight: '200px'}} />
-                
-                <Card.Body>
-                    <Card.Title className="wrapped-cook-text"><b>{name}</b></Card.Title>
+                <Card.Body><Card.Img className="cook-image" variant="top" src={picture} onClick={this.clickProfile} style={{maxHeight: '200px'}} />
+
+        <Card.Title className="wrapped-cook-text"><b>{name}</b></Card.Title>
                     <br/>
                     <Card.Text className="text-about-me-label wrapped-cook-text">
                         {description}

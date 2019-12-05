@@ -18,10 +18,12 @@ import PrivacyPolicy from '../PrivacyPolicy';
 import { openModal, closeModal } from '../../actions/modal.action';
 import { ModalKey } from '../../constants/ModalKeys';
 import axios from 'axios';
-import { serverURL } from '../../config';
+import { serverURL, pusher } from '../../config';
 import { ROLE } from '../../constants';
 import Orders from '../Orders';
+import Requests from '../Requests';
 import MenuModal from '../Common/Modals/MenuModal.js'
+import notificationSound from '../../constants/sounds/notification.mp3';
 
 function mapStateToProps(state) {
     return {
@@ -74,10 +76,18 @@ class Main extends Component {
     }
 
     async componentDidUpdate(prevProps) {
-        if (prevProps !== this.props) {
-            const { auth_token, email, zipcode } = this.props;
+        if (prevProps.email !== this.props.email || prevProps.zipcode !== this.props.zipcode) {
+            const { auth_token, email, zipcode, openModal } = this.props;
             const loggedIn = auth_token && auth_token.length > 0;
-            if (loggedIn) {
+            let channel = pusher.subscribe(`cook-${email}`);
+            channel.bind('request_added', function (data) {
+                
+                const audio = new Audio(notificationSound);
+                audio.play();
+                openModal(ModalKey.REQUEST_MODAL, { ...data });
+                
+            });
+            if (loggedIn && this.props.zipcode !== prevProps.zipcode) {
                 const newLocation = await this.getLocation();
                 if (!newLocation || newLocation === '') {
                     this.props.openModal(ModalKey.ZIPCODE, { email: email, changeLocation: this.props.changeLocation });
@@ -87,6 +97,7 @@ class Main extends Component {
                 }
             }
         }
+
     }
 
     getLocation = async () => {
@@ -109,21 +120,21 @@ class Main extends Component {
     render() {
         const { signOut, auth_token, email, getToken, openModal, closeModal, showModal, modalKey, modalProps, changeLocation } = this.props;
         const loggedIn = auth_token && auth_token.length > 0;
-        console.log(modalProps);
         return (
-                <Router>
-                    <Header signOut={signOut} loggedIn={loggedIn} openModal={openModal} email={email} changeLocation={changeLocation}/>
-                    <Route exact path="/" render={() => <Home auth_token={auth_token} email={email} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
-                    <Route path="/login" render={() => <Login auth_token={auth_token} email={email} getToken={getToken} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
-                    <Route path="/register" render={() => <Register auth_token={auth_token} email={email} getToken={getToken} />} />
-                    <Route path="/addfood" render={() => <AddFoodItem auth_token={auth_token} email={email} />} />
-                    <Route path="/profile" render={() => <Profile auth_token={auth_token} email={email} />} />
-                    <Route path="/privacyPolicy" render={() => <PrivacyPolicy auth_token={auth_token} email={email} />} />
-                    <Route path="/orders" render={() => <Orders auth_token={auth_token} email={email} openModal={openModal} />} />
-                    <Route path="/homecookmenu" render={() => <MenuModal auth_token={auth_token} email={email} openModal={openModal} />} />
-                    <MyModal {...modalProps} closeModal={closeModal} />
-                    <Chat auth_token={auth_token} email={email} />
-                </Router>
+            <Router>
+                <Header signOut={signOut} loggedIn={loggedIn} openModal={openModal} email={email} changeLocation={changeLocation}/>
+                <Route exact path="/" render={() => <Home auth_token={auth_token} email={email} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
+                <Route path="/login" render={() => <Login auth_token={auth_token} email={email} getToken={getToken} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
+                <Route path="/register" render={() => <Register auth_token={auth_token} email={email} getToken={getToken} />} />
+                <Route path="/addfood" render={() => <AddFoodItem auth_token={auth_token} email={email} />} />
+                <Route path="/profile" render={() => <Profile auth_token={auth_token} email={email} />} />
+                <Route path="/privacyPolicy" render={() => <PrivacyPolicy auth_token={auth_token} email={email} />} />
+                <Route path="/orders" render={() => <Orders auth_token={auth_token} email={email} openModal={openModal} />} />
+                <Route path="/homecookmenu" render={() => <MenuModal auth_token={auth_token} email={email} openModal={openModal} />} />
+                <Route path="/homecookrequest" render={() => <Requests auth_token={auth_token} email={email} />} />
+                <MyModal {...modalProps} closeModal={closeModal} />
+                 <Chat auth_token={auth_token} email={email} />
+            </Router>
         );
     }
 }

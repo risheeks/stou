@@ -4,21 +4,59 @@ import { Row, Col, Container, FormGroup, FormControl, FormLabel, Image, ListGrou
 import CustomRating from '../../Common/CustomRating';
 import Accordion from 'react-bootstrap/Accordion'
 import { useState } from 'react';
+import axios from 'axios';
+import { serverURL } from '../../../config';
 
 class ProfileModal extends Component {
     
     constructor(props) {
       super(props);
       this.state = {
-        open:false
+        open:false,
+        reviewRating:[]
       };
+    }
+    componentDidMount() {
+        this.getReviewRating();
+        this.getNumReviews();
     }
     setOpen = (open) => {
         this.setState({open:open})
+        // console.log(this.state.reviewRating[1])
     }
 
+    getNumReviews = () => {
+        axios.post(`${serverURL}/getviews`, {
+            data: {
+                cookEmail: this.props.cook_email,
+            }
+        })
+            .then(res => {
+                this.setState({
+                   views : res.data.data
+                });
+            })
+    }
+
+    getReviewRating = () => {
+        axios.post(`${serverURL}/getreviewrating`, {
+            data: {
+              email: this.props.cook_email,
+              role: 1
+            }
+        })
+        .then(res => {
+            this.setState({
+                reviewRating: Array.from(res.data.data[1])
+            });
+            console.log(this.state.reviewRating)
+        })
+    }
+
+
+
     render() {
-        let { showModal, closeModal, description} = this.props;
+        let { showModal, closeModal, description, rating} = this.props;
         let {open} = this.state
         return (
             
@@ -33,13 +71,18 @@ class ProfileModal extends Component {
                     </Col>
                     <Col>
                     <Form.Label className='text-profile-modal'><h1 className='text-profile-name-modal'>{this.props.name}</h1></Form.Label>
+                    <div className="rating-profile">
+                    <CustomRating rating={rating} readonly={true} bowlSize="22px"/>
+                     </div>
                     <Form.Label><h3 className='text-profile-description-modal'>{this.props.description ? this.props.description : "I am pationate about cooking"}</h3></Form.Label>
                     </Col>
+                    
                 </Row>
+                
                 </Modal.Body>
                 <Modal.Footer className="profile-footer-modal">
                 <div className="footer-review-top">
-                    <CustomRating rating="0" readonly={true} bowlSize="30px"/> 
+                    {/* <CustomRating rating="0" readonly={true} bowlSize="30px"/>  */}
                     <div className="footer-review">
                         <Button
                             className = "footer-review-button"
@@ -49,57 +92,36 @@ class ProfileModal extends Component {
                             >
                             Review
                         </Button>
-                        
-                        <div className="">
-                        <Collapse in={open}>
-                        <Container className="Review-container">
-                            <ListGroup>
-                            <ListGroup.Item className="food-option-view-menu">
-                            <div className="food-option-inner">
-                                <div className="review-info">
-                                    <div className="reviewer-name">
-                                        <Form.Label>
-                                            <p>Siddhant patel</p>
-                                        </Form.Label>
-                                    </div>
-                                    <div className="vfo-description wrapped-review-text">
-                                        <p>Amazing food. Tasty and healthy
-                                        </p>
-                                    </div>
-                                    <div className="review-bowl">
-                                        <p><b><CustomRating rating="2" readonly={true} bowlSize="20px"/></b></p>
-                                    </div>
-                                </div>
-                            </div>
-                            </ListGroup.Item>
-                            </ListGroup>
-                        </Container>
-                        </Collapse>
-                        <Collapse in={open}>
-                        <Container className="ViewFoodOptions">
-                            <ListGroup>
-                            <ListGroup.Item className="food-option-view-menu">
-                            <div className="food-option-inner">
-                                <div className="review-info">
-                                    <div className="reviewer-name">
-                                        <Form.Label>
-                                            <p>Siddhant patel</p>
-                                        </Form.Label>
-                                    </div>
-                                    <div className="vfo-description wrapped-review-text">
-                                        <p>Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus
-                                        terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer
-                                        </p>
-                                    </div>
-                                    <div className="review-bowl">
-                                        <p><b><CustomRating rating="2" readonly={true} bowlSize="20px"/></b></p>
+                        {/* <br/> */}
+                        <div className="review-button-margin">
+                       
+                        {this.state.reviewRating.map(item => (
+                            <Collapse in={open}>
+                            <Container className="ViewFoodOptions">
+                                <ListGroup>
+                                <ListGroup.Item className="food-option-view-menu">
+                                <div className="food-option-inner">
+                                    <div className="review-info">
+                                        <div className="reviewer-name">
+                                            <Form.Label>
+                                                <p>{item.customer}</p>
+                                            </Form.Label>
+                                        </div>
+                                        <div className="vfo-description wrapped-review-text">
+                                            <p>
+                                                {item.review}
+                                            </p>
+                                        </div>
+                                        <div className="review-bowl">
+                                            <p><b><CustomRating rating={item.rating} readonly={true} bowlSize="20px"/></b></p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            </ListGroup.Item>
-                            </ListGroup>
-                        </Container>
-                        </Collapse>
+                                </ListGroup.Item>
+                                </ListGroup>
+                            </Container>
+                            </Collapse>
+                        ))}
                         </div>
                     </div>
                 </div>
