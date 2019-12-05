@@ -64,8 +64,10 @@ router.use('/', function (req, res, next) {
                 res.send(o);
             }
         });
-
     });
+    con.on('error', function () {
+        console.log('Too many users');
+    })
 });
 
 module.exports = router;

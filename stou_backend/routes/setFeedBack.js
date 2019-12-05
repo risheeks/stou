@@ -29,6 +29,9 @@ router.use('/', function (req, res, next) {
             connection.release();
         });
     });
+    con.on('error', function () {
+        console.log('Too many users');
+    })
 });
 
 module.exports = router;

@@ -54,6 +54,9 @@ router.use('/', function (req, res, next) {
             }
         });
     });
+    con.on('error', function () {
+        console.log('Too many users');
+    })
 });
 
 module.exports = router;
