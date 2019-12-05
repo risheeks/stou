@@ -19,6 +19,7 @@ class HomeCook extends Component {
     }
     componentDidMount = () => {
         this.setState({isFavoriteHomeCook : this.props.isFav})
+        this.axiosGetViews(this.state.cook_email);
     }
 
     ChangeSaveFavHomeCookStatus =(e)=> {
@@ -93,6 +94,19 @@ class HomeCook extends Component {
         openModal(ModalKey.PROFILE, {name, description, picture, rating,cook_email});
     }
 
+
+    axiosGetViews = (email) => {
+        axios.post(`${serverURL}/getviews`, {
+            data: {
+                cookEmail: this.props.cook_email,
+            }
+        })
+            .then(res => {
+                this.setState({
+                    views : res.data.data
+                });
+            })
+    }
      axiosCall = (views) => {
         axios.post(`${serverURL}/setViews`, {
             data: {
