@@ -14,12 +14,12 @@ class HomeCook extends Component {
             isFavoriteHomeCook : false,
             cook_email: this.props.cook_email,
             fooditems:[],
-            views: 0
+            views: this.props.numViews
 		};
     }
     componentDidMount = () => {
         this.setState({isFavoriteHomeCook : this.props.isFav})
-        this.axiosGetViews(this.state.cook_email);
+        //this.axiosGetViews(this.state.cook_email);
     }
 
     ChangeSaveFavHomeCookStatus =(e)=> {
