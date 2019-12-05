@@ -28,8 +28,7 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
     }
 
     AddRequest = () => {
-        const { openModal} = this.props;
-        console.log("Yo");
+        const { openModal, closeModal } = this.props;
 
         axios.post(`${serverURL}/addrequest`, {
             data: {
@@ -40,15 +39,13 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
             }
         })
         .then(res => {
-            console.log(res.data);
-
-            //console.log("yo again");
             let channel = pusher.subscribe(`cook-${this.props.cookEmail}`);
             channel.bind('new-request', function (data) {
 
             const audio = new Audio(notificationSound);
             audio.play();
             openModal(ModalKey.NEW_ORDER, {...data});
+            closeModal();
             });
         })
     }
