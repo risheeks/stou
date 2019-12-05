@@ -31,11 +31,18 @@ class FavoriteHomeCooksList extends Component {
 
 	componentDidMount() {
 		this.getFavHomecooks();
-		return;
 	}
+
+	componentDidUpdate(prevProps) {
+		if(prevProps.email !== this.props.email) {
+			this.getFavHomecooks();
+		}
+	}
+
 	render() {
 		return (
 			<Container className="master-container">
+				<h3 style={{lineHeight: 3}}>Your Favorite Homecooks</h3>
 				<Container className="homecook-container">
 					{this.state.favhomecooks.map(item => (
 						<FavoriteHomeCook
