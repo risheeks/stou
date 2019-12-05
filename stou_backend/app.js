@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 //var Map = require('Map');
 var indexRouter = require('./routes/index');
-var a = require('.rout')
 var usersRouter = require('./routes/users');
 var cors = require('cors');
 var app = express();
@@ -101,7 +100,69 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
-app.use('/setViews', function(req,res,next){
+
+app.use('/setViews', function(req,res,next) {
+    let cookEmail = req.body['data']['cookEmail'];
+    let numViews = req.body['data']['numViews'];
+    let q = 'UPDATE USER SET NUMVIEWS=' + numViews + ' WHERE EMAIL=\'' + cookEmail + '\' AND ROLE=1';
+    var o = {};
+    con.getConnection(function (err, connection) {
+        if (err) throw err;
+        connection.query(q, function (err, rows) {
+            if (err) throw err;
+            if (rows.length === 0) {
+                o['code'] = 404;
+                res.status(404);
+                o['message'] = 'Cook Not Found';
+                res.send(o);
+            } else {
+                o['code'] = 200;
+                res.status(200);
+                o['message'] = 'Success';
+                res.send(o);
+            }
+        });
+        connection.release();
+    });
+});
+
+app.use('/logtofile', function (req, res, next) {
+  let data = req.body['data']['data'];
+  let role = req.body['data']['role'];
+  let logFile;
+  if(role === "Customer") logFile = "log/log_customer";
+  else logFile = "log/log_cook"
+  
+  var currentdate = new Date(); 
+  var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear();
+  data = datetime.toString() + " - " + data.toString() + "\n";
+  const fs = require('fs');
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+
+    fs.appendFile(logFile, data, function (err) {
+      if (err) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'Cook Not Found';
+        res.send(o);
+        throw err;
+      }
+      console.log('Saved!');
+      o['code'] = 200;
+      res.status(200);
+      o['message'] = 'Success';
+      res.send(o);
+    });
+    connection.release();
+  });
+});
+
+
+app.use('/gettopfood', function (req, res, next) {
   let cookEmail = req.body['data']['cookEmail'];
   let numViews = req.body['data']['numViews'];
   let q = 'UPDATE USER SET NUMVIEWS=' + numViews + ' WHERE COOK_EMAIL=\'' + cookEmail +'\' AND ROLE=1';
@@ -151,7 +212,6 @@ app.use('/getviews', function(req, res, next){
   });
 });
 
-app.use('/gettopfood', topFoodRouter);
 
 app.use('/shareapp', function(req,res,next){
   let email = req.body['data']['email'];
