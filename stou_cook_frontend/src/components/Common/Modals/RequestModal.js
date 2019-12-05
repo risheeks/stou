@@ -10,8 +10,7 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
     constructor(props) {
       super(props);
       this.state = {
-        request: '',
-        description: ''
+        request: []
       };
     }
 
@@ -27,35 +26,67 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
         
     }
 
-    AddRequest = () => {
-        const { openModal} = this.props;
-        console.log("Yo");
+    componentDidMount() {
+        this.getRequests();
+    }
 
-        axios.post(`${serverURL}/addrequest`, {
+    getRequests = () => {
+    const { openModal} = this.props;
+    
+    axios.post(`${serverURL}/getrequest`, {
+        data: {
+            email: this.props.email,
+            role: 1            
+        }
+    })
+    .then(res => {
+        if (res.data.data.length > 0) {
+            this.setState({
+                requests: Array.from(res.data.data)
+            });
+
+        }
+        else{
+    
+        }
+    })
+    }
+
+
+    acceptRequest (email, name, e) {
+        e.preventDefault();
+        axios.post(`${serverURL}/changerequeststatus`, {
             data: {
-                cookEmail: this.props.cookEmail,
-                customerEmail: this.props.email,
-                itemName: this.state.request,
-                itemDescription: this.state.description            
+                cookEmail: this.props.email,
+                customerEmail: email,
+                itemName: name,
+                status: 1            
             }
         })
         .then(res => {
-            console.log(res.data);
-
-            //console.log("yo again");
-            let channel = pusher.subscribe(`cook-${this.props.cookEmail}`);
-            channel.bind('new-request', function (data) {
-
-            const audio = new Audio(notificationSound);
-            audio.play();
-            openModal(ModalKey.NEW_ORDER, {...data});
-            });
+            
         })
     }
 
+    rejectRequest (email, name, e) {
+        //console.log(request);
+        e.preventDefault();
+        axios.post(`${serverURL}/changerequeststatus`, {
+            data: {
+                cookEmail: this.props.email,
+                customerEmail: email,
+                itemName: name,
+                status: 2            
+            }
+        })
+        .then(res => {
+            
+        })   
+    }
+
     render() {
-        let { showModal, closeModal, description} = this.props;
-        
+        let { showModal, closeModal, description, request_item} = this.props; 
+     
         return (
             <Modal show={showModal} onHide={() => closeModal()}>
                 <Modal.Header closeButton className="profile-footer-modal">
@@ -100,9 +131,17 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
                             block
                             bsSize="large"
                             variant="danger"
-                            onClick={this.AddRequest}
+                            onClick={this.rejectRequest}
                             >
-                            Submit
+                            Decline
+                        </Button>
+                        <Button 
+                            block
+                            bsSize="large"
+                            variant="success"
+                            onClick={this.acceptRequest}
+                            >
+                            Accept
                         </Button>
                     </Col>
                 </Row>

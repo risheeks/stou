@@ -12,10 +12,13 @@ import FeedbackModal from './FeedbackModal';
 import ShareappModal from './ShareappModal';
 import PrivacyModal from './PrivacyModal';
 import ErrorModal from './ErrorModal';
+import CookOnline from './CookOnline';
+import RequestAccepted from './AcceptRequestModal';
+import RequestDeclined from './DeclineRequestModal';
+
 
 class MyModal extends Component {
     render() {
-        console.log(this.props);
         const { modalKey } = this.props;
         switch (modalKey) {
             case ModalKey.ZIPCODE:
@@ -39,9 +42,15 @@ class MyModal extends Component {
             case ModalKey.SHAREAPP:
                 return <ShareappModal {...this.props} />;
             case ModalKey.PRIVACY:
-                return <PrivacyModal {...this.props} />; 
+                return <PrivacyModal {...this.props} />;
             case ModalKey.ERROR_MODAL:
-                return <ErrorModal {...this.props} />; 
+                return <ErrorModal {...this.props} />;
+            case ModalKey.COOK_ONLINE:
+                return <CookOnline {...this.props} />;
+            case ModalKey.REQUEST_ACCEPTED:
+                return <RequestAccepted {...this.props} />;
+            case ModalKey.REQUEST_DECLINED:
+                return <RequestDeclined {...this.props} />;
             default:
                 return null;
         }

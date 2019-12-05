@@ -244,7 +244,7 @@ class Register extends Component {
             <Button
               block
               bsSize="large"
-              className="submit-button"
+              variant="danger"
               onClick={this.checkOnSubmit}
               type="submit"
             >

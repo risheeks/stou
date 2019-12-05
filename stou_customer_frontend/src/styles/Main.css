@@ -264,6 +264,20 @@ textarea {
   height: 8rem;
 }
 
+.food-option-view-menu-top {
+  height: 8rem;
+  box-shadow: 0px 0px 5px 2px orange;
+  
+}
+
+.rating-profile {
+  margin-top: -7px;
+}
+
+.review-button-margin {
+  margin-top: 8px;
+}
+
   .vfo-image {
     width: 6.5rem;
     height: 6.5rem;
@@ -320,6 +334,23 @@ textarea {
     text-align: left;
     margin-left: 4%;
     width: 80%;
+}
+
+.vfo-info-modal {
+  text-align: left;
+  margin-left: 4%;
+  width: 200px;
+}
+
+.fire-icon {
+  color: orange;
+  width: 25px;
+  height: 25px;
+}
+
+.fire-text {
+  display: flex;
+  line-height: 1.8;
 }
 
 .review-info {
@@ -649,6 +680,17 @@ textarea {
   align-self: center;
 }
 
+.notification-toast {
+  position: fixed;
+  top: 4rem;
+  left: 76%;
+  width: 300px;
+}
+
+.notification-picture {
+  width: 30px;
+}
+
 @media all and (min-width: 480px) {
     .Register {
       border: 1px solid rgb(202, 202, 202);
@@ -747,12 +789,13 @@ textarea {
 }
 
 .text-profile-name-modal {
-  font-size: 1.3em;
+  font-size: 1.2em;
 }
 
 .text-profile-description-modal {
   color: grey;
   font-size: 15.5px;
+  margin-top: 5px;
 }
 .center-col {
   height: 200px;

@@ -94,8 +94,22 @@ class Main extends Component {
             channel.bind('order-update', function (data) {
                 const audio = new Audio(notificationSound);
                 audio.play();
-                console.log(openModal)
                 openModal(ModalKey.ORDER_UPDATE, { ...data });
+            });
+            channel.bind('cook-online', function(data) {
+                const audio = new Audio(notificationSound);
+                audio.play();
+                openModal(ModalKey.COOK_ONLINE, { ...data });
+            });
+            channel.bind('request_accepted', function(data) {
+                const audio = new Audio(notificationSound);
+                audio.play();
+                openModal(ModalKey.REQUEST_ACCEPTED, { ...data });
+            });
+            channel.bind('request_declined', function(data) {
+                const audio = new Audio(notificationSound);
+                audio.play();
+                openModal(ModalKey.REQUEST_DECLINED, { ...data });
             });
             if (loggedIn) {
                 const newLocation = await this.getLocation();
