@@ -15,6 +15,7 @@
     "paypal-checkout": "^4.0.296",
     "prop-types": "^15.7.2",
     "pusher-js": "^5.0.2",
+    "rimraf": "3.0.0",
     "react": "^16.9.0",
     "react-async-script-loader": "^0.3.0",
     "react-bootstrap": "^1.0.0-beta.12",
@@ -31,6 +32,7 @@
     "redux-thunk": "^2.3.0"
   },
   "scripts": {
+    "preinstall": "npm install -g rimraf",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

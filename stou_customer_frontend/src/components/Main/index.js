@@ -12,7 +12,7 @@ import Footer from '../Common/Footer';
 import Profile from '../Profile';
 import FavoriteHomeCooksList from '../FavoriteHomeCooks';
 import '../../styles/Main.css';
-import MyModal from '../../../../stou_customer_frontend/src/components/Common/Modals';
+import MyModal from '../Common/Modals';
 
 import { getToken, signOut, changeLocation } from '../../actions/login.action';
 import { openModal, closeModal } from '../../actions/modal.action';
