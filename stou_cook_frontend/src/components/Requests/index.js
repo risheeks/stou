@@ -13,7 +13,8 @@ class Requests extends Component {
     super(props);
     this.state = {
         //requests: [{cook: 'Cook1', customer: 'Customer1', itemName: 'Name1', itemDescription: 'Blah Blah Description Blah Blah', status: 'Pending'}, {cook: 'Cook2', customer: 'Customer2', itemName: 'Name2', itemDescription: 'Blah Blah Description Blah Blah', status: 'Pending'}],
-        requests: []
+        requests: [],
+
     };
   }
 
@@ -22,13 +23,8 @@ class Requests extends Component {
   }
 
   getRequests = () => {
-    //console.log("my email below on Requests")
-    //console.log(this.props.email)
-    //console.log(this.state.feedback)
     const { openModal} = this.props;
-    console.log("cook email below from request cookside")
-    console.log(this.props.email)
-
+    
     axios.post(`${serverURL}/getrequest`, {
         data: {
             email: this.props.email,
@@ -41,10 +37,9 @@ class Requests extends Component {
                 requests: Array.from(res.data.data)
             });
 
-            //console.log(Array.from(res.data.data))
         }
         else{
-            //console.log("missing")
+    
         }
     })
   }
@@ -60,13 +55,7 @@ class Requests extends Component {
             }
         })
         .then(res => {
-            console.log(res.data);
-            let channel = pusher.subscribe(`customer-${this.props.customerEmail}`);
-            channel.bind('request-accepted', function (data) {
-            const audio = new Audio(notificationSound);
-            audio.play();
-            //openModal(ModalKey.NEW_ORDER, {...data});
-            });
+            
         })
     }
 
@@ -82,14 +71,24 @@ class Requests extends Component {
             }
         })
         .then(res => {
-            console.log(res.data);
-            let channel = pusher.subscribe(`customer-${this.props.customerEmail}`);
-            channel.bind('request-rejected', function (data) {
-            const audio = new Audio(notificationSound);
-            audio.play();
-            //openModal(ModalKey.NEW_ORDER, {...data});
-            });
+            
         })   
+    }
+
+    renderSwitch (status) {
+        //console.log("status below")
+        //console.log(status)
+        switch(status) {
+            case 0:
+            
+            return 'Pending';
+            case 1:
+            return 'Accepted';
+            case 2:
+            return 'Declined';
+            default:
+            return 'Pending';
+        }
     }
 
   render() {
@@ -100,10 +99,9 @@ class Requests extends Component {
             <ListGroup.Item className="">
               
                 <div className="request_texts">
-                  <p>{item.itemName} for {item.customer}</p>                  
+                  <p>{item.itemName} for {item.name}</p>                  
                   <p>{item.itemDescription}</p>                                  
-                </div>
-                
+                </div>  
 
                 { (item.status == 0) ? 
                     <div>
@@ -111,7 +109,7 @@ class Requests extends Component {
                         <Button className="margined-buttons request-button" onClick={e => this.acceptRequest(item.customerEmail, item.itemName, e)} variant="success">Accept</Button>    
                     </div> :
                     <div className="request_status">
-                        <p>Request Updated</p>
+                        <Button className="margined-buttons request-button" variant="info">{this.renderSwitch(item.status)}</Button>
                     </div>
 
                 }

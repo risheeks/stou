@@ -401,6 +401,24 @@ app.use('/changerequeststatus', function (req, res, next) {
         res.send(o);
       }
       else {
+        if(status === 1){
+            pusher.trigger('customer-'+customerEmail, 'request_accepted', {
+              "message": "Request Accepted",
+              "request_item": {
+                "email": customerEmail,
+                "name": itemName,
+              }
+            });
+        }
+        else if(status === 2){
+          pusher.trigger('customer-'+customerEmail, 'request_declined', {
+              "message": "Request Declined",
+              "request_item": {
+                "email": customerEmail,
+                "name": itemName,
+              }
+          });  
+        }
         o['code'] = 200;
         res.status(200);
         o['message'] = 'Status changed';
@@ -411,6 +429,7 @@ app.use('/changerequeststatus', function (req, res, next) {
   });
 });
 
+    
 
 app.use('/getrequest', function (req, res, next) {
   const email = req.body['data']['email'];
@@ -469,6 +488,10 @@ app.use('/addrequest', function (req, res, next) {
         res.send(o);
       }
       else {
+        pusher.trigger('cook-'+cookEmail, 'request_added', {
+          "message": "New Request",
+          
+          });
         o['code'] = 200;
         res.status(200);
         o['message'] = 'Request added';
