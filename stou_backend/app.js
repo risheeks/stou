@@ -101,10 +101,30 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
-app.use('/setViews', function(req,res,next){
-  let cookEmail = req.body['data']['cookEmail'];
-  let numViews = req.body['data']['numViews'];
-  let q = 'UPDATE USER SET NUMVIEWS=' + numViews + ' WHERE COOK_EMAIL=\'' + cookEmail +'\' AND ROLE=1';
+app.use('/setViews', function(req,res,next) {
+    let cookEmail = req.body['data']['cookEmail'];
+    let numViews = req.body['data']['numViews'];
+    let q = 'UPDATE USER SET NUMVIEWS=' + numViews + ' WHERE COOK_EMAIL=\'' + cookEmail + '\' AND ROLE=1';
+    var o = {};
+    con.getConnection(function (err, connection) {
+        if (err) throw err;
+        connection.query(q, function (err, rows) {
+            if (err) throw err;
+            if (rows.length === 0) {
+                o['code'] = 404;
+                res.status(404);
+                o['message'] = 'Cook Not Found';
+                res.send(o);
+            } else {
+                o['code'] = 200;
+                res.status(200);
+                o['message'] = 'Success';
+                res.send(o);
+            }
+        });
+        connection.release();
+    });
+});
 
 app.use('/logtofile', function (req, res, next) {
   let data = req.body['data']['data'];
@@ -168,7 +188,6 @@ app.use('/gettopfood', function (req, res, next) {
         ob['food_id'] = row.FOOD_ID;
         ob['delivery_time'] = row.DELIVERY_TIME;
         o['data'] = ob;
-
         o['code'] = 200;
         res.status(200);
         o['message'] = 'Success';
