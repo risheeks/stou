@@ -28,10 +28,11 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
 
     acceptRequest = () => {
         //e.preventDefault();
-        let {request_item} = this.props;
-        const {cookEmail, customerEmail,name} = request_item;
+        let { request_item } = this.props;
+        const { cookEmail, customerEmail, name, requestId } = request_item;
         axios.post(`${serverURL}/changerequeststatus`, {
             data: {
+                requestId: requestId,
                 cookEmail: cookEmail,
                 customerEmail: customerEmail,
                 itemName: name,
@@ -47,9 +48,10 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
         //console.log(request);
         //e.preventDefault();
         let {request_item} = this.props;
-        const {cookEmail, customerEmail,name} = request_item;
+        const { cookEmail, customerEmail, name, requestId } = request_item;
         axios.post(`${serverURL}/changerequeststatus`, {
             data: {
+                requestId: requestId,
                 cookEmail: cookEmail,
                 customerEmail: customerEmail,
                 itemName: name,

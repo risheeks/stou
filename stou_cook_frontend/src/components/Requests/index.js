@@ -52,10 +52,11 @@ class Requests extends Component {
       })
   }
 
-  acceptRequest(email, name, e) {
+  acceptRequest(email, name, requestId, e) {
     e.preventDefault();
     axios.post(`${serverURL}/changerequeststatus`, {
       data: {
+        requestId: requestId,
         cookEmail: this.props.email,
         customerEmail: email,
         itemName: name,
@@ -67,11 +68,12 @@ class Requests extends Component {
       })
   }
 
-  rejectRequest(email, name, e) {
+  rejectRequest(email, name, requestId, e) {
     //console.log(request);
     e.preventDefault();
     axios.post(`${serverURL}/changerequeststatus`, {
       data: {
+        requestId: requestId,
         cookEmail: this.props.email,
         customerEmail: email,
         itemName: name,
@@ -112,8 +114,8 @@ class Requests extends Component {
 
               {(item.status == 0) ?
                 <div>
-                  <Button className="margined-buttons request-button" onClick={e => this.rejectRequest(item.customerEmail, item.itemName, e)} variant="danger">Reject</Button>
-                  <Button className="margined-buttons request-button" onClick={e => this.acceptRequest(item.customerEmail, item.itemName, e)} variant="success">Accept</Button>
+                  <Button className="margined-buttons request-button" onClick={e => this.rejectRequest(item.customerEmail, item.itemName, item.requestId, e)} variant="danger">Reject</Button>
+                  <Button className="margined-buttons request-button" onClick={e => this.acceptRequest(item.customerEmail, item.itemName, item.requestId, e)} variant="success">Accept</Button>
                 </div> :
                 <div className="request_status">
                   <Button className="margined-buttons request-button" variant="info" disabled>{this.renderSwitch(item.status)}</Button>

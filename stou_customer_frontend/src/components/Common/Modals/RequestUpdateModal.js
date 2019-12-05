@@ -12,7 +12,7 @@ class RequestUpdateModal extends Component {
                     <img src={picture} className="rounded mr-2 notification-picture" alt="" />
                     <strong className="mr-auto">{cookName}</strong>
                 </Toast.Header>
-                <Toast.Body>Hey, your request for {name} has been {status}!</Toast.Body>
+                <Toast.Body>Hey, your request for {name} has been {status ? "accepted" : "declined"}! Keep an eye on the cook's menu to order the item!</Toast.Body>
             </Toast>
         );
     }

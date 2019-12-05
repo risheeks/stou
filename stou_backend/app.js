@@ -471,15 +471,15 @@ app.use('/getbanstatus', function (req, res, next) {
 
 
 app.use('/changerequeststatus', function (req, res, next) {
+  const requestId = req.body['data']['requestId'];
   const cookEmail = req.body['data']['cookEmail'];
   const customerEmail = req.body['data']['customerEmail'];
   const itemName = req.body['data']['itemName'];
   const status = req.body['data']['status'];
-
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'UPDATE REQUESTS SET STATUS=' + status + ' WHERE COOK_EMAIL=\'' + cookEmail + '\' AND CUSTOMER_EMAIL=\'' + customerEmail + '\' AND ITEM_NAME=\'' + itemName + '\';';
+    var q = 'UPDATE REQUESTS SET STATUS=' + status + ' WHERE REQUEST_ID=\'' + requestId + '\';';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -489,20 +489,19 @@ app.use('/changerequeststatus', function (req, res, next) {
         res.send(o);
       }
       else {
-        var q = `SELECT * FROM USER WHERE EMAIL=${cookEmail} AND ROLE=1;`;
-        let cookInfo = {}
+        var q = `SELECT * FROM USER WHERE EMAIL="${cookEmail}" AND ROLE=1;`;
         connection.query(q, function (err, newRows) {
-          cookInfo = newRows[0]
-        });
-        pusher.trigger('customer-' + customerEmail, 'request-update', {
-          "message": "Request Accepted",
-          "request_item": {
-            "email": cookEmail,
-            "name": itemName,
-            "status": status,
-            "cookName": cookInfo.name,
-            "picture": cookInfo.picture
-          }
+          console.log(newRows);
+          pusher.trigger('customer-' + customerEmail, 'request-update', {
+            "message": "Request Accepted",
+            "request_item": {
+              "email": cookEmail,
+              "name": itemName,
+              "status": status,
+              "cookName": newRows[0].FIRST_NAME + ' ' + newRows[0].LAST_NAME,
+              "picture": newRows[0].PICTURE
+            }
+          });
         });
         o['code'] = 200;
         res.status(200);
@@ -540,7 +539,7 @@ app.use('/getrequest', function (req, res, next) {
         let obList = [];
         var ob = {};
         for (i = 0; i < rows.length; i++) {
-          ob = { 'cookEmail': rows[i].COOK_EMAIL, 'customerEmail': rows[i].CUSTOMER_EMAIL, 'itemName': rows[i].ITEM_NAME, 'itemDescription': rows[i].ITEM_DESCRIPTION, 'status': rows[i].STATUS, 'requestId' : rows[i].REQUEST_ID };
+          ob = { 'requestId': rows[i].REQUEST_ID, 'cookEmail': rows[i].COOK_EMAIL, 'customerEmail': rows[i].CUSTOMER_EMAIL, 'itemName': rows[i].ITEM_NAME, 'itemDescription': rows[i].ITEM_DESCRIPTION, 'status': rows[i].STATUS, 'requestId': rows[i].REQUEST_ID };
           obList.push(ob);
           ob = {};
         }
@@ -564,7 +563,7 @@ app.use('/addrequest', function (req, res, next) {
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'INSERT INTO REQUESTS VALUES (\'' + cookEmail + '\', \'' + customerEmail + '\', \'' + itemName + '\', \'' + itemDescription + '\', 0,\'' + requestId +'\');';
+    var q = 'INSERT INTO REQUESTS VALUES (\'' + cookEmail + '\', \'' + customerEmail + '\', \'' + itemName + '\', \'' + itemDescription + '\', 0,\'' + requestId + '\');';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -577,6 +576,7 @@ app.use('/addrequest', function (req, res, next) {
         pusher.trigger('cook-' + cookEmail, 'request_added', {
           "message": "New Request",
           "request_item": {
+            "requestId": requestId,
             "cookEmail": cookEmail,
             "customerEmail": customerEmail,
             "name": itemName,
