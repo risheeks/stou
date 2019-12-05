@@ -17,20 +17,6 @@ class Orders extends Component {
 
     componentDidMount() {
         this.setOrders();
-        const chatManager = new ChatManager({
-            instanceLocator: instanceLocator,
-            userId: this.props.email,
-            tokenProvider: new TokenProvider({
-                url: tokenUrl,
-
-            })
-        })
-        chatManager.connect()
-        .then(currentUser => {
-            this.setState({currentUser})
-            // this.getRooms()
-        })
-        .catch(err => console.log('error on connecting: ', err))
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -105,6 +91,11 @@ class Orders extends Component {
                 this.props.openModal(ModalKey.ORDER_STATUS, { order, setOrders: this.setOrders });
                 this.setOrders();
             })
+            .catch(err => {
+                if(err.response) {
+                    console.log(err.response.data);
+                }
+            })
     }
 
     renderOrderInfo = order => {
@@ -127,7 +118,7 @@ class Orders extends Component {
                     <ListGroup.Item className="order-item-div">
                         {this.renderOrderInfo(order)}
                         <div className="order-item-button-div">
-                            <Button className="margined-buttons" variant="danger" onClick={e => this.setOrderStatus("canceled", order)}>Cancel</Button>
+                            <Button className="margined-buttons" variant="danger" onClick={e => this.setOrderStatus("cancelled", order)}>Cancel</Button>
                             <Button className="margined-buttons" variant="success" onClick={e => this.setOrderStatus("on_the_way", order)}>Mark on the way</Button>
                         </div>
                     </ListGroup.Item>
@@ -144,7 +135,7 @@ class Orders extends Component {
                     <ListGroup.Item className="order-item-div">
                         {this.renderOrderInfo(order)}
                         <div className="order-item-button-div">
-                            <Button className="margined-buttons" variant="danger" onClick={e => this.setOrderStatus("canceled", order)}>Cancel</Button>
+                            <Button className="margined-buttons" variant="danger" onClick={e => this.setOrderStatus("cancelled", order)}>Cancel</Button>
                             <Button className="margined-buttons" variant="success" onClick={e => this.setOrderStatus("delivered", order)}>Mark delivered</Button>
                         </div>
                     </ListGroup.Item>
