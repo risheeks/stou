@@ -9,10 +9,10 @@ router.use('/', function (req, res, next) {
     const email = req.body['data']['email'];
     var o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'SELECT * FROM USER A, (SELECT COOK_EMAIL FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL = "' + email + '") B WHERE A.EMAIL = B.COOK_EMAIL AND A.ROLE = 1';
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 400;
                 res.status(400)
@@ -47,7 +47,7 @@ router.use('/', function (req, res, next) {
                 o['message'] = 'favorite cooks sent';
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

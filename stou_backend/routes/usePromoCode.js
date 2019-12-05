@@ -9,11 +9,11 @@ router.use('/', function (req, res, next) {
     let status = req.body['data']['status']
     var o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'UPDATE PROMOCODES SET STATUS=' + status + ' WHERE PROMO_CODE=\'' + promoCode + '\';';
         console.log(q)
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 404;
                 res.status(404);
@@ -25,7 +25,7 @@ router.use('/', function (req, res, next) {
                 o['message'] = 'Promo Code Used';
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

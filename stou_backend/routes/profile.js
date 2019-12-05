@@ -34,7 +34,7 @@ router.use('/', function (req, res, next) {
                 if (o['code'] !== 404)
                     res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

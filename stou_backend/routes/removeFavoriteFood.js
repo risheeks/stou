@@ -9,7 +9,7 @@ router.use('/', function (req, res, next) {
     const foodId = req.body['data']['food_id'];
     let o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'DELETE from FAVORITE_FOOD where EMAIL=\'' + email + '\' AND FOOD_ID=\'' + foodId + '\';';
         connection.query(q, function (err, rows) {
             if (err) {
@@ -24,7 +24,7 @@ router.use('/', function (req, res, next) {
                 o['message'] = 'Removed favorite food';
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

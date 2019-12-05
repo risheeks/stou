@@ -8,10 +8,10 @@ router.use('/', function (req, res, next) {
     const email = req.body['data']['email'];
     let o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'SELECT * FROM FOOD WHERE COOK_EMAIL= "' + email + '";';
         connection.query(q, function (err, result) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (result.length === 0) {
                 o['code'] = 400;
                 res.status(400)
@@ -42,7 +42,7 @@ router.use('/', function (req, res, next) {
                     res.send(o);
 
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

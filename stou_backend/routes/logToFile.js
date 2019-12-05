@@ -25,7 +25,7 @@ router.use('/', function (req, res, next) {
                     res.status(404);
                     o['message'] = 'Cook Not Found';
                     res.send(o);
-                    throw err;
+                    console.log(err);
                 }
                 console.log('Saved!');
                 o['code'] = 200;

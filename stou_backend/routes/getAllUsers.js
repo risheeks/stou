@@ -15,7 +15,7 @@ router.use('/', function (req, res, next) {
     }
     let o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'SELECT * FROM USER WHERE ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '") AND (FIRST_NAME LIKE "%' + searchQuery + '%" OR EMAIL LIKE "%' + searchQuery + '%" OR LAST_NAME LIKE "%' + searchQuery + '%") ORDER BY FIRST_NAME, LAST_NAME LIMIT ' + start + ', ' + end + ';';
         connection.query(q, function (err, result) {
             if (err) console.log(err);
@@ -44,7 +44,7 @@ router.use('/', function (req, res, next) {
                 if (obj.length !== 0)
                     res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

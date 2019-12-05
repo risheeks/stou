@@ -8,10 +8,10 @@ router.use('/', function (req, res, next) {
     const orderId = req.body['data']['orderId'];
     let o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'SELECT TITLE, DESCRIPTION, QUANTITY, FOOD.PRICE AS PRICE from ORDER_FOOD, FOOD where ORDER_ID=\'' + orderId + '\' AND FOOD.FOOD_ID=ORDER_FOOD.FOOD_ID;';
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 400;
                 res.status(400)
@@ -34,7 +34,7 @@ router.use('/', function (req, res, next) {
                 res.status(200);
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

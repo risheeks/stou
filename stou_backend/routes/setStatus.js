@@ -20,10 +20,10 @@ router.use('/', function (req, res, next) {
     if (role === "Homecook") role = "COOK"
     var o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'UPDATE USER SET ONLINE = ' + status + ' WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 400;
                 res.status(400)
@@ -33,11 +33,11 @@ router.use('/', function (req, res, next) {
             else {
                 var q = `SELECT * FROM USER WHERE EMAIL="${email}";`;
                 connection.query(q, function (err, newRows) {
-                    if (err) throw err;
+                    if (err) console.log(err);
                     else if (status == 1) {
                         var q = 'SELECT CUSTOMER_EMAIL from FAVORITE_HOMECOOKS where COOK_EMAIL=\'' + email + '\';';
                         connection.query(q, function (err, rows) {
-                            if (err) throw err;
+                            if (err) console.log(err);
                             if (rows.length === 0) {
 
                             }
@@ -56,7 +56,7 @@ router.use('/', function (req, res, next) {
                         });
                     }
                 });
-                connection.release();
+                con.releaseConnection(connection);
                 o['code'] = 200;
                 res.status(200);
                 o['message'] = 'status updated';

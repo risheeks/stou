@@ -9,10 +9,10 @@ router.use('/', function (req, res, next) {
     const cookemail = req.body['data']['cook_email'];
     var o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'INSERT INTO FAVORITE_HOMECOOKS(COOK_EMAIL, CUSTOMER_EMAIL) VALUES ("' + cookemail + '", "' + email + '");';
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 400;
                 res.status(400)
@@ -25,7 +25,7 @@ router.use('/', function (req, res, next) {
                 o['message'] = 'favorite cook added';
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         })
     });
     con.on('error', function () {

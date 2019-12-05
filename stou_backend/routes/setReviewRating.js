@@ -12,7 +12,7 @@ router.use('/', function (req, res, next) {
     let review = req.body['data']['review'];
 
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = '';
         if (role === 1) {
             q = 'UPDATE ORDERS SET REVIEW=\'' + review + '\', COOK_RATING=' + rating + ' WHERE ORDER_ID=\'' + orderId + '\';';
@@ -21,23 +21,23 @@ router.use('/', function (req, res, next) {
             q = 'UPDATE ORDERS SET CUSTOMER_RATING=' + rating + ' WHERE ORDER_ID=\'' + orderId + '\';';
         }
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 404;
                 res.status(404);
                 o['message'] = 'Order Not Found';
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
 
     let o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'SELECT RATING, NUMRATINGS from USER where EMAIL=\'' + email + '\' AND ROLE=' + role + ';';
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 404;
                 res.status(404);
@@ -55,10 +55,10 @@ router.use('/', function (req, res, next) {
                 }
                 let newRating = ((parseFloat(currentRating) * parseInt(numRatings)) + parseFloat(rating)) / parseInt(numRatings + 1);
                 con.getConnection(function (err, connection) {
-                    if (err) throw err;
+                    if (err) console.log(err);
                     var q = 'UPDATE USER SET RATING=' + newRating + ', NUMRATINGS=' + (numRatings + 1) + ' WHERE EMAIL=\'' + email + '\' AND ROLE=' + role + ';';
                     connection.query(q, function (err, rows) {
-                        if (err) throw err;
+                        if (err) console.log(err);
                         if (rows.length === 0) {
                             o['code'] = 500;
                             res.status(500);
@@ -71,12 +71,12 @@ router.use('/', function (req, res, next) {
                             o['message'] = 'Rating updated';
                             res.send(o);
                         }
-                        connection.release();
+                        con.releaseConnection(connection);
                     });
                 });
             }
         });
-        connection.release();
+        con.releaseConnection(connection);
     });
     con.on('error', function () {
         console.log('Too many users');

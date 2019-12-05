@@ -24,7 +24,7 @@ router.use('/', function (req, res, next) {
     const newOrderStatus = req.body['data']['orderStatus'];
     let o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'SELECT * from ORDERS where ORDER_ID=\'' + orderId + '\';';
         connection.query(q, function (err, rows) {
             if (err || rows.length === 0) {
@@ -53,7 +53,7 @@ router.use('/', function (req, res, next) {
                 }
                 if (update) {
                     con.getConnection(function (err, connection) {
-                        if (err) throw err;
+                        if (err) console.log(err);
                         var q = 'UPDATE ORDERS SET ORDER_STATUS=\'' + newOrderStatus + '\' where ORDER_ID=\'' + orderId + '\';';
                         connection.query(q, function (err, newRows) {
                             if (err) {
@@ -96,7 +96,7 @@ router.use('/', function (req, res, next) {
                                 o['message'] = 'Status update successful';
                                 res.send(o);
                             }
-                            connection.release();
+                            con.releaseConnection(connection);
                         });
                     });
                 }
@@ -107,7 +107,7 @@ router.use('/', function (req, res, next) {
                     res.send(o);
                 }
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

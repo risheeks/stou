@@ -30,21 +30,21 @@ router.use('/', function (req, res, next) {
     var o = {};
 
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'Insert into ORDERS (ORDER_ID, ORDERED_AT, COOK_EMAIL, CUSTOMER_EMAIL, INSTRUCTIONS, DELIVERY_TIME, ORDER_ADDRESS, ORDER_STATUS, PAYMENT_KEY) values("' + orderID + '", "' + Date.now() + '", "' + cookEmail + '", "' + customerEmail + '", "' + instructions + '", ' + deliveryTime + ', "' + orderAddress + '", "' + orderStatus + '", "' + paymentId + '");';
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
 
             else {
                 for (let i = 0; i < itemList.length; i++) {
                     con.getConnection(function (err, connection) {
-                        if (err) throw err;
+                        if (err) console.log(err);
                         console.log(itemList[i]);
                         var q = 'Insert into ORDER_FOOD (ORDER_ID, FOOD_ID, QUANTITY, PRICE) values(\'' + orderID + '\', \'' + itemList[i].food_id + '\', ' + itemList[i].quantity + ', ' + itemList[i].price + ');';
                         connection.query(q, function (err, rows) {
-                            if (err) throw err;
+                            if (err) console.log(err);
                         });
-                        connection.release();
+                        con.releaseConnection(connection);
                     });
                 }
                 pusher.trigger(`cook-${cookEmail}`, 'new-order', {
@@ -66,7 +66,7 @@ router.use('/', function (req, res, next) {
                 o['orderId'] = orderID;
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

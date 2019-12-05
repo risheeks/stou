@@ -9,7 +9,7 @@ router.use('/', function (req, res, next) {
     const customerEmail = req.body['data']['customerEmail'];
     let o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'DELETE from FAVORITE_HOMECOOKS where COOK_EMAIL=\'' + cookEmail + '\' AND CUSTOMER_EMAIL=\'' + customerEmail + '\';';
         connection.query(q, function (err, rows) {
             if (err) {
@@ -24,7 +24,7 @@ router.use('/', function (req, res, next) {
                 o['message'] = 'Removed favorite homecook';
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

@@ -8,10 +8,10 @@ router.use('/', function (req, res, next) {
     const customerEmail = req.body['data']['customerEmail'];
     var o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         let q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.COOK_EMAIL AND USER.ROLE=1 AND CUSTOMER_EMAIL="' + customerEmail + '"AND ORDERS.CUSTOMER_RATING IS NULL ORDER BY ORDERED_AT DESC;';
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 400;
                 res.status(400)
@@ -42,7 +42,7 @@ router.use('/', function (req, res, next) {
                 res.status(200);
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

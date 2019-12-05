@@ -11,7 +11,7 @@ router.use('/', function (req, res, next) {
     var o = {};
 
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'UPDATE USER SET PASSWORD = "' + newPw + '" WHERE EMAIL="' + email + '" AND PASSWORD="' + oldPw + '";';
         connection.query(q, function (err, rows) {
             if (err) {
@@ -25,7 +25,7 @@ router.use('/', function (req, res, next) {
                 o['message'] = 'Password reset successfully';
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

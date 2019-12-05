@@ -9,10 +9,10 @@ router.use('/', function (req, res, next) {
     const foodId = req.body['data']['food_id'];
     var o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'INSERT INTO FAVORITE_FOOD(FOOD_ID, EMAIL) VALUES ("' + foodId + '", "' + email + '");';
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 400;
                 res.status(400)
@@ -25,7 +25,7 @@ router.use('/', function (req, res, next) {
                 o['message'] = 'favorite food added';
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
 
     });

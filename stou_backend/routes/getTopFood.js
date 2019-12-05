@@ -9,9 +9,9 @@ router.use('/', function (req, res, next) {
     let q = 'SELECT * FROM FOOD JOIN (SELECT FOOD_ID, COUNT(*) AS ORDER_COUNT FROM ORDER_FOOD JOIN (SELECT * FROM ORDERS WHERE COOK_EMAIL=\'' + cookEmail + '\') AS NEW_ORDERS ON NEW_ORDERS.ORDER_ID=ORDER_FOOD.ORDER_ID GROUP BY FOOD_ID ORDER BY ORDER_COUNT LIMIT 1) AS FOOD_COUNTER ON FOOD_COUNTER.FOOD_ID=FOOD.FOOD_ID;';
     var o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 404;
                 res.status(404);
@@ -35,7 +35,7 @@ router.use('/', function (req, res, next) {
                 o['message'] = 'Success';
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

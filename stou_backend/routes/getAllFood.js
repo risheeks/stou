@@ -42,7 +42,7 @@ router.use('/', function (req, res, next) {
                     res.send(o);
 
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

@@ -8,15 +8,16 @@ router.use('/', function (req, res, next) {
     const customerEmail = req.body['data']['customerEmail'];
     let o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         let q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.COOK_EMAIL AND USER.ROLE=1 AND CUSTOMER_EMAIL="' + customerEmail + '" AND ORDERED_AT > "' + (Date.now() - 2419200000) + '" ORDER BY ORDERED_AT DESC;';
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 400;
                 res.status(400)
                 o['message'] = 'Invalid Cook';
                 res.send(o);
+                con.releaseConnection(connection);
             }
             else {
                 let obj = [];
@@ -41,8 +42,9 @@ router.use('/', function (req, res, next) {
                 o['message'] = 'Success';
                 res.status(200);
                 res.send(o);
+                con.releaseConnection(connection);
+
             }
-            connection.release();
         });
     });
     con.on('error', function () {

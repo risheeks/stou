@@ -41,7 +41,7 @@ router.use('/', function (req, res, next) {
 
     let o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'UPDATE USER SET ABOUT_ME="' + aboutMe + '", FIRST_NAME="' + firstName + '", LAST_NAME="' + lastName + '" , PICTURE="' + profilePicture + '" where EMAIL="' + email + '" AND ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
         connection.query(q, function (err, result) {
             if (err) {
@@ -62,7 +62,7 @@ router.use('/', function (req, res, next) {
                 o['message'] = 'Successfully updated';
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

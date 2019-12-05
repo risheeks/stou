@@ -9,10 +9,10 @@ router.use('/', function (req, res, next) {
     const role = req.body['data']['role'];
     var o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'SELECT FIRST_NAME, LAST_NAME, RATING FROM USER WHERE EMAIL=\'' + email + '\' AND ROLE=' + role + ';';
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 404;
                 res.status(404);
@@ -28,10 +28,10 @@ router.use('/', function (req, res, next) {
                 };
                 obList.push(ob);
                 con.getConnection(function (err, nconnection) {
-                    if (err) throw err;
+                    if (err) console.log(err);
                     var q = 'SELECT FIRST_NAME, LAST_NAME, REVIEW, ORDERS.COOK_RATING FROM ORDERS, USER WHERE CUSTOMER_EMAIL=EMAIL AND COOK_EMAIL=\'' + email + '\'AND COOK_RATING IS NOT NULL;'
                     nconnection.query(q, function (err, rows) {
-                        if (err) throw err;
+                        if (err) console.log(err);
                         if (rows.length === 0) {
                             o['code'] = 404;
                             res.status(404);
@@ -57,11 +57,11 @@ router.use('/', function (req, res, next) {
                             res.status(200);
                             res.send(o);
                         }
-                        nconnection.release();
+                        con.releaseConnection(connection);
                     });
                 });
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

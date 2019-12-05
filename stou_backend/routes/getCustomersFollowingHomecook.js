@@ -8,10 +8,10 @@ router.use('/', function (req, res, next) {
         const cookEmail = req.body['data']['cookEmail'];
         var o = {};
         con.getConnection(function (err, connection) {
-            if (err) throw err;
+            if (err) console.log(err);
             var q = 'SELECT * from FAVORITE_HOMECOOKS where COOK_EMAIL=\'' + cookEmail + '\');';
             connection.query(q, function (err, rows) {
-                if (err) throw err;
+                if (err) console.log(err);
                 if (rows.length === 0) {
                     o['code'] = 404;
                     res.status(404);
@@ -28,7 +28,7 @@ router.use('/', function (req, res, next) {
                     o['message'] = 'Success';
                     res.send(o);
                 }
-                connection.release();
+                con.releaseConnection(connection);
             });
         });
     con.on('error', function () {

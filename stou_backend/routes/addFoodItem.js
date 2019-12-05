@@ -96,7 +96,7 @@ router.use('/', function (req, res, next) {
                         if (err) console.log(err);
                     });
                 }
-                connection.release();
+                con.releaseConnection(connection);
             });
         }
 

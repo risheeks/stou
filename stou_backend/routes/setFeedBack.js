@@ -10,10 +10,10 @@ router.use('/', function (req, res, next) {
 
     let o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'INSERT INTO FEEDBACK VALUES (\'' + email + '\', \'' + feedback + '\');';
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 500;
                 res.status(500);
@@ -26,7 +26,7 @@ router.use('/', function (req, res, next) {
                 o['message'] = 'Feedback added';
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

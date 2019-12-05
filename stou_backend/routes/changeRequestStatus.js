@@ -21,10 +21,10 @@ router.use('/', function (req, res, next) {
     const status = req.body['data']['status'];
     let o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'UPDATE REQUESTS SET STATUS=' + status + ' WHERE REQUEST_ID=\'' + requestId + '\';';
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 500;
                 res.status(500);
@@ -45,7 +45,7 @@ router.use('/', function (req, res, next) {
                             "picture": newRows[0].PICTURE
                         }
                     });
-                    connection.release();
+                    con.releaseConnection(connection);
                 });
                 o['code'] = 200;
                 res.status(200);

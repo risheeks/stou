@@ -7,10 +7,10 @@ var con = mysql.createPool(connString);
 router.use('/', function (req, res, next) {
     var o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'SELECT * FROM FEEDBACK';
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 200;
                 res.status(200);
@@ -30,7 +30,7 @@ router.use('/', function (req, res, next) {
                 res.status(200);
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

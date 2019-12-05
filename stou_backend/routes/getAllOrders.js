@@ -9,10 +9,10 @@ router.use('/', function (req, res, next) {
     const status = req.body['data']['status'];
     var o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         let q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.CUSTOMER_EMAIL AND USER.ROLE=2 AND COOK_EMAIL="' + cookEmail + '" AND ORDER_STATUS="' + status + '" ORDER BY ORDERED_AT DESC;';
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 400;
                 res.status(400);
@@ -42,7 +42,7 @@ router.use('/', function (req, res, next) {
                 res.status(200);
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {

@@ -53,6 +53,13 @@ var setFavoriteFoodRouter = require('./routes/setFavoriteFood');
 var getFavoriteHomecooksRouter = require('./routes/getFavoriteHomecooks');
 var resetPasswordRouter = require('./routes/resetPassword');
 
+var path = require('path');
+var rfs = require('rotating-file-stream')
+var accessLogStream =  rfs.createStream('access.log', {
+  interval: '1d', // rotate daily
+  path: path.join(__dirname, 'log')
+});
+
 var cors = require('cors');
 var app = express();
 const Chatkit = require('@pusher/chatkit-server');
@@ -90,7 +97,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.set('port', process.env.PORT || 5000);
 
-app.use(logger('dev'));
+app.use(logger('combined', { stream : accessLogStream}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -223,7 +230,7 @@ app.use('/register', function (req, res, next) {
   let o = {};
 
   con.getConnection(function (err, connection) {
-    if (err) throw err;
+    if (err) console.log(err);
     var q = 'SELECT FIRST_NAME, LAST_NAME FROM USER WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC = "' + role + '");';
     connection.query(q, function (err, rows) {
 
@@ -248,7 +255,7 @@ app.use('/register', function (req, res, next) {
         revLoginTokens[email] = o['token'];
         res.send(o);
       }
-      connection.release();
+      con.releaseConnection(connection);
     });
   });
 });
@@ -268,7 +275,7 @@ function registerUser(firstName, lastName, email, password, role, cuisines) {
     avatarURL: pic
   })
   con.getConnection(function (err, connection) {
-    if (err) throw err;
+    if (err) console.log(err);
     var q = 'INSERT INTO USER (PICTURE, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, ROLE, BANNED) values("' + pic + '", "' + firstName + '", "' + lastName + '", "' + email + '", "' + password + '", (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '"), 0);';
     connection.query(q, function (err, rows) {
       if (err) {
@@ -318,7 +325,7 @@ function registerUser(firstName, lastName, email, password, role, cuisines) {
           ' With consent, you might be included in the featured home cooks.'
         sendEmail(email, password, s)
       }
-      connection.release();
+      con.releaseConnection(connection);
     });
   });
 }
@@ -377,10 +384,10 @@ app.use('/login', function (req, res, next) {
   if (role === 'Homecook') role = 'cook';
   var o = {};
   con.getConnection(function (err, connection) {
-    if (err) throw err;
+    if (err) console.log(err);
     var q = 'SELECT FIRST_NAME, LAST_NAME, BANNED FROM USER WHERE EMAIL = "' + email + '" AND PASSWORD = "' + password + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC = "' + role + '");';
     connection.query(q, function (err, rows) {
-      if (err) throw err;
+      if (err) console.log(err);
       if (rows.length === 0) {
         o['code'] = 401;
         o['message'] = 'Invalid login credentials';
@@ -403,7 +410,7 @@ app.use('/login', function (req, res, next) {
         res.status(200);
         res.send(o);
       }
-      connection.release();
+      con.releaseConnection(connection);
     });
   });
 });

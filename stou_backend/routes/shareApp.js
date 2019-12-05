@@ -8,10 +8,10 @@ router.use('/', function (req, res, next) {
     let email = req.body['data']['email'];
     var o = {};
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'SELECT * FROM USER WHERE EMAIL=\'' + email + '\' AND ROLE=2;';
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
             if (rows.length === 0) {
                 o['code'] = 202;
                 res.status(202);
@@ -26,7 +26,7 @@ router.use('/', function (req, res, next) {
                 o['message'] = 'User already registered';
                 res.send(o);
             }
-            connection.release();
+            con.releaseConnection(connection);
         });
     });
     con.on('error', function () {
@@ -38,12 +38,12 @@ function generatePromoCode() {
     var o = {};
     let promoCode = uuidv4();
     con.getConnection(function (err, connection) {
-        if (err) throw err;
+        if (err) console.log(err);
         var q = 'INSERT INTO PROMOCODES VALUES(\'' + promoCode.substring(0, 7) + '\', 0);';
         connection.query(q, function (err, rows) {
-            if (err) throw err;
+            if (err) console.log(err);
         });
-        connection.release();
+        con.releaseConnection(connection);
     });
     return promoCode.substring(0, 7);
 }
