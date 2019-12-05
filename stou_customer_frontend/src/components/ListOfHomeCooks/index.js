@@ -49,6 +49,7 @@ class ListOfHomeCooks extends Component {
 							cook_email = {item.email}
 							picture={item.profilePicture}
 							description={item.aboutMe}
+							numViews = {item.numViews}
 							rating={item.rating}
 							addToOrder={this.props.addToOrder}
 							isFav={item.isFavorite}

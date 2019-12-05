@@ -101,10 +101,11 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
+
 app.use('/setViews', function(req,res,next) {
     let cookEmail = req.body['data']['cookEmail'];
     let numViews = req.body['data']['numViews'];
-    let q = 'UPDATE USER SET NUMVIEWS=' + numViews + ' WHERE COOK_EMAIL=\'' + cookEmail + '\' AND ROLE=1';
+    let q = 'UPDATE USER SET NUMVIEWS=' + numViews + ' WHERE EMAIL=\'' + cookEmail + '\' AND ROLE=1';
     var o = {};
     con.getConnection(function (err, connection) {
         if (err) throw err;
@@ -1475,7 +1476,7 @@ app.use('/gethomecooks', function (req, res, next) {
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'SELECT PICTURE, FIRST_NAME, LAST_NAME, EMAIL, RATING, ABOUT_ME, EXISTS(SELECT * FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL="' + email + '" AND COOK_EMAIL=EMAIL) as IS_FAVORITE FROM USER, ROLES WHERE online=1 AND USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) + 2) + ' AND ONLINE=1 );';
+    var q = 'SELECT NUMVIEWS,PICTURE, FIRST_NAME, LAST_NAME, EMAIL, RATING, ABOUT_ME, EXISTS(SELECT * FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL="' + email + '" AND COOK_EMAIL=EMAIL) as IS_FAVORITE FROM USER, ROLES WHERE online=1 AND USER.ROLE=ROLES.ROLE_ID AND ROLE_DESC="COOK" AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) + 2) + ' AND ONLINE=1 );';
     connection.query(q, function (err, result) {
       if (err) console.log(err);
       if (result.length === 0) {
@@ -1497,6 +1498,10 @@ app.use('/gethomecooks', function (req, res, next) {
           ob['aboutMe'] = row.ABOUT_ME;
           ob['isFavorite'] = row.IS_FAVORITE;
           ob['profilePicture'] = row.PICTURE;
+          ob['numViews'] = row.NUMVIEWS;
+          if(ob['numViews'] === null) {
+            ob['numViews'] = 0;
+          }
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         o['data'] = obj;
