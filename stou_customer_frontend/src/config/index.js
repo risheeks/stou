@@ -1,5 +1,7 @@
 import Pusher from 'pusher-js';
 
+console.log(process.env)
+
 export const serverURL = process.env.REACT_APP_API_URL;
 
 export const firebaseConfig = {
