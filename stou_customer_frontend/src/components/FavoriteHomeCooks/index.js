@@ -42,8 +42,10 @@ class FavoriteHomeCooksList extends Component {
 	render() {
 		return (
 			<Container className="master-container">
-				<h3 style={{lineHeight: 3}}>Your Favorite Homecooks</h3>
-				<Container className="homecook-container">
+					<div className="orders-container">
+						<p className="page-title"><b>Your Favorite Homecooks</b></p>
+					</div>
+					<Container className="homecook-container">
 					{this.state.favhomecooks.map(item => (
 						<FavoriteHomeCook
 							openModal={this.props.openModal}

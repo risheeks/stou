@@ -102,8 +102,8 @@ class Requests extends Component {
 
   render() {
     return (
-      <Container className="orders-container">
-        <h3 style={{lineHeight: 3}}>Your Food Requests</h3>
+      <Container className="orders-container margin-container">
+        <p className="page-title"><b>Food Requests For You</b></p>
         <ListGroup className="orders-list">
           {this.state.requests.map(item => (
             <ListGroup.Item className="">
@@ -127,7 +127,9 @@ class Requests extends Component {
             </ListGroup.Item>
           ))}
         </ListGroup>
+      
       </Container>
+      
     )
   }
 
