@@ -87,7 +87,7 @@ class Main extends Component {
                 openModal(ModalKey.REQUEST_MODAL, { ...data });
                 console.log("Reached here")
             });
-            if (loggedIn) {
+            if (loggedIn && this.props.zipcode !== prevProps.zipcode) {
                 const newLocation = await this.getLocation();
                 if (!newLocation || newLocation === '') {
                     this.props.openModal(ModalKey.ZIPCODE, { email: email, changeLocation: this.props.changeLocation });

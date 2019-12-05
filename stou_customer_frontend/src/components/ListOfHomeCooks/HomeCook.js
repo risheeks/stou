@@ -159,20 +159,19 @@ class HomeCook extends Component {
 
     render() {
         const { name, description, picture, rating } = this.props;
-
+        console.log(this.state.isFavoriteHomeCook)
         return (
             <Card className="homecook-card" style={{ width: '18rem' }}>
 
-                <div onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'none' : 'block' }}>
+                <div>
                     <div>
                     <i className="eyeViews-text"><IoMdEye className="eyeViews"/>{this.state.views} Views</i>
                      </div>
-                	<i><FaRegHeart className="saveOpenHeart"/></i>
+                     {this.state.isFavoriteHomeCook ?
+                     <i onClick={this.ChangeSaveFavHomeCookStatus}><FaHeart className="saveHeart"/></i> :
+                    <i onClick={this.ChangeSaveFavHomeCookStatus}><FaRegHeart className="saveOpenHeart"/></i>
+                    }
                 </div>
-                <div onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'block' : 'none' }}>
-                	<i><FaHeart className="saveHeart"/></i>
-                </div>
-
                 <Card.Body><Card.Img className="cook-image" variant="top" src={picture} onClick={this.clickProfile} style={{maxHeight: '200px'}} />
 
         <Card.Title className="wrapped-cook-text"><b>{name}</b></Card.Title>
