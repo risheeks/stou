@@ -182,6 +182,9 @@ class OrderModal extends Component {
             case "request_cancel": {
                 return this.renderRequestCancel();
             }
+            case "cancelled": {
+                return this.renderPast();
+            }
             default: {
                 return this.renderNew();
             }

@@ -78,8 +78,8 @@ class Orders extends Component {
                     <ListGroup.Item className="order-item-div" action onClick={e => this.handleOrder(e, order)}>
                         {this.renderOrderInfo(order)}
                         <div className="order-item-button-div">
-                            <Button className={order.orderStatus === 'delivered' || order.orderStatus === 'cancelled' || order.orderStatus === 'request_cancel' ? 'hidden' : ''} variant="danger" onClick={e => this.setOrderStatus("request_cancel", order)}>Cancel</Button>
-                            {order.orderStatus}
+                            <p style={{paddingTop: '12px'}}>{order.orderStatus}</p>
+                            {order.orderStatus === 'placed' || order.orderStatus === 'in_progress' ? <Button variant="danger" onClick={e => this.setOrderStatus("request_cancel", order)} style={{marginLeft: '20px'}}>Cancel</Button> : null}
                         </div>
                     </ListGroup.Item>
                 )}
