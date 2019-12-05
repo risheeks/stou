@@ -85,7 +85,7 @@ class Main extends Component {
                 const audio = new Audio(notificationSound);
                 audio.play();
                 openModal(ModalKey.REQUEST_MODAL, { ...data });
-                console.log("Reached here")
+                
             });
             if (loggedIn) {
                 const newLocation = await this.getLocation();
