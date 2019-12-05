@@ -78,7 +78,7 @@ app.use(cors());
 // });
 var path = require('path')
 var rfs = require('rotating-file-stream')
-var accessLogStream = rfs('access.log', {
+var accessLogStream = rfs.createStream('access.log', {
   interval: '1d', // rotate daily
   path: path.join(__dirname, 'log')
 })
