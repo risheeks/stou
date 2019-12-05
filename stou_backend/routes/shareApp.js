@@ -3,6 +3,7 @@ var router = express.Router();
 var mysql = require('mysql');
 var connString = 'mysql://lSC9ZLcwnc:5SqWHLCVs5@remotemysql.com:3306/lSC9ZLcwnc?charset=utf8_general_ci&timezone=-0700';
 var con = mysql.createPool(connString);
+const uuidv4 = require('uuid/v4');
 /* GET home page. */
 router.use('/', function (req, res, next) {
     let email = req.body['data']['email'];
