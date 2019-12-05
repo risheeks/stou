@@ -136,8 +136,12 @@ class HomeCook extends Component {
             }
         })
             .then(res => {
+                let numviews = 0
+                if(res.data.data !== null) {
+                    numviews = res.data.data;
+                }
                 this.setState({
-                    views : res.data.data
+                    views : numviews
                 });
             })
     }
