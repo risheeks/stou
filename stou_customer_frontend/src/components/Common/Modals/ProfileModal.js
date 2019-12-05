@@ -42,7 +42,7 @@ class ProfileModal extends Component {
 
 
     render() {
-        let { showModal, closeModal, description} = this.props;
+        let { showModal, closeModal, description, rating} = this.props;
         let {open} = this.state
         return (
             
@@ -57,9 +57,14 @@ class ProfileModal extends Component {
                     </Col>
                     <Col>
                     <Form.Label className='text-profile-modal'><h1 className='text-profile-name-modal'>{this.props.name}</h1></Form.Label>
+                    <div className="rating-profile">
+                    <CustomRating rating={rating} readonly={true} bowlSize="22px"/>
+                     </div>
                     <Form.Label><h3 className='text-profile-description-modal'>{this.props.description ? this.props.description : "I am pationate about cooking"}</h3></Form.Label>
                     </Col>
+                    
                 </Row>
+                
                 </Modal.Body>
                 <Modal.Footer className="profile-footer-modal">
                 <div className="footer-review-top">
@@ -73,8 +78,8 @@ class ProfileModal extends Component {
                             >
                             Review
                         </Button>
-                        
-                        <div className="">
+                        {/* <br/> */}
+                        <div className="review-button-margin">
                        
                         {this.state.reviewRating.map(item => (
                             <Collapse in={open}>

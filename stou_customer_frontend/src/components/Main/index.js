@@ -94,8 +94,13 @@ class Main extends Component {
             channel.bind('order-update', function (data) {
                 const audio = new Audio(notificationSound);
                 audio.play();
-                console.log(openModal)
                 openModal(ModalKey.ORDER_UPDATE, { ...data });
+            });
+            channel.bind('cook-online', function(data) {
+                console.log("HIHIHI")
+                const audio = new Audio(notificationSound);
+                audio.play();
+                openModal(ModalKey.COOK_ONLINE, { ...data });
             });
             if (loggedIn) {
                 const newLocation = await this.getLocation();

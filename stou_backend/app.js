@@ -105,6 +105,46 @@ app.use('/setViews', function(req,res,next){
   let cookEmail = req.body['data']['cookEmail'];
   let numViews = req.body['data']['numViews'];
   let q = 'UPDATE USER SET NUMVIEWS=' + numViews + ' WHERE COOK_EMAIL=\'' + cookEmail +'\' AND ROLE=1';
+
+app.use('/logtofile', function (req, res, next) {
+  let data = req.body['data']['data'];
+  let role = req.body['data']['role'];
+  let logFile;
+  if(role === "Customer") logFile = "log/log_customer";
+  else logFile = "log/log_cook"
+  
+  var currentdate = new Date(); 
+  var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear();
+  data = datetime.toString() + " - " + data.toString() + "\n";
+  const fs = require('fs');
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+
+    fs.appendFile(logFile, data, function (err) {
+      if (err) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'Cook Not Found';
+        res.send(o);
+        throw err;
+      }
+      console.log('Saved!');
+      o['code'] = 200;
+      res.status(200);
+      o['message'] = 'Success';
+      res.send(o);
+    });
+    connection.release();
+  });
+});
+
+
+app.use('/gettopfood', function (req, res, next) {
+  let cookEmail = req.body['data']['cookEmail'];
+  let q = 'SELECT * FROM FOOD JOIN (SELECT FOOD_ID, COUNT(*) AS ORDER_COUNT FROM ORDER_FOOD JOIN (SELECT * FROM ORDERS WHERE COOK_EMAIL=\'' + cookEmail + '\') AS NEW_ORDERS ON NEW_ORDERS.ORDER_ID=ORDER_FOOD.ORDER_ID GROUP BY FOOD_ID ORDER BY ORDER_COUNT LIMIT 1) AS FOOD_COUNTER ON FOOD_COUNTER.FOOD_ID=FOOD.FOOD_ID;';
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
@@ -116,6 +156,19 @@ app.use('/setViews', function(req,res,next){
         o['message'] = 'Cook Not Found';
         res.send(o);
       } else {
+        let ob = {};
+        row = rows[0];
+        ob['name'] = row.TITLE;
+        ob['price'] = row.PRICE;
+        ob['cuisine'] = row.CUISINE;
+        ob['calories'] = row.CALORIES;
+        ob['picture'] = row.PICTURE;
+        ob['email'] = row.COOK_EMAIL;
+        ob['description'] = row.DESCRIPTION;
+        ob['food_id'] = row.FOOD_ID;
+        ob['delivery_time'] = row.DELIVERY_TIME;
+        o['data'] = ob;
+
         o['code'] = 200;
         res.status(200);
         o['message'] = 'Success';
@@ -151,9 +204,8 @@ app.use('/getviews', function(req, res, next){
   });
 });
 
-app.use('/gettopfood', topFoodRouter);
 
-app.use('/shareapp', function(req,res,next){
+app.use('/shareapp', function (req, res, next) {
   let email = req.body['data']['email'];
   var o = {};
   con.getConnection(function (err, connection) {
@@ -164,7 +216,7 @@ app.use('/shareapp', function(req,res,next){
       if (rows.length === 0) {
         o['code'] = 202;
         res.status(202);
-        let a  = generatePromoCode();
+        let a = generatePromoCode();
         let text = 'App link, Enjoy 10% off on your order with this promo code ' + a;
         sendEmail(email, "", text, 'ENJOY STOU');
         o['message'] = 'Shared App Successfully';
@@ -180,11 +232,11 @@ app.use('/shareapp', function(req,res,next){
   });
 });
 
-app.use('/getnamefromemail', function(req,res,next){
+app.use('/getnamefromemail', function (req, res, next) {
   let email = req.body['data']['email'];
   let role = req.body['data']['role'];
   let q = "";
-  if(role === 1) {
+  if (role === 1) {
     q = 'SELECT FIRST_NAME,LAST_NAME FROM USER WHERE COOK_EMAIL=\'' + email + '\';';
   } else {
     q = 'SELECT FIRST_NAME,LAST_NAME FROM USER WHERE CUSTOMER_EMAIL=\'' + email + '\';';
@@ -212,40 +264,40 @@ app.use('/getnamefromemail', function(req,res,next){
 });
 
 
-app.use('/getroomid', function(req,res,next) {
-    let email = req.body['data']['email'];
-    let role = req.body['data']['role']
-    var o = {};
-    let q = "";
-    if(role === 1) {
-      q = 'SELECT CUSTOMER_EMAIL, COOK_EMAIL FROM ORDERS WHERE COOK_EMAIL=\'' + email + '\';';
-    } else {
-      q = 'SELECT CUSTOMER_EMAIL, COOK_EMAIL FROM ORDERS WHERE CUSTOMER_EMAIL=\'' + email + '\';';
-    }
+app.use('/getroomid', function (req, res, next) {
+  let email = req.body['data']['email'];
+  let role = req.body['data']['role']
+  var o = {};
+  let q = "";
+  if (role === 1) {
+    q = 'SELECT CUSTOMER_EMAIL, COOK_EMAIL FROM ORDERS WHERE COOK_EMAIL=\'' + email + '\';';
+  } else {
+    q = 'SELECT CUSTOMER_EMAIL, COOK_EMAIL FROM ORDERS WHERE CUSTOMER_EMAIL=\'' + email + '\';';
+  }
 
   con.getConnection(function (err, connection) {
-        if (err) throw err;
-        connection.query(q, function (err, rows) {
-            if (err) throw err;
-            if (rows.length === 0) {
-                o['code'] = 404;
-                res.status(404);
-                o['message'] = 'No Orders Found';
-                res.send(o);
-            } else {
-                let idSet = new Set();
-                for(i=0; i < rows.length; i++) {
-                    idSet.add(rows[i].CUSTOMER_EMAIL+"-"+rows[i].COOK_EMAIL);
-                }
-                o['data'] = Array.from(idSet.values())
-                o['code'] = 200;
-                res.status(200);
-                o['message'] = 'Success';
-                res.send(o);
-            }
-        });
-        connection.release();
+    if (err) throw err;
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'No Orders Found';
+        res.send(o);
+      } else {
+        let idSet = new Set();
+        for (i = 0; i < rows.length; i++) {
+          idSet.add(rows[i].CUSTOMER_EMAIL + "-" + rows[i].COOK_EMAIL);
+        }
+        o['data'] = Array.from(idSet.values())
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Success';
+        res.send(o);
+      }
     });
+    connection.release();
+  });
 });
 
 app.use('/checkpromocode', function (req, res, next) {
@@ -299,18 +351,18 @@ app.use('/usepromocode', function (req, res, next) {
   });
 });
 
- function generatePromoCode() {
+function generatePromoCode() {
   var o = {};
   let promoCode = uuidv4();
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'INSERT INTO PROMOCODES VALUES(\'' + promoCode.substring(0,7) + '\', 0);';
+    var q = 'INSERT INTO PROMOCODES VALUES(\'' + promoCode.substring(0, 7) + '\', 0);';
     connection.query(q, function (err, rows) {
       if (err) throw err;
     });
     connection.release();
   });
-  return promoCode.substring(0,7);
+  return promoCode.substring(0, 7);
 };
 
 
@@ -540,7 +592,7 @@ app.use('/getreviewrating', function (req, res, next) {
                   'review': rows[i].REVIEW,
                   'rating': rows[i].COOK_RATING
                 };
-                if(rows[i].CUSTOMER_RATING !== null)
+                if (rows[i].CUSTOMER_RATING !== null)
                   tempList.push(tempOb);
                 tempOb = {};
               }
@@ -762,22 +814,22 @@ app.use('/setorderstatus', function (req, res, next) {
                   });
                 }
                 pusher.trigger(`customer-${customerEmail}`, 'order-update', {
-                    "message": "Order status changed",
-                    "order": {
-                      "orderId": orderId,
-                      "orderStatus": newOrderStatus,
-                      "name": rows[0].FIRST_NAME + " " + rows[0].LAST_NAME,
-                      "orderedAt": rows[0].ORDERED_AT,
-                      "orderAddress": rows[0].ORDER_ADDRESS,
-                      "rating": rows[0].RATING
-                    }
-                  });
-                  o['code'] = 200;
-                  res.status(200);
-                  o['message'] = 'Status update successful';
-                  res.send(o);
-                }
-              });
+                  "message": "Order status changed",
+                  "order": {
+                    "orderId": orderId,
+                    "orderStatus": newOrderStatus,
+                    "name": rows[0].FIRST_NAME + " " + rows[0].LAST_NAME,
+                    "orderedAt": rows[0].ORDERED_AT,
+                    "orderAddress": rows[0].ORDER_ADDRESS,
+                    "rating": rows[0].RATING
+                  }
+                });
+                o['code'] = 200;
+                res.status(200);
+                o['message'] = 'Status update successful';
+                res.send(o);
+              }
+            });
             connection.release();
           });
         }
@@ -1769,7 +1821,7 @@ app.use('/setstatus', function (req, res, next) {
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
-    var q = 'UPDATE USER SET ONLINE = ' + status + ' WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");'; console.log(q);
+    var q = 'UPDATE USER SET ONLINE = ' + status + ' WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -1779,13 +1831,38 @@ app.use('/setstatus', function (req, res, next) {
         res.send(o);
       }
       else {
+        var q = `SELECT * FROM USER WHERE EMAIL="${email}";`;
+        connection.query(q, function (err, newRows) {
+          if (err) throw err;
+          else if (status == 1) {
+            var q = 'SELECT CUSTOMER_EMAIL from FAVORITE_HOMECOOKS where COOK_EMAIL=\'' + email + '\';';
+            connection.query(q, function (err, rows) {
+              if (err) throw err;
+              if (rows.length === 0) {
+
+              }
+              else {
+                for (i = 0; i < rows.length; i++) {
+                  pusher.trigger(`customer-${rows[i].CUSTOMER_EMAIL}`, 'cook-online', {
+                    "message": "Favorite cook online",
+                    "cook": {
+                      "email": email,
+                      "name": newRows[0].FIRST_NAME + " " + newRows[0].LAST_NAME,
+                      "picture": newRows[0].PICTURE,
+                    }
+                  });
+                }
+              }
+            });
+          }
+        });
+        connection.release();
         o['code'] = 200;
         res.status(200);
         o['message'] = 'status updated';
         o['status'] = status;
         res.send(o);
       }
-      connection.release();
     });
 
   });
@@ -1896,7 +1973,7 @@ app.use('/getfavoritehomecooks', function (req, res, next) {
 });
 
 
-function sendEmail(email, password="", text, subject = 'Password Reset') {
+function sendEmail(email, password = "", text, subject = 'Password Reset') {
   const nodemailer = require('nodemailer');
   var transporter = nodemailer.createTransport({
     service: 'gmail',

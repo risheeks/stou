@@ -236,7 +236,7 @@ export default class Profile extends React.Component {
               <br />
               <Button
                 block
-                className="submit-button"
+                variant="danger"
                 onClick={this.updateProfile}
               >
                 Update
