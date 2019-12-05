@@ -21,10 +21,13 @@ class Requests extends Component {
     this.getRequests();
   }
 
+  componentDidUpdate(prevProps) {
+    if(prevProps.email !== this.props.email) {
+      this.getRequests();
+    }
+  }
+
   getRequests = () => {
-    //console.log("my email below on Requests")
-    //console.log(this.props.email)
-    //console.log(this.state.feedback)
     const { openModal} = this.props;
 
     axios.post(`${serverURL}/getrequest`, {
@@ -41,7 +44,9 @@ class Requests extends Component {
             //console.log(this.state.requests)
         }
         else{
-            //console.log("missing")
+          this.setState({
+            requests: []
+        });
         }
     })
   }
@@ -60,9 +65,6 @@ class Requests extends Component {
             return 'Pending';
         }
     }
-
-    //SELECT COOK_EMAIL, CUSTOMER_EMAIL, ITEM_NAME, ITEM_DESCRIPTION, STATUS, FIRST_NAME FROM REQUESTS, USER WHERE REQUESTS.COOK_EMAIL = USER.EMAIL;
-    //SELECT COOK_EMAIL, CUSTOMER_EMAIL, ITEM_NAME, ITEM_DESCRIPTION, STATUS, FIRST_NAME FROM REQUESTS, USER WHERE REQUESTS.CUSTOMER_EMAIL = USER.EMAIL;
 
   
   render() {
