@@ -578,7 +578,12 @@ app.use('/addrequest', function (req, res, next) {
       else {
         pusher.trigger('cook-'+cookEmail, 'request_added', {
           "message": "New Request",
-          
+          "request_item": {
+                "cookEmail": cookEmail,
+                "customerEmail": customerEmail,
+                "name": itemName,
+                "description": itemDescription
+              }
           });
         o['code'] = 200;
         res.status(200);
