@@ -18,10 +18,24 @@ class ProfileModal extends Component {
     }
     componentDidMount() {
         this.getReviewRating();
+        this.getNumReviews();
     }
     setOpen = (open) => {
         this.setState({open:open})
         // console.log(this.state.reviewRating[1])
+    }
+
+    getNumReviews = () => {
+        axios.post(`${serverURL}/getviews`, {
+            data: {
+                cookEmail: this.props.cook_email,
+            }
+        })
+            .then(res => {
+                this.setState({
+                   views : res.data.data
+                });
+            })
     }
 
     getReviewRating = () => {

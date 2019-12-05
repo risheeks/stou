@@ -101,6 +101,7 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
+
 app.use('/setViews', function(req,res,next) {
     let cookEmail = req.body['data']['cookEmail'];
     let numViews = req.body['data']['numViews'];

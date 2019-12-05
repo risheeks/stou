@@ -122,9 +122,22 @@ class HomeCook extends Component {
     clickProfile = e => {
         const { name, description, picture, rating, openModal, cook_email} = this.props;
         //console.log(this.props);
+        this.state.views = this.state.views + 1;
+        this.axiosCall(this.state.views);
         openModal(ModalKey.PROFILE, {name, description, picture, rating,cook_email});
     }
 
+     axiosCall = (views) => {
+        axios.post(`${serverURL}/setViews`, {
+            data: {
+                cookEmail: this.props.cook_email,
+                numViews: views
+            }
+        })
+            .then(res => {
+
+            })
+    }
 
     render() {
         const { name, description, picture, rating } = this.props;
