@@ -258,7 +258,7 @@ textarea {
 }
 
 .food-option {
-    height: 9rem;
+    height: 8rem;
 }
 .food-option-view-menu {
   height: 8rem;
@@ -293,6 +293,14 @@ textarea {
     font-size: 0.75em;
     margin-top: -1rem;
     /* margin-top: -9%; */
+  }
+
+  .vfo-time {
+    /* display: block; */
+    color: rgba(111, 95, 95, 0.67);
+    font-size: 0.75em;
+    margin-top: 1.5rem;
+    float: right;
   }
 
   .review-bowl {
