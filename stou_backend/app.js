@@ -853,7 +853,7 @@ app.use('/setorderstatus', function (req, res, next) {
                     userIds: [cookEmail, customerEmail],
                   })
                 }
-                if (newOrderStatus === 'delivered') {
+                if (newOrderStatus === 'delivered' || newOrderStatus === 'cancelled') {
                   var q = `SELECT * FROM ORDERS WHERE COOK_EMAIL="${cookEmail}" AND CUSTOMER_EMAIL="${customerEmail}" AND ORDER_STATUS NOT IN("delivered", "cancelled") AND ORDER_ID != "${orderId}";`;
                   connection.query(q, function (err, nRows) {
                     console.log(nRows[0])
