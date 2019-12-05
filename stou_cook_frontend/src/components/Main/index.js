@@ -76,11 +76,10 @@ class Main extends Component {
     }
 
     async componentDidUpdate(prevProps) {
-        if (prevProps !== this.props) {
-            const { auth_token, email, zipcode } = this.props;
+        if (prevProps.email !== this.props.email || prevProps.zipcode !== this.props.zipcode) {
+            const { auth_token, email, zipcode, openModal } = this.props;
             const loggedIn = auth_token && auth_token.length > 0;
             let channel = pusher.subscribe(`cook-${email}`);
-            
             channel.bind('request_added', function (data) {
                 
                 const audio = new Audio(notificationSound);
