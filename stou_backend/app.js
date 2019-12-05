@@ -76,13 +76,19 @@ app.use(cors());
 
 //   res.status(200).json({'success': true})
 // });
+var path = require('path')
+var rfs = require('rotating-file-stream')
+var accessLogStream = rfs('access.log', {
+  interval: '1d', // rotate daily
+  path: path.join(__dirname, 'log')
+})
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.set('port', process.env.PORT || 5000);
 
-app.use(logger('dev'));
+app.use(logger('combined', { stream: accessLogStream }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
