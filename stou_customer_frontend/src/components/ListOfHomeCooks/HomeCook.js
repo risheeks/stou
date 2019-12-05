@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Card, Button, Image } from 'react-bootstrap';
 import CustomRating from '../Common/CustomRating';
-import { FaHeart, FaRegHeart } from "react-icons/fa"; 
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { IoMdEye } from "react-icons/io"
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { ModalKey } from '../../constants/ModalKeys';
@@ -13,7 +14,7 @@ class HomeCook extends Component {
             isFavoriteHomeCook : false,
             cook_email: this.props.cook_email,
             fooditems:[],
-            topFood:[]
+            views: 0
 		};
     }
     componentDidMount = () => {
@@ -130,16 +131,20 @@ class HomeCook extends Component {
 
         return (
             <Card className="homecook-card" style={{ width: '18rem' }}>
+
                 <div onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'none' : 'block' }}>
-                	<i><FaRegHeart className="saveOpenHeart"/></i> 
+                    <div>
+                    <i className="eyeViews-text"><IoMdEye className="eyeViews"/>{this.state.views} Views</i>
+                     </div>
+                	<i><FaRegHeart className="saveOpenHeart"/></i>
                 </div>
                 <div onClick={this.ChangeSaveFavHomeCookStatus} style={{display: this.state.isFavoriteHomeCook ? 'block' : 'none' }}>
                 	<i><FaHeart className="saveHeart"/></i>
                 </div>
-                <Card.Img className="cook-image" variant="top" src={picture} onClick={this.clickProfile} style={{maxHeight: '200px'}} />
-                
-                <Card.Body>
-                    <Card.Title className="wrapped-cook-text"><b>{name}</b></Card.Title>
+
+                <Card.Body><Card.Img className="cook-image" variant="top" src={picture} onClick={this.clickProfile} style={{maxHeight: '200px'}} />
+
+        <Card.Title className="wrapped-cook-text"><b>{name}</b></Card.Title>
                     <br/>
                     <Card.Text className="text-about-me-label wrapped-cook-text">
                         {description}

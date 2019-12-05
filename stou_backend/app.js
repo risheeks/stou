@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 //var Map = require('Map');
 var indexRouter = require('./routes/index');
+var a = require('.rout')
 var usersRouter = require('./routes/users');
 var cors = require('cors');
 var app = express();
@@ -100,6 +101,67 @@ const uuidv4 = require('uuid/v4');
 
 app.listen(app.settings.port, () => console.log("Listening on port " + app.settings.port));
 
+app.use('/setViews', function(req,res,next) {
+    let cookEmail = req.body['data']['cookEmail'];
+    let numViews = req.body['data']['numViews'];
+    let q = 'UPDATE USER SET NUMVIEWS=' + numViews + ' WHERE COOK_EMAIL=\'' + cookEmail + '\' AND ROLE=1';
+    var o = {};
+    con.getConnection(function (err, connection) {
+        if (err) throw err;
+        connection.query(q, function (err, rows) {
+            if (err) throw err;
+            if (rows.length === 0) {
+                o['code'] = 404;
+                res.status(404);
+                o['message'] = 'Cook Not Found';
+                res.send(o);
+            } else {
+                o['code'] = 200;
+                res.status(200);
+                o['message'] = 'Success';
+                res.send(o);
+            }
+        });
+        connection.release();
+    });
+});
+
+app.use('/logtofile', function (req, res, next) {
+  let data = req.body['data']['data'];
+  let role = req.body['data']['role'];
+  let logFile;
+  if(role === "Customer") logFile = "log/log_customer";
+  else logFile = "log/log_cook"
+  
+  var currentdate = new Date(); 
+  var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear();
+  data = datetime.toString() + " - " + data.toString() + "\n";
+  const fs = require('fs');
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+
+    fs.appendFile(logFile, data, function (err) {
+      if (err) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'Cook Not Found';
+        res.send(o);
+        throw err;
+      }
+      console.log('Saved!');
+      o['code'] = 200;
+      res.status(200);
+      o['message'] = 'Success';
+      res.send(o);
+    });
+    connection.release();
+  });
+});
+
+
 app.use('/gettopfood', function (req, res, next) {
   let cookEmail = req.body['data']['cookEmail'];
   let q = 'SELECT * FROM FOOD JOIN (SELECT FOOD_ID, COUNT(*) AS ORDER_COUNT FROM ORDER_FOOD JOIN (SELECT * FROM ORDERS WHERE COOK_EMAIL=\'' + cookEmail + '\') AS NEW_ORDERS ON NEW_ORDERS.ORDER_ID=ORDER_FOOD.ORDER_ID GROUP BY FOOD_ID ORDER BY ORDER_COUNT LIMIT 1) AS FOOD_COUNTER ON FOOD_COUNTER.FOOD_ID=FOOD.FOOD_ID;';
@@ -126,7 +188,6 @@ app.use('/gettopfood', function (req, res, next) {
         ob['food_id'] = row.FOOD_ID;
         ob['delivery_time'] = row.DELIVERY_TIME;
         o['data'] = ob;
-
         o['code'] = 200;
         res.status(200);
         o['message'] = 'Success';
@@ -136,6 +197,32 @@ app.use('/gettopfood', function (req, res, next) {
     connection.release();
   });
 });
+
+app.use('/getviews', function(req, res, next){
+  let cookEmail = req.body['data']['cookEmail'];
+  let q = 'SELECT * FROM USER WHERE EMAIL=\'' + cookEmail +'\' AND ROLE=1';
+  var o = {};
+  con.getConnection(function (err, connection) {
+    if (err) throw err;
+    connection.query(q, function (err, rows) {
+      if (err) throw err;
+      if (rows.length === 0) {
+        o['code'] = 404;
+        res.status(404);
+        o['message'] = 'Cook Not Found';
+        res.send(o);
+      } else {
+        o['data'] = rows[0].NUMVIEWS;
+        o['code'] = 200;
+        res.status(200);
+        o['message'] = 'Success';
+        res.send(o);
+      }
+    });
+    connection.release();
+  });
+});
+
 
 app.use('/shareapp', function (req, res, next) {
   let email = req.body['data']['email'];
@@ -972,7 +1059,6 @@ app.use('/getdetailsbyorder', function (req, res, next) {
   con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'SELECT * from ORDERS, USER where USER.EMAIL=ORDERS.COOK_EMAIL and USER.ROLE=1 and ORDER_ID=\'' + orderId + '\';';
-    // console.log(q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -981,7 +1067,6 @@ app.use('/getdetailsbyorder', function (req, res, next) {
         o['message'] = 'Invalid Order';
         res.send(o);
       } else {
-        // console.log(rows[0]);
         var ord = {};
         ord['orderedAt'] = rows[0].ORDERED_AT;
         ord['orderAddress'] = rows[0].ORDER_ADDRESS;
@@ -1012,7 +1097,6 @@ app.use('/getstatus', function (req, res, next) {
   con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'SELECT online from USER where EMAIL=\'' + cookEmail + '\' AND ROLE=(SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC="' + role + '");';
-    console.log(q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -1027,14 +1111,12 @@ app.use('/getstatus', function (req, res, next) {
         o['message'] = 'Success';
         res.send(o);
       }
-      console.log(rows[0]);
     });
     connection.release();
   });
 });
 
 app.use('/placeorder', function (req, res, next) {
-  console.log(req.body);
   const orderID = uuidv4();
   const cookEmail = req.body['data']['cookEmail'];
   const customerEmail = req.body['data']['customerEmail'];
@@ -1048,22 +1130,18 @@ app.use('/placeorder', function (req, res, next) {
 
   var o = {};
 
-  console.log(req.body.data);
   con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'Insert into ORDERS (ORDER_ID, ORDERED_AT, COOK_EMAIL, CUSTOMER_EMAIL, INSTRUCTIONS, DELIVERY_TIME, ORDER_ADDRESS, ORDER_STATUS, PAYMENT_KEY) values("' + orderID + '", "' + Date.now() + '", "' + cookEmail + '", "' + customerEmail + '", "' + instructions + '", ' + deliveryTime + ', "' + orderAddress + '", "' + orderStatus + '", "' + paymentId + '");';
-    // console.log('MEssage:' + q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
 
       else {
         for (let i = 0; i < itemList.length; i++) {
-          // console.log('in');
           con.getConnection(function (err, connection) {
             if (err) throw err;
             console.log(itemList[i]);
             var q = 'Insert into ORDER_FOOD (ORDER_ID, FOOD_ID, QUANTITY, PRICE) values(\'' + orderID + '\', \'' + itemList[i].food_id + '\', ' + itemList[i].quantity + ', ' + itemList[i].price + ');';
-            // console.log(q);
             connection.query(q, function (err, rows) {
               if (err) throw err;
             });
@@ -1120,7 +1198,6 @@ app.use('/setlocation', function (req, res, next) {
         o['message'] = 'Location updated';
         res.send(o);
       }
-      console.log(rows[0]);
     });
     connection.release();
   });
@@ -1150,7 +1227,6 @@ app.use('/getlocation', function (req, res, next) {
         res.status(200);
         res.send(o);
       }
-      console.log(rows[0]);
     });
     connection.release();
   });
@@ -1167,12 +1243,10 @@ app.use('/logout', function (req, res, next) {
 app.use('/removefavoritehomecooks', function (req, res, next) {
   const cookEmail = req.body['data']['cookEmail'];
   const customerEmail = req.body['data']['customerEmail'];
-  console.log("Reached remove");
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'DELETE from FAVORITE_HOMECOOKS where COOK_EMAIL=\'' + cookEmail + '\' AND CUSTOMER_EMAIL=\'' + customerEmail + '\';';
-    console.log("Reached remove");
     connection.query(q, function (err, rows) {
       if (err) {
         o['code'] = 400;
@@ -1186,8 +1260,6 @@ app.use('/removefavoritehomecooks', function (req, res, next) {
         o['message'] = 'Removed favorite homecook';
         res.send(o);
       }
-      console.log(rows[0]);
-      console.log("Reached remove");
     });
     connection.release();
   });
@@ -1227,9 +1299,7 @@ app.use('/getpastfoodcook', function (req, res, next) {
     if (err) console.log(err);
     var q = 'SELECT FOOD.PICTURE, FOOD.FOOD_ID, USER1.EMAIL, FOOD.TITLE, FOOD.DESCRIPTION, FOOD.CUISINE, FOOD.PRICE, FOOD.CALORIES, FOOD.DELIVERY_TIME, USER1.FIRST_NAME, USER1.LAST_NAME FROM FOOD, USER AS USER1 WHERE USER1.EMAIL=FOOD.COOK_EMAIL AND USER1.ROLE=1 AND FOOD.COOK_EMAIL=\'' + cookEmail + '\' AND valid=\'true\'';
 
-    console.log(q);
     connection.query(q, function (err, result) {
-      console.log("Yo: " + result)
       if (err || result.length === 0) {
         o['code'] = 400;
         res.status(400)
@@ -1241,7 +1311,6 @@ app.use('/getpastfoodcook', function (req, res, next) {
         let ob = {};
         for (var i = 0; i < result.length; i++) {
           var row = result[i];
-          // console.log(row);
           ob['name'] = row.TITLE;
           ob['homecook'] = row.FIRST_NAME + " " + row.LAST_NAME;
           ob['email'] = row.COOK_EMAIL;
@@ -1258,7 +1327,6 @@ app.use('/getpastfoodcook', function (req, res, next) {
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         o['data'] = obj;
-        console.log(o);
         if (obj.length !== 0)
           res.send(o);
 
@@ -1275,7 +1343,6 @@ app.use('/getpastfood', function (req, res, next) {
   con.getConnection(function (err, connection) {
     if (err) console.log(err);
     var q = 'SELECT DISTINCT FOOD.PICTURE, FOOD.FOOD_ID, USER1.EMAIL, FOOD.TITLE, FOOD.DESCRIPTION, FOOD.CUISINE, FOOD.PRICE, FOOD.CALORIES, FOOD.DELIVERY_TIME, USER1.FIRST_NAME, USER1.LAST_NAME, EXISTS(SELECT * FROM FAVORITE_FOOD WHERE FAVORITE_FOOD.FOOD_ID=FOOD.FOOD_ID AND FAVORITE_FOOD.EMAIL="' + email + '") AS IS_FAVORITE FROM FOOD, USER AS USER1, ORDERS, ORDER_FOOD WHERE USER1.EMAIL=ORDERS.COOK_EMAIL AND USER1.ROLE=1 AND ORDER_FOOD.ORDER_ID=ORDERS.ORDER_ID AND ORDER_FOOD.FOOD_ID=FOOD.FOOD_ID AND ORDERS.CUSTOMER_EMAIL="' + email + '";';
-    console.log(q);
     connection.query(q, function (err, result) {
       if (err) {
         o['code'] = 400;
@@ -1288,7 +1355,6 @@ app.use('/getpastfood', function (req, res, next) {
         let ob = {};
         for (var i = 0; i < result.length; i++) {
           var row = result[i];
-          // console.log(row);
           ob['name'] = row.TITLE;
           ob['homecook'] = row.FIRST_NAME + " " + row.LAST_NAME;
           ob['email'] = row.COOK_EMAIL;
@@ -1306,7 +1372,6 @@ app.use('/getpastfood', function (req, res, next) {
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         o['data'] = obj;
-        console.log(o);
         if (obj.length !== 0)
           res.send(o);
 
@@ -1323,7 +1388,6 @@ app.use('/getallfood', function (req, res, next) {
   con.getConnection(function (err, connection) {
     if (err) console.log(err);
     var q = 'SELECT FOOD.PICTURE, FOOD_ID, COOK_EMAIL, TITLE, DESCRIPTION, CUISINE, PRICE, CALORIES, DELIVERY_TIME, FIRST_NAME, LAST_NAME FROM FOOD, USER WHERE FOOD.COOK_EMAIL=USER.EMAIL AND USER.online=1 AND USER.ROLE=1 AND (LOCATION BETWEEN ' + (parseInt(location) - 2) + ' AND ' + (parseInt(location) + 2) + ');';
-    console.log(q);
     connection.query(q, function (err, result) {
       if (err) {
         o['code'] = 400;
@@ -1336,7 +1400,6 @@ app.use('/getallfood', function (req, res, next) {
         let ob = {};
         for (var i = 0; i < result.length; i++) {
           var row = result[i];
-          // console.log(row);
           ob['name'] = row.TITLE;
           ob['homecook'] = row.FIRST_NAME + " " + row.LAST_NAME;
           ob['email'] = row.COOK_EMAIL;
@@ -1357,7 +1420,6 @@ app.use('/getallfood', function (req, res, next) {
           res.send(o);
 
       }
-      console.log("HOLA AMIGO")
       connection.release();
     });
   });
@@ -1365,7 +1427,6 @@ app.use('/getallfood', function (req, res, next) {
 
 app.use('/getfooditems', function (req, res, next) {
   const email = req.body['data']['email'];
-  console.log(email)
   let o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
@@ -1398,7 +1459,6 @@ app.use('/getfooditems', function (req, res, next) {
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
         o['data'] = obj;
-        console.log(o);
         if (obj.length !== 0)
           res.send(o);
 
@@ -1410,7 +1470,6 @@ app.use('/getfooditems', function (req, res, next) {
 
 
 app.use('/gethomecooks', function (req, res, next) {
-  // console.log(req.body)
   const email = req.body['data']['email'];
   let location = req.body['data']['location'];
   let o = {};
@@ -1440,9 +1499,7 @@ app.use('/gethomecooks', function (req, res, next) {
           ob['profilePicture'] = row.PICTURE;
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
-        // console.log(obj);
         o['data'] = obj;
-        // console.log(o);
         if (obj.length !== 0)
           res.send(o);
       }
@@ -1487,9 +1544,7 @@ app.use('/getallusers', function (req, res, next) {
           ob['banStatus'] = row.BANNED;
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
-        // console.log(obj);
         o['data'] = obj;
-        // console.log(o);
         if (obj.length !== 0)
           res.send(o);
       }
@@ -1521,9 +1576,7 @@ app.use('/getnumberofusers', function (req, res, next) {
         let ob = {};
         let cookEmail;
         ob['numUsers'] = Math.ceil(result[0].numusers / 10);
-        // console.log(obj);
         o['data'] = JSON.parse(JSON.stringify(ob));
-        // console.log(o);
         if (ob)
           res.send(o);
       }
@@ -1547,17 +1600,12 @@ app.use('/addfooditem', function (req, res, next) {
   const desc = req.body['data']['description'];
   const deliveryTime = req.body['data']['deliveryTime'];
   let o = {};
-  // console.log(token)
-  // console.log('insert into FoodItems values(\'' + itemName + '\', \'' + loginTokens[token] + '\', \'' + location + '\', \'' + price + '\', \'' + allergens +'\', \'' + cuisine + '\', \'' + calories +'\', \'' + picture + '\', \'' + desc + '\')')
-
 
   con.getConnection(function (err, connection) {
-    console.log(allergens);
     if (err) console.log(err);
     let cuisine_present = false;
     if (cuisine != null) {
       var q = 'SELECT * FROM CUISINES WHERE CUISINE="' + cuisine + '";';
-      console.log(q);
       connection.query(q, function (err, result) {
         if (err) console.log(err);
         if (result.length === 0) {
@@ -1570,9 +1618,7 @@ app.use('/addfooditem', function (req, res, next) {
     }
     if ((cuisine_present === false) && (cuisine_present != null)) {
       q = 'INSERT INTO CUISINES (CUISINE) VALUES ("' + cuisine + '");';
-      console.log(q);
       connection.query(q, function (err, result) {
-        console.log(cuisine_present);
         var columns = "(";
         var values = "(";
         if (itemName != null) {
@@ -1611,7 +1657,6 @@ app.use('/addfooditem', function (req, res, next) {
         values += '"' + cook_email + '") ';
 
         q = 'INSERT INTO FOOD ' + columns + 'VALUES ' + values + ';';
-        console.log(q);
         connection.query(q, function (err, result) {
           if (err) {
             o['code'] = 400;
@@ -1688,7 +1733,6 @@ app.use('/editProfile', function (req, res, next) {
           avatarURL: profilePicture
         })
           .then(res => {
-            console.log("Chatkit user updated.");
           })
         o['code'] = 200;
         res.status(200)
@@ -1736,7 +1780,6 @@ app.use('/profile', function (req, res, next) {
 });
 
 app.use('/filter', function (req, res, next) {
-  console.log('in filter')
   const json = req.body['data'];
   const cuisines = json['cuisines'];
   const allergenList = json['allergens'];
@@ -1747,7 +1790,6 @@ app.use('/filter', function (req, res, next) {
     var q = 'SELECT * FROM FOOD, FOOD_ALLERGEN, USER WHERE USER.EMAIL=FOOD.COOK_EMAIL AND FOOD.FOOD_ID=FOOD_ALLERGEN.FOOD_ID AND INSTR("' + cuisines + '",FOOD.CUISINE)>0 AND INSTR("' + allergenList + '",FOOD_ALLERGEN.ALLERGEN)=0';
     // var q = 'select * from FOOD, FOOD_ALLERGEN where FOOD.CUISNE like \'' + cuisines + '\' AND Allergen NOT LIKE \'' + allergenList + '\';';
     connection.query(q, function (err, result) {
-      console.log(result);
       if (err) console.log(err);
       if (result.length === 0) {
         o['code'] = 400;
@@ -1775,7 +1817,6 @@ app.use('/filter', function (req, res, next) {
           }
           obj.push(JSON.parse(JSON.stringify(ob)));
         }
-        console.log(obj);
         o['data'] = obj;
         o['code'] = 200;
         o['message'] = 'Filter results'
@@ -1792,7 +1833,6 @@ app.use('/forgotpassword', function (req, res, next) {
   const email = req.body['data']['email'];
   const encPassword = req.body['data']['encPassword'];
   const password = req.body['data']['password'];
-  console.log(email);
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
@@ -1800,7 +1840,6 @@ app.use('/forgotpassword', function (req, res, next) {
     connection.query(q, function (err, rows) {
       // 
       if (err) {
-        console.log("reset failed");
         o['code'] = 404;
         res.status(404)
         o['message'] = 'Reset failed';
@@ -1809,7 +1848,7 @@ app.use('/forgotpassword', function (req, res, next) {
         sendEmail(email, password, 'Here\'s your new password: ' + password);
         o['code'] = 200;
         res.status(200);
-        o['message'] = 'Password et successfully';
+        o['message'] = 'Password reset successfully';
         res.send(o);
       }
       connection.release();
@@ -1929,12 +1968,10 @@ app.use('/setfavoritefood', function (req, res, next) {
 app.use('/getfavoritehomecooks', function (req, res, next) {
 
   const email = req.body['data']['email'];
-  console.log(email)
   var o = {};
   con.getConnection(function (err, connection) {
     if (err) throw err;
     var q = 'SELECT * FROM USER A, (SELECT COOK_EMAIL FROM FAVORITE_HOMECOOKS WHERE CUSTOMER_EMAIL = "' + email + '") B WHERE A.EMAIL = B.COOK_EMAIL AND A.ROLE = 1';
-    console.log(q);
     connection.query(q, function (err, rows) {
       if (err) throw err;
       if (rows.length === 0) {
@@ -1971,7 +2008,6 @@ app.use('/getfavoritehomecooks', function (req, res, next) {
         o['message'] = 'favorite cooks sent';
         res.send(o);
       }
-      console.log(rows[0]);
       connection.release();
     });
 
@@ -2068,7 +2104,6 @@ app.use('/login', function (req, res, next) {
         o['code'] = 401;
         o['message'] = 'Invalid login credentials';
         res.status(401);
-        console.log(o);
         res.send(o);
       }
       else if (rows[0].BANNED) {
@@ -2084,7 +2119,6 @@ app.use('/login', function (req, res, next) {
         loginTokens[o['token']] = email;
         revLoginTokens[email] = o['token'];
 
-        console.log(loginTokens);
         res.status(200);
         res.send(o);
       }
@@ -2110,10 +2144,8 @@ app.use('/register', function (req, res, next) {
     if (err) throw err;
     var q = 'SELECT FIRST_NAME, LAST_NAME FROM USER WHERE EMAIL = "' + email + '" AND ROLE = (SELECT ROLE_ID FROM ROLES WHERE ROLE_DESC = "' + role + '");';
     connection.query(q, function (err, rows) {
-      console.log(q);
 
       if (err) {
-        console.log(err);
         o['code'] = 400;
         o['message'] = 'Error occurred';
         res.status(400)
@@ -2125,7 +2157,6 @@ app.use('/register', function (req, res, next) {
         o['message'] = 'User already registered';
         res.send(o);
       } else if (!err) {
-        console.log('allowing');
         registerUser(firstName, lastName, email, password, role, cuisines);
         o['code'] = 200;
         res.status(200);
@@ -2162,7 +2193,6 @@ function registerUser(firstName, lastName, email, password, role, cuisines) {
         console.log(err);
       }
       else {
-        console.log('success');
         let s = 'Privacy Policy\n' +
           '\n' +
           'Stou values the privacy of the users who use our web service. And, we want you to be aware\n' +
