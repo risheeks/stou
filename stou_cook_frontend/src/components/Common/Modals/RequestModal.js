@@ -75,13 +75,14 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
                 
                     <Row>
                         <Col>
-                            <p>Food: {name}</p>
+                            <p><b>Food</b></p>
+                            <p className="vfo-description">{name}</p>
                         </Col>
                     </Row>
                     <Row>
                         <Col>
-                            <p>Description: </p>
-                            <p>{description}</p>
+                            <p><b>Description</b></p>
+                            <p className="vfo-description">{description}</p>
                         </Col>
                     </Row>
                     <Row>
