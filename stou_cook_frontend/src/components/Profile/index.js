@@ -214,48 +214,6 @@ export default class Profile extends React.Component {
             >
               Update
             </Button>
-            <br />
-            <div className="form-group">
-              <h5><p className='form-text'>Past Food:</p></h5>
-              <Container className="ViewFood">
-                <ListGroup>
-                  <ListGroup.Item>
-                    <Row>
-                      <Col>
-                        <img className="vfo-image rounded float-left" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" alr=""></img>
-                      </Col>
-                      <Col>
-                        <Row className="vfo-foodname">
-                          <p>Spicy Pasta</p>
-                        </Row>
-                        <Row className="vfo-description">
-                          <p>tasty italian food</p>
-                        </Row>
-                      </Col>
-                      <Col className="vfo-price">
-                      </Col>
-                    </Row>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <Row>
-                      <Col>
-                        <img className="vfo-image rounded float-left" src="https://d1doqjmisr497k.cloudfront.net/-/media/mccormick-us/recipes/mccormick/f/800/fiesta_tacos_800x800.jpg" alr=""></img>
-                      </Col>
-                      <Col>
-                        <Row className="vfo-foodname">
-                          <p>Chicken Tikka Masala</p>
-                        </Row>
-                        <Row className="vfo-description">
-                          <p>Delicious Indian food!</p>
-                        </Row>
-                      </Col>
-                      <Col className="vfo-price">
-                      </Col>
-                    </Row>
-                  </ListGroup.Item>
-                </ListGroup>
-              </Container>
-            </div>
           </Form>
             
         </div>
