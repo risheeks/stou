@@ -5,6 +5,7 @@ import axios from 'axios';
 import { serverURL } from '../../config';
 import { withRouter } from 'react-router-dom';
 import { ModalKey } from '../../constants/ModalKeys';
+import Raven from 'raven-js';
 
 export class Login extends Component {
   constructor(props) {
@@ -12,12 +13,15 @@ export class Login extends Component {
 
     this.state = {
       email: "",
-      password: ""
+      password: "",
+      error: null
     };
   }
 
   componentDidMount() {
-    console.log(this.props.auth_token);
+    
+    
+    // console.log(this.props.auth_token);
     if (this.props.auth_token && this.props.auth_token.length > 0) {
       this.props.history.push('/');
     }
@@ -54,20 +58,24 @@ export class Login extends Component {
         // .then(res => {
         //   console.log(res);
         // })
-        console.log(res);
+        // console.log(res);
         this.props.getToken(res.data['token'], email);
         this.props.history.push('/');
       })
       .catch(err => {
-        if(err.response.data.code === 401) {
-          this.props.openModal(ModalKey.ERROR_MODAL, {...err.response.data})
-        }
+          
+        Raven.captureException("Login: " + err);
+        this.props.openModal(ModalKey.ERROR_MODAL, {...err.response.data})
+       
       })
   }
 
   render() {
     return (
+      
       <div className="master-container">
+        <script src="https://cdn.ravenjs.com/3.26.4/raven.min.js"
+    crossOrigin="anonymous"></script>
         <div className="Login container">
           {this.props.auth_token ? this.props.history.push('/') : null}
           <form onSubmit={this.handleSubmit}>
