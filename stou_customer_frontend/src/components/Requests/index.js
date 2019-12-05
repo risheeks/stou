@@ -78,7 +78,7 @@ class Requests extends Component {
               <ListGroup.Item className="">
 
                 <div className="request_texts">
-                  <p>{item.itemName} from <b>Siddhant Patel</b> </p>                  
+                  <p>{item.itemName} from <b>{item.cookEmail}</b> </p>                  
                   <p className="vfo-description">{item.itemDescription}</p>                                  
                 </div>
                 <Button variant="danger" className="request-button">{this.renderSwitch(item.status)}</Button>                 

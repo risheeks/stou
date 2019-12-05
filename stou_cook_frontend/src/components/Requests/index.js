@@ -108,8 +108,8 @@ class Requests extends Component {
             <ListGroup.Item className="">
 
               <div className="request_texts">
-                <p>{item.itemName} for {item.name}</p>
-                <p>{item.itemDescription}</p>
+                <p>{item.itemName} for <b>{item.customerEmail}</b></p>
+                <p className="vfo-description">{item.itemDescription}</p>
               </div>
 
               {(item.status == 0) ?

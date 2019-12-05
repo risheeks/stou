@@ -389,7 +389,7 @@ align-self: center;
   color: rgba(111, 95, 95, 0.67);
   font-size: 0.75em;
   text-align: left;
-
+  margin-top: -1rem;
 }
 
 .vfo-chefname {
