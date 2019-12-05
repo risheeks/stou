@@ -640,7 +640,7 @@ app.use('/getreviewrating', function (req, res, next) {
                   'review': rows[i].REVIEW,
                   'rating': rows[i].COOK_RATING
                 };
-                if (rows[i].CUSTOMER_RATING !== null)
+                if (rows[i].COOK_RATING !== null)
                   tempList.push(tempOb);
                 tempOb = {};
               }
