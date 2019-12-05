@@ -133,7 +133,7 @@ class Main extends Component {
                 <Route path="/homecookmenu" render={() => <MenuModal auth_token={auth_token} email={email} openModal={openModal} />} />
                 <Route path="/homecookrequest" render={() => <Requests auth_token={auth_token} email={email} />} />
                 <MyModal {...modalProps} closeModal={closeModal} />
-                 <Chat auth_token={auth_token} email={email} />
+                {loggedIn ? <Chat auth_token={auth_token} email={email} /> : null}
             </Router>
         );
     }

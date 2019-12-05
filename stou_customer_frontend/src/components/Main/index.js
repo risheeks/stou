@@ -221,7 +221,7 @@ class Main extends Component {
                 loggedIn={loggedIn}
                 />
                 <MyModal {...modalProps} closeModal={closeModal} />
-                <Chat auth_token={auth_token} email={email} />
+                {loggedIn ? <Chat auth_token={auth_token} email={email} /> : null}
             </Router>
         );
     }
