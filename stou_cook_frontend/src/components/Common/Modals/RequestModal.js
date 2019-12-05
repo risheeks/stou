@@ -39,7 +39,7 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
             }
         })
         .then(res => {
-            
+            this.props.closeModal();
         })
     }
 
@@ -57,7 +57,7 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
             }
         })
         .then(res => {
-            
+            this.props.closeModal();
         })   
     }
 
