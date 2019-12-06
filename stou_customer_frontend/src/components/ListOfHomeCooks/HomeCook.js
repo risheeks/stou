@@ -6,6 +6,7 @@ import { IoMdEye } from "react-icons/io"
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { ModalKey } from '../../constants/ModalKeys';
+import Raven from 'raven-js';
 
 class HomeCook extends Component {
     constructor(props) {
@@ -46,6 +47,9 @@ class HomeCook extends Component {
         .then(res => {
             
         })
+        .catch(err => {
+            Raven.captureException("SetFavHomeCooks: " + err);
+        })
     }
 
     RemoveFavoriteHomeCook =(e) => {
@@ -58,6 +62,9 @@ class HomeCook extends Component {
         .then(res => {
             //console.log("Reached remove")
             //console.log(res.data);
+        })
+        .catch(err => {
+            Raven.captureException("RemoveFavHomeCook: " + err);
         })
     }
 
@@ -75,7 +82,7 @@ class HomeCook extends Component {
             //console.log("TOP FOOD=" + this.state.topFood)
             
         }).catch(function (error) {
-            console.log("ERROR gettopfood")
+            Raven.captureException("GetTopFood: " + error);
         });
     }
 
@@ -108,6 +115,7 @@ class HomeCook extends Component {
             openModal(ModalKey.MENU, {fooditems,addToOrder,openModal, name, baggedItems: baggedItems, topFood:res.data.data, clearOrder: clearOrder, customerEmail: this.props.email, cookEmail: this.state.cook_email});
                 
             }).catch(function (error) {
+                Raven.captureException("GetTopFood: " + error);
                 console.log("ERROR gettopfood")
             });
             
@@ -115,6 +123,7 @@ class HomeCook extends Component {
             //console.log(this.state.fooditems)   
             
         }).catch(function (error) {
+            Raven.captureException("GetFoodItems: " + error);
             const { openModal, name} = self.props;
             openModal(ModalKey.MENU, {openModal, name, customerEmail: this.props.email, cookEmail: this.state.cook_email});
         });
@@ -144,6 +153,10 @@ class HomeCook extends Component {
                     views : numviews
                 });
             })
+            .catch(err => {
+                Raven.captureException("GetViews: " + err);
+            })
+
     }
      axiosCall = (views) => {
         axios.post(`${serverURL}/setViews`, {
@@ -154,6 +167,9 @@ class HomeCook extends Component {
         })
             .then(res => {
 
+            })
+            .catch(err => {
+                Raven.captureException("SetViews: " + err);
             })
     }
 

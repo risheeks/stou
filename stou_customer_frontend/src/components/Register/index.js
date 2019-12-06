@@ -7,6 +7,7 @@ import sha256 from 'crypto-js/sha256';
 import { serverURL } from '../../config';
 import { withRouter } from 'react-router-dom';
 import PrivacyPolicy from '../PrivacyPolicy';
+import Raven from 'raven-js';
 
 class Register extends Component {
   constructor(props) {
@@ -139,7 +140,8 @@ class Register extends Component {
           this.props.history.push('/');
         })
         .catch(err => {
-          console.log(err);
+          Raven.captureException("Register: " + err);
+          // console.log(err);
         })
     }
     this.setState({

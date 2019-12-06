@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Modal, Button, Form, FormControl} from 'react-bootstrap';
 import axios from 'axios';
 import { serverURL } from '../../../config';
+import Raven from 'raven-js';
+
 
 class ShareappModal extends Component {
     constructor(props) {
@@ -24,6 +26,9 @@ class ShareappModal extends Component {
         .then(res => {
           console.log(res.data);
           this.props.closeModal();
+        })
+        .catch(err => {
+            Raven.captureException("ShareApp: " + err);
         })
     }
     handleChange = e => {

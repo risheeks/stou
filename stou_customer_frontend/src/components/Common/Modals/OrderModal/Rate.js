@@ -4,6 +4,8 @@ import { ROLE } from '../../../../constants';
 import axios from 'axios';
 import { serverURL } from '../../../../config';
 import CustomRating from '../../CustomRating';
+import Raven from 'raven-js';
+
 
 class Rate extends Component {
     constructor(props) {
@@ -39,8 +41,10 @@ class Rate extends Component {
               review: this.state.review
             }
           })
-          .then(res => {
+        .then(res => {
             this.props.closeModal();
+        }).catch(err => {
+            Raven.captureException("SetReviewRating: " + err);
         })
         
     }
