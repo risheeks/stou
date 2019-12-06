@@ -2018,13 +2018,13 @@ function sendEmail(email, password = "", text, subject = 'Password Reset') {
   var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'markvadesamuel1998@gmail.com',
-      pass: 'soccermanager'
+      user: 'stoufood@gmail.com',
+      pass: 'CurryOrBiryani'
     }
   });
 
   var mailOptions = {
-    from: 'markvadesamuel1998@gmail.com',
+    from: 'stoufood@gmail.com',
     to: email.toString(),
     subject: subject,
     text: text
