@@ -2067,13 +2067,9 @@ app.use('/resetpassword', function (req, res, next) {
 
 
 app.use('/checklogin', function (req, res, next) {
-  const o = checkLogin(req.body['data']['email'], req.body['data']['token'], req.body['data']['role']);
-  res.status(o['code']);
-  res.send(o);
-});
-
-
-function checkLogin(email, token, role) {
+  const email = req.body['data']['email'];
+  const token = req.body['data']['token']
+  const role = req.body['data']['role'];
   var o = {};
   const tok = revLoginTokens[email];
   con.getConnection(function (err, connection) {
@@ -2090,9 +2086,15 @@ function checkLogin(email, token, role) {
         o['code'] = 401;
         o['message'] = 'Unauthorized client error';
       }
-      return o;
+      res.status(o['code']);
+      res.send(o);
     });
   });
+});
+
+
+function checkLogin(email, token, role) {
+  
 }
 
 app.use('/login', function (req, res, next) {

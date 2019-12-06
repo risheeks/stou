@@ -9,7 +9,6 @@ import "../../styles/Main.css";
 import { serverURL } from "../../config/index.js"
 import { firebaseConfig } from '../../config';
 import Raven from 'raven-js';
-import { ModalKey } from "../../constants/ModalKeys";
 import { ModalKey } from '../../constants/ModalKeys';
 
 export class AddFoodItem extends Component {
