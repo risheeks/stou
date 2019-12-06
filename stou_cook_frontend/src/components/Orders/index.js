@@ -5,6 +5,7 @@ import { serverURL } from '../../config';
 import { ModalKey } from '../../constants/ModalKeys';
 import { tokenUrl, instanceLocator } from '../../config';
 import { ChatManager, TokenProvider } from '@pusher/chatkit-client';
+import Raven from 'raven-js';
 
 class Orders extends Component {
     constructor(props) {
@@ -52,6 +53,7 @@ class Orders extends Component {
                 });
             })
             .catch(err => {
+                Raven.captureException("GetAllOrders: " + err);
                 this.setState({
                     orders: []
                 });
@@ -92,6 +94,7 @@ class Orders extends Component {
                 this.setOrders();
             })
             .catch(err => {
+                Raven.captureException("SetOrderStatus: " + err);
                 if(err.response) {
                     console.log(err.response.data);
                 }

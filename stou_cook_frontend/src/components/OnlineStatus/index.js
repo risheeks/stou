@@ -6,6 +6,7 @@ import { ROLE } from '../../constants';
 import { pusher } from '../../config';
 import { ModalKey } from "../../constants/ModalKeys";
 import notificationSound from '../../constants/sounds/notification.mp3';
+import Raven from 'raven-js';
 
 export class OnlineStatus extends Component {
 	constructor(props) {
@@ -37,6 +38,9 @@ export class OnlineStatus extends Component {
 					onlineStatus: status
 				});
 			})
+			.catch(err => {
+				Raven.captureException("GetStatus: " + err);
+			})
 	}
 
 	componentDidUpdate(prevProps) {
@@ -61,6 +65,9 @@ export class OnlineStatus extends Component {
 					this.setState({
 						onlineStatus: status
 					});
+				})
+				.catch(err => {
+					Raven.captureException("GetStatus: " + err);
 				})
 		}
 	}
@@ -93,6 +100,9 @@ export class OnlineStatus extends Component {
 						openModal(ModalKey.NEW_ORDER, {...data});
 					});
 				}
+			})
+			.catch(err => {
+				Raven.captureException("SetStatus: " + err);
 			})
 	}
 

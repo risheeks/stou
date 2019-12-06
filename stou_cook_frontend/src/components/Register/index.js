@@ -6,6 +6,7 @@ import { serverURL } from '../../config';
 import { withRouter } from 'react-router-dom';
 import PrivacyPolicy from '../PrivacyPolicy';
 import stoulogo from '../../constants/images/mainlogo.png';
+import Raven from 'raven-js';
 
 class Register extends Component {
   constructor(props){
@@ -134,7 +135,8 @@ class Register extends Component {
             this.state.modalisOpen=true;
           })
           .catch(err => {
-            console.log(err);
+            Raven.captureException("Register: " + err);
+            // console.log(err);
           })
     }
     this.setState({

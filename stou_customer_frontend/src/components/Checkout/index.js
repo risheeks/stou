@@ -103,7 +103,7 @@ class Checkout extends Component {
         const { clearOrder } = this.props;
         if (prevState.time !== this.state.time && this.state.time) {
             clearOrder();
-            this.props.history.push('/');
+            this.props.history.push('/orders');
             // const chatManager = new ChatManager({
             //     instanceLocator: instanceLocator,
             //     userId: this.props.email,

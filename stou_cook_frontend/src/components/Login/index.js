@@ -7,6 +7,7 @@ import { withRouter } from 'react-router-dom';
 import ResetPassword from '../ResetPassword';
 import { ModalKey } from "../../constants/ModalKeys";
 import stoulogo from '../../constants/images/mainlogo.png';
+import Raven from 'raven-js';
 
 export class Login extends Component {
   constructor(props) {
@@ -50,6 +51,7 @@ export class Login extends Component {
       })
       .catch(err => {
         if(err && err.response && err.response.data.code === 401) {
+          Raven.captureException("Login: " + err);
           this.props.openModal(ModalKey.ERROR_MODAL, {...err.response.data})
         }
       })
