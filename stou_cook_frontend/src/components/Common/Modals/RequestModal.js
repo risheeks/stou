@@ -6,7 +6,9 @@ import { serverURL } from '../../../config';
 import { pusher } from '../../../config';
 import { ModalKey } from "../../../constants/ModalKeys";
 import notificationSound from '../../../constants/sounds/notification.mp3';
- class RequestModal extends Component {
+import Raven from 'raven-js';
+ 
+class RequestModal extends Component {
     constructor(props) {
       super(props);
       this.state = {
@@ -42,6 +44,9 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
         .then(res => {
             this.props.closeModal();
         })
+        .catch(err => {
+            Raven.captureException("ChangeReqStatus: " + err);
+        })
     }
 
     rejectRequest = () => {
@@ -61,6 +66,9 @@ import notificationSound from '../../../constants/sounds/notification.mp3';
         .then(res => {
             this.props.closeModal();
         })   
+        .catch(err => {
+            Raven.captureException("ChangeReqStatus: " + err);
+        })
     }
 
     render() {

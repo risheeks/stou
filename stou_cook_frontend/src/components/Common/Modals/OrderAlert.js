@@ -5,6 +5,7 @@ import axios from 'axios';
 import { serverURL, tokenUrl, instanceLocator } from '../../../config';
 import { ModalKey } from '../../../constants/ModalKeys';
 import { ChatManager, TokenProvider } from '@pusher/chatkit-client'
+import Raven from 'raven-js';
 
 class OrderAlert extends Component {
     constructor(props) {
@@ -56,6 +57,9 @@ class OrderAlert extends Component {
         axios.post(`${serverURL}/setorderstatus`, { data })
             .then(res => {
                 this.props.closeModal();
+            })
+            .catch(err => {
+                Raven.captureException("SetOrderStatus: " + err);
             })
     }
 

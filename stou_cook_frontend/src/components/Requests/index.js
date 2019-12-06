@@ -6,6 +6,7 @@ import "../../styles/Main.css";
 import { serverURL } from '../../config';
 import { pusher } from '../../config';
 import notificationSound from '../../constants/sounds/notification.mp3';
+import Raven from 'raven-js';
 
 
 class Requests extends Component {
@@ -66,6 +67,9 @@ class Requests extends Component {
       .then(res => {
         this.getRequests();
       })
+      .catch(err => {
+        Raven.captureException("ChangeRequestStatus: " + err);
+    })
   }
 
   rejectRequest(email, name, requestId, e) {
@@ -83,6 +87,9 @@ class Requests extends Component {
       .then(res => {
         this.getRequests();
       })
+      .catch(err => {
+        Raven.captureException("ChangeRequestStatus: " + err);
+    })
   }
 
   renderSwitch(status) {

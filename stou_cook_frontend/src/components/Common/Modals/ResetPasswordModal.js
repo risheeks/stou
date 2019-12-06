@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Form, Button, TextField, Modal, DialogActions, DialogContent, DialogContentText, DialogTitle } from "react-bootstrap";
 import axios from 'axios';
 import { serverURL } from '../../../config';
+import Raven from 'raven-js';
 
 
 class ResetPasswordModal extends Component {
@@ -34,6 +35,7 @@ class ResetPasswordModal extends Component {
         this.props.closeModal();
       })
       .catch(err => {
+        Raven.captureException("ForgotPassword: " + err);
         console.log(err);
       })
   }
