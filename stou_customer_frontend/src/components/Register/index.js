@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Button, FormGroup, FormControl, FormLabel, Alert, Modal } from "react-bootstrap";
+import { Button, FormGroup, FormControl, FormLabel, Alert, Modal, Image } from "react-bootstrap";
 import axios from 'axios';
 import "../../styles/Main.css";
 import sha256 from 'crypto-js/sha256';
@@ -8,6 +8,7 @@ import { serverURL } from '../../config';
 import { withRouter } from 'react-router-dom';
 import PrivacyPolicy from '../PrivacyPolicy';
 import Raven from 'raven-js';
+import stoulogo from '../../constants/images/mainlogo.png';
 
 class Register extends Component {
   constructor(props) {
@@ -171,6 +172,7 @@ class Register extends Component {
     return (
       <div className="master-container">
         <div className="Register container">
+        <Image className="logo-image" src={stoulogo}></Image>
           <Modal show={this.state.modalisOpen} onHide={this.handleClose}>
             <PrivacyPolicy />
           </Modal>

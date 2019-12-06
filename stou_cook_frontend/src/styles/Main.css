@@ -293,11 +293,18 @@ align-self: center;
   align-self: center;
 }
 
+.logo-image {
+  width: 7rem;
+  margin-bottom: 2rem;
+}
+
 @media all and (min-width: 480px) {
   .Login {
-    padding: 60px 0;
+    padding: 40px 0;
     border: 1px solid rgb(202, 202, 202);
+    border-radius: 5px;
     width: 450px;
+    margin-top: 5rem;
   }
 
   .Login form {
@@ -307,14 +314,16 @@ align-self: center;
 }
 @media all and (min-width: 480px) {
   .Register {
+    padding: 40px 0;
     border: 1px solid rgb(202, 202, 202);
+    border-radius: 5px;
     width: 450px;
+    margin-top: 2px;
+    
   }
   .form {
     margin: 0 auto;
     max-width: 320px;
-    padding-top: 60px;
-    padding-bottom: 50px;
   }
   
   .title {

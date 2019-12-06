@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
+import { Button, FormGroup, FormControl, FormLabel, Image } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { withRouter } from 'react-router-dom';
 import ResetPassword from '../ResetPassword';
 import { ModalKey } from "../../constants/ModalKeys";
+import stoulogo from '../../constants/images/mainlogo.png';
 
 export class Login extends Component {
   constructor(props) {
@@ -62,6 +63,7 @@ export class Login extends Component {
   render() {
     return (
       <div className="Login container">
+        <Image className="logo-image" src={stoulogo}></Image>
         { this.props.auth_token ? this.props.history.push('/') : null}
         <form onSubmit={this.handleSubmit}>
           <FormGroup controlId="email">

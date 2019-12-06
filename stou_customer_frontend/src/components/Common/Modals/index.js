@@ -14,6 +14,7 @@ import PrivacyModal from './PrivacyModal';
 import ErrorModal from './ErrorModal';
 import CookOnline from './CookOnline';
 import RequestUpdateModal from './RequestUpdateModal';
+import ResetPasswordModal from './ResetPasswordModal';
 
 class MyModal extends Component {
     render() {
@@ -47,6 +48,8 @@ class MyModal extends Component {
                 return <CookOnline {...this.props} />;
             case ModalKey.REQUEST_UPDATE:
                 return <RequestUpdateModal {...this.props} />;
+            case ModalKey.RESET_PASSWORD:
+                return <ResetPasswordModal {...this.props} />;
             default:
                 return null;
         }
