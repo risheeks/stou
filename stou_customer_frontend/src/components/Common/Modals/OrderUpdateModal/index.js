@@ -4,6 +4,8 @@ import OrderProgress from './OrderProgress';
 import axios from 'axios';
 import { serverURL } from '../../../../config';
 import Rate from '../OrderModal/Rate';
+import Raven from 'raven-js';
+
 
 class OrderUpdateModal extends Component {
     constructor(props) {
@@ -25,12 +27,16 @@ class OrderUpdateModal extends Component {
                 this.setState({
                     items: Array.from(res.data)
                 });
-            });
+            }).catch(err => {
+                Raven.captureException("GetFoodItemsByOrder: " + err);
+            })
         axios.post(`${serverURL}/getdetailsbyorder`, { data })
         .then(res => {
             this.setState({
                 order: res.data.data
             })
+        }).catch(err => {
+            Raven.captureException("GetDetailsByOrder: " + err);
         })
     }
 

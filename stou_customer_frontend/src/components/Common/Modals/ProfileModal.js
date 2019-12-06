@@ -6,6 +6,7 @@ import Accordion from 'react-bootstrap/Accordion'
 import { useState } from 'react';
 import axios from 'axios';
 import { serverURL } from '../../../config';
+import Raven from 'raven-js';
 
 class ProfileModal extends Component {
     
@@ -36,6 +37,9 @@ class ProfileModal extends Component {
                    views : res.data.data
                 });
             })
+            .catch(err => {
+                Raven.captureException("GetViews: " + err);
+            })
     }
 
     getReviewRating = () => {
@@ -50,6 +54,9 @@ class ProfileModal extends Component {
                 reviewRating: Array.from(res.data.data[1])
             });
             console.log(this.state.reviewRating)
+        })
+        .catch(err => {
+            Raven.captureException("GetReviewRating: " + err);
         })
     }
 

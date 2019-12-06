@@ -5,6 +5,8 @@ import { FaHeart, FaRegHeart } from "react-icons/fa";
 import NavLink from 'react-bootstrap/NavLink';
 import axios from 'axios';
 import { serverURL } from '../../config';
+import Raven from 'raven-js';
+
 export default class FavoriteFood extends React.Component {
 
     constructor(props) {
@@ -29,6 +31,9 @@ export default class FavoriteFood extends React.Component {
       .then(res => {
           //console.log(res.data);
       })
+      .catch(err => {
+        Raven.captureException("SetFavFood: " + err);
+      })
     }
     RemoveFavoriteFood =(e) => {
       //console.log(this.props.email + " " + this.state.cook_email);
@@ -41,6 +46,9 @@ export default class FavoriteFood extends React.Component {
       .then(res => {
           //console.log("Reached remove")
           //console.log(res.data);
+      })
+      .catch(err => {
+        Raven.captureException("RemoveFavFood: " + err);
       })
     }
     ChangeSaveFavFoodStatus =(e)=> {

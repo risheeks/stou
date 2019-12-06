@@ -9,7 +9,7 @@ import { ModalKey } from '../../constants/ModalKeys';
 import { tokenUrl, instanceLocator } from '../../config'
 import { ChatManager, TokenProvider } from '@pusher/chatkit-client'
 import { PayPalButton } from "react-paypal-button-v2";
-
+import Raven from 'raven-js';
 
 const CLIENT = {
     sandbox: 'AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC',
@@ -181,8 +181,14 @@ class Checkout extends Component {
                     .then(res => {
                         console.log(res.data.code);
                     })
+                    .catch(err => {
+                        Raven.captureException("UsePromoCode: " + err);
+                    })
                 }
 
+            })
+            .catch(err => {
+                Raven.captureException("PlaceOrder: " + err);
             })
     }
 
@@ -251,6 +257,9 @@ class Checkout extends Component {
                     this.setState({promo_code_success:promo_code})
                 }
             }
+        })
+        .catch(err => {
+            Raven.captureException("CheckPromoCode: " + err);
         })
         
     }

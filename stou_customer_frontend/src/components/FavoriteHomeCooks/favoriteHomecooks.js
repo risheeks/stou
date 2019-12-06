@@ -5,6 +5,7 @@ import { FaHeart, FaRegHeart } from "react-icons/fa";
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { ModalKey } from '../../constants/ModalKeys';
+import Raven from 'raven-js';
 
 class FavoriteHomeCook extends Component {
     constructor(props) {
@@ -29,6 +30,9 @@ class FavoriteHomeCook extends Component {
         })
         .then(res => {
             console.log(res.data);
+        })
+        .catch(err => {
+            Raven.captureException("RemoveFavHomeCooks: " + err);
         })
         // window.location.reload();
     }
