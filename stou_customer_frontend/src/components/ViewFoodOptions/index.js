@@ -5,6 +5,7 @@ import { serverURL } from '../../config';
 import NavLink from 'react-bootstrap/NavLink';
 import { ModalKey } from '../../constants/ModalKeys';
 import { FaTruck } from "react-icons/fa";
+import Raven from 'raven-js';
 
 class ViewFoodOptions extends Component {
   constructor(props) {
@@ -26,6 +27,7 @@ class ViewFoodOptions extends Component {
           });
         })
         .catch(err => {
+          Raven.captureException("GetAllFod: " + err);
           this.setState({
             foodoptions: []
           });
@@ -43,6 +45,7 @@ class ViewFoodOptions extends Component {
           });
         })
         .catch(err => {
+          Raven.captureException("GetAllFod: " + err);
           this.setState({
             foodoptions: []
           });
@@ -62,6 +65,7 @@ class ViewFoodOptions extends Component {
           })
         })
         .catch(err => {
+          Raven.captureException("Filter: " + err);
           this.setState({
             foodoptions: []
           });

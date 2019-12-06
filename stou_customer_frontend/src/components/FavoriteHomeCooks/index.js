@@ -4,6 +4,7 @@ import { Row, Col, Container, Button, ListGroup, FormControl, FormLabel, Image }
 import FavoriteHomeCook from './favoriteHomecooks';
 import axios from 'axios';
 import { serverURL } from '../../config';
+import Raven from 'raven-js';
 
 class FavoriteHomeCooksList extends Component {
 	constructor(props) {
@@ -20,12 +21,15 @@ class FavoriteHomeCooksList extends Component {
 				email: this.props.email,
 			}
 		})
-			.then(res => {
-				console.log(res.data)
-				this.setState({
-					favhomecooks: Array.from(res.data)
-				});
+		.then(res => {
+			console.log(res.data)
+			this.setState({
+				favhomecooks: Array.from(res.data)
 			});
+		})
+		.catch(err =>{
+			Raven.captureException("GetFavHomeCooks: " + err);
+		})
 		console.log(this.state.favhomecooks)
 	}
 

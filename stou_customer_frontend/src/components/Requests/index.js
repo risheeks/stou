@@ -4,6 +4,7 @@ import { Button, ListGroup, Container } from "react-bootstrap";
 import axios from 'axios';
 import "../../styles/Main.css";
 import { serverURL } from '../../config';
+import Raven from 'raven-js';
 
 
 class Requests extends Component {
@@ -48,6 +49,9 @@ class Requests extends Component {
             requests: []
         });
         }
+    })
+    .catch(err => {
+      Raven.captureException("GetRequest: " + err);
     })
   }
 

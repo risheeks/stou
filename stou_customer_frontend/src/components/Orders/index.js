@@ -3,6 +3,7 @@ import { ToggleButtonGroup, ToggleButton, ListGroup, Button, Image } from 'react
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { ModalKey } from '../../constants/ModalKeys';
+import Raven from 'raven-js';
 
 class Orders extends Component {
     constructor(props) {
@@ -33,6 +34,9 @@ class Orders extends Component {
                 order.orderStatus = orderStatus
                 this.props.openModal(ModalKey.ORDER_STATUS, { order, setOrders: this.setOrders });
             })
+            .catch(err => {
+                Raven.captureException("SetOrderStatus: " + err);
+            })
     }
 
     setOrders = orders_type => {
@@ -47,6 +51,7 @@ class Orders extends Component {
                 });
             })
             .catch(err => {
+                Raven.captureException("GetCustomOrders: " + err);
                 this.setState({
                     orders: []
                 });

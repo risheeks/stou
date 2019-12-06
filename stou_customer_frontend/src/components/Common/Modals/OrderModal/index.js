@@ -4,6 +4,8 @@ import OrderProgress from './OrderProgress';
 import axios from 'axios';
 import { serverURL } from '../../../../config';
 import Rate from './Rate';
+import Raven from 'raven-js';
+
 
 class OrderModal extends Component {
     constructor(props) {
@@ -24,6 +26,8 @@ class OrderModal extends Component {
                 this.setState({
                     items: Array.from(res.data)
                 });
+            }).catch(err => {
+                Raven.captureException("GetFoodItemsByOrder: " + err);
             })
     }
 

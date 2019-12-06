@@ -5,6 +5,7 @@ import { Row, Col, Container, Button, ListGroup, FormControl, FormLabel, Image }
 import HomeCook from './HomeCook';
 import axios from 'axios';
 import { serverURL } from '../../config';
+import Raven from 'raven-js';
 
 class ListOfHomeCooks extends Component {
 	constructor(props) {
@@ -34,7 +35,10 @@ class ListOfHomeCooks extends Component {
                 this.setState({
                     homecooks: Array.from(res.data.data)
 				});
-			});
+			})
+			.catch(err => {
+				Raven.captureException("GetHomeCooks: " + err);
+			})
 			
 	}
 
