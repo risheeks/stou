@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Modal, Button, Form, Col, Row, Image } from "react-bootstrap";
-import MessageList from "../../Chat/MessageList";
+import MessageList from "../../ChatHistory/MessageList";
 import { ModalKey } from '../../../constants/ModalKeys';
 
 class MessageListModal extends Component {
