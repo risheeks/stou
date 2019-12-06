@@ -1,4 +1,4 @@
-#Stou Backend Documentation 
+# Stou Backend Documentation 
 
 <b>Overview</b>
 
@@ -19,6 +19,13 @@
 <b>Logs</b>
 
     The backend also logs all HTTP requests with other metadata about the request in a file called ‘access.log’ in the log/ directory sorted by day.
+    
+<b>Database </b>
+
+    The database is a MySql relational database and is hosted remotely with remoteSql and phpMyAdmin. The SQL script create_tables.sql can be used to sanitize the database to drop tables and reinitialize the database. 
+    URL: https://remotemysql.com/phpmyadmin/sql.php?server=1&db=lSC9ZLcwnc
+
+
 
 <b>Folder Structure</b>
 
@@ -265,9 +272,4 @@ Use Promo Code
     URL : /usePromoCode
 
 	
-<b>Database </b>
-
-    The database is a MySql relational database and is hosted remotely with remoteSql and phpMyAdmin. The SQL script create_tables.sql can be used to sanitize the database to drop tables and reinitialize the database. 
-    URL: https://remotemysql.com/phpmyadmin/sql.php?server=1&db=lSC9ZLcwnc
-
 
