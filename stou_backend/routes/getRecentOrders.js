@@ -45,10 +45,13 @@ router.use('/', function (req, res, next) {
                 con.releaseConnection(connection);
 
             }
+            connection.on('error',function () {
+                console.log('MUC')
+            })
         });
     });
     con.on('error', function () {
-        console.log('Too many users');
+        res.status(500); res.send({'message' : 'Internal Server Error'});;
     })
 });
 

@@ -65,7 +65,7 @@ router.use('/', function (req, res, next) {
         });
     });
     con.on('error', function () {
-        console.log('Too many users');
+        res.status(500); res.send({'message' : 'Internal Server Error'});;
     })
 });
 

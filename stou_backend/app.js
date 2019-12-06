@@ -378,6 +378,7 @@ function checkLogin(email, token) {
 }
 
 app.use('/login', function (req, res, next) {
+  console.log('in login')
   const email = req.body['data']['email'];
   const password = req.body['data']['password'];
   let role = req.body['data']['role'];
@@ -410,7 +411,9 @@ app.use('/login', function (req, res, next) {
         res.status(200);
         res.send(o);
       }
-      con.releaseConnection(connection);
+      connection.on('error', function () {
+        res.status(500); res.send({'message' : 'Internal Server Error'});;
+      });
     });
   });
 });

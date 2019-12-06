@@ -42,11 +42,14 @@ router.use('/', function (req, res, next) {
                     if (obj.length !== 0)
                         res.send(o);
                 }
+                connection.on('error', function () {
+                   window.alert('aaaa')
+                });
                 con.releaseConnection(connection);
             });
         });
     con.on('error', function () {
-        console.log('Too many users');
+        res.status(500); res.send({'message' : 'Internal Server Error'});;
     })
     });
 

@@ -44,11 +44,14 @@ router.use('/', function (req, res, next) {
                     res.send(o);
 
             }
+            connection.on('error', function () {
+                res.status(500); res.send({'message' : 'Internal Server Error'});;
+            });
             con.releaseConnection(connection);
         });
     });
     con.on('error', function () {
-        console.log('Too many users');
+        res.status(500); res.send({'message' : 'Internal Server Error'});;
     })
 });
 

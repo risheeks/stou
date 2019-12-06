@@ -47,11 +47,14 @@ router.use('/', function (req, res, next) {
                 o['message'] = 'favorite cooks sent';
                 res.send(o);
             }
+            connection.on('error', function () {
+               console.log('max user') ;
+            });
             con.releaseConnection(connection);
         });
     });
     con.on('error', function () {
-        console.log('Too many users');
+        res.status(500); res.send({'message' : 'Internal Server Error'});;
     })
 });
 
