@@ -244,8 +244,8 @@ app.use('/shareapp', function (req, res, next) {
         o['code'] = 202;
         res.status(202);
         let a = generatePromoCode();
-        let text = 'App link, Enjoy 10% off on your order with this promo code ' + a;
-        sendEmail(email, "", text, 'ENJOY STOU');
+        let text = 'Hey there,\nWant delicious homecooked food? Your friend got you covered!\nEnjoy 10% off on your order with this promo code ' + a + '\nLog on to https://stoufood.herokuapp.com and Just Stou It!\n';
+        sendEmail(email, "", text, '10% off of your next Stou order');
         o['message'] = 'Shared App Successfully';
         res.send(o);
       } else {
@@ -1779,14 +1779,18 @@ app.use('/profile', function (req, res, next) {
 });
 
 app.use('/filter', function (req, res, next) {
-  const json = req.body['data'];
-  const cuisines = json['cuisines'];
-  const allergenList = json['allergens'];
+  const cuisines = req.body['data']['cuisines'];
+  const allergens = req.body['data']['allergens'];
+  const location = req.body['data']['location'];
   var o = {};
-
+  console.log(cuisines)
   con.getConnection(function (err, connection) {
     if (err) console.log(err);
-    var q = 'SELECT * FROM FOOD, FOOD_ALLERGEN, USER WHERE USER.EMAIL=FOOD.COOK_EMAIL AND FOOD.FOOD_ID=FOOD_ALLERGEN.FOOD_ID AND INSTR("' + cuisines + '",FOOD.CUISINE)>0 AND INSTR("' + allergenList + '",FOOD_ALLERGEN.ALLERGEN)=0';
+    let q = `SELECT DISTINCT(FOOD_ID), FOODS.*, USER.FIRST_NAME, USER.LAST_NAME FROM USER JOIN (SELECT * FROM FOOD WHERE FOOD_ID NOT IN (SELECT FOOD.FOOD_ID FROM FOOD JOIN FOOD_ALLERGEN ON FOOD_ALLERGEN.FOOD_ID=FOOD.FOOD_ID WHERE ALLERGEN IN (${allergens}))) AS FOODS ON FOODS.COOK_EMAIL=USER.EMAIL WHERE USER.LOCATION BETWEEN "${parseInt(location) - 2}" AND "${parseInt(location) + 2}"`;
+    if (cuisines !== '""') {
+      q = `SELECT DISTINCT(FOOD_ID), FOODS.*, USER.FIRST_NAME, USER.LAST_NAME FROM USER JOIN (SELECT * FROM FOOD WHERE FOOD_ID NOT IN (SELECT FOOD.FOOD_ID FROM FOOD JOIN FOOD_ALLERGEN ON FOOD_ALLERGEN.FOOD_ID=FOOD.FOOD_ID WHERE ALLERGEN IN (${allergens}))) AS FOODS ON FOODS.COOK_EMAIL=USER.EMAIL WHERE USER.LOCATION BETWEEN "${parseInt(location) - 2}" AND "${parseInt(location) + 2}" AND CUISINE IN (${cuisines})`;
+    }
+    console.log(q)
     // var q = 'select * from FOOD, FOOD_ALLERGEN where FOOD.CUISNE like \'' + cuisines + '\' AND Allergen NOT LIKE \'' + allergenList + '\';';
     connection.query(q, function (err, result) {
       connection.release();

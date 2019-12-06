@@ -11,6 +11,7 @@ import { Container, ListGroup, Form, Button, Modal, Tabs, Tab } from 'react-boot
 import { ModalKey } from '../../constants/ModalKeys';
 import { ROLE } from '../../constants';
 import RecentOrders from '../RecentOrders';
+import Raven from 'raven-js';
 
 export class Home extends Component {
 
@@ -20,21 +21,85 @@ export class Home extends Component {
             allergens: [],
             cuisines: [],
             zip: "47906",
-            modalisOpen: true
+            modalisOpen: true,
+            foodoptions: []
         }
 
     }
 
+    componenDidMount() {
+        const data = { location: this.props.location }
+        axios.post(`${serverURL}/getallfood`, { data: data })
+          .then(res => {
+            this.setState({
+              foodoptions: Array.from(res.data.data)
+            });
+          })
+          .catch(err => {
+            Raven.captureException("GetAllFod: " + err);
+            this.setState({
+              foodoptions: []
+            });
+          })
+    }
+
+    componentDidUpdate(prevProps) {
+        if(this.props.email !== prevProps.email || this.props.location !== prevProps.location) {
+            const data = { location: this.props.location }
+            axios.post(`${serverURL}/getallfood`, { data: data })
+              .then(res => {
+                this.setState({
+                  foodoptions: Array.from(res.data.data)
+                });
+              })
+              .catch(err => {
+                Raven.captureException("GetAllFod: " + err);
+                this.setState({
+                  foodoptions: []
+                });
+              })
+        }
+    }
+
     onFilter = (allergens, cuisines) => {
-        this.setState({
-            allergens: allergens,
-            cuisines: cuisines
-        })
+        if (allergens.length > 0 || cuisines.length > 0) {
+            const data = {
+              allergens: '"' + allergens.join('", "') + '"',
+              cuisines: '"' + cuisines.join('", "') + '"',
+              location: this.props.location
+            }
+            axios.post(`${serverURL}/filter`, { data: data })
+              .then(res => {
+                this.setState({
+                  foodoptions: Array.from(res.data.data)
+                })
+              })
+              .catch(err => {
+                Raven.captureException("Filter: " + err);
+                this.setState({
+                  foodoptions: []
+                });
+              })
+          }
+          else {
+            const data = { location: this.props.location }
+            axios.post(`${serverURL}/getallfood`, { data: data })
+              .then(res => {
+                this.setState({
+                  foodoptions: Array.from(res.data.data)
+                });
+              })
+              .catch(err => {
+                Raven.captureException("GetAllFod: " + err);
+                this.setState({
+                  foodoptions: []
+                });
+              })
+          }
     }
 
     render() {
         const { openModal, addToOrder, location, baggedItems, clearOrder, email } = this.props;
-        //console.log(location)
         return (
             <div className="master-container">
                 <div className="home">
@@ -51,6 +116,7 @@ export class Home extends Component {
                                     location={location}
                                     baggedItems={baggedItems}
                                     clearOrder={clearOrder}
+                                    foodoptions={this.state.foodoptions}
                                 />
                             </div>
                         </Tab>

@@ -15,64 +15,6 @@ class ViewFoodOptions extends Component {
     };
   }
 
-  componentDidMount() {
-    if (this.props.allergens.length <= 0 && this.props.cuisines.length <= 0 && this.props.location) {
-      const data = { location: this.props.location }
-      axios.post(`${serverURL}/getallfood`, { data: data })
-        .then(res => {
-          // console.log(res.data)
-          // console.log(Array.from(res.data.data));
-          this.setState({
-            foodoptions: Array.from(res.data.data)
-          });
-        })
-        .catch(err => {
-          Raven.captureException("GetAllFod: " + err);
-          this.setState({
-            foodoptions: []
-          });
-        })
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.allergens.length <= 0 && this.props.cuisines.length <= 0 && this.props !== prevProps) {
-      const data = { location: this.props.location }
-      axios.post(`${serverURL}/getallfood`, { data: data })
-        .then(res => {
-          this.setState({
-            foodoptions: Array.from(res.data.data)
-          });
-        })
-        .catch(err => {
-          Raven.captureException("GetAllFod: " + err);
-          this.setState({
-            foodoptions: []
-          });
-        })
-    }
-    if ((this.props.allergens.length > 0 || (this.props.cuisines && this.props.cuisines !== '')) && (this.props.allergens !== prevProps.allergens || this.props.cuisines !== prevProps.cuisines)) {
-      const data = {
-        allergens: this.props.allergens.toString(),
-        cuisines: this.props.cuisines.toString(),
-        location: this.props.location
-      }
-      axios.post(`${serverURL}/filter`, { data: data })
-        .then(res => {
-          // console.log(Array.from(res.data.data))
-          this.setState({
-            foodoptions: Array.from(res.data.data)
-          })
-        })
-        .catch(err => {
-          Raven.captureException("Filter: " + err);
-          this.setState({
-            foodoptions: []
-          });
-        })
-    }
-  }
-
   handleFoodName = (e, foodItem) => {
     // console.log(this.props);
     const { openModal, addToOrder, baggedItems, clearOrder } = this.props;
@@ -86,11 +28,10 @@ class ViewFoodOptions extends Component {
 }
 
   render() {
-
     return (
       <Container className="ViewFoodOptions">
         <ListGroup>
-          {this.state.foodoptions.map(item => (
+          {this.props.foodoptions && this.props.foodoptions.length > 0 ? this.props.foodoptions.map(item => (
             <ListGroup.Item className="food-option">
               <div className="food-option-inner">
                 <div>
@@ -119,7 +60,7 @@ class ViewFoodOptions extends Component {
                 </div>
               </div>
             </ListGroup.Item>
-          ))}
+          )) : null}
         </ListGroup>
       </Container>
     )
