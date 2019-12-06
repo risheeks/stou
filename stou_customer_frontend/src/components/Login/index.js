@@ -19,8 +19,8 @@ export class Login extends Component {
   }
 
   componentDidMount() {
-    
-    
+
+
     // console.log(this.props.auth_token);
     if (this.props.auth_token && this.props.auth_token.length > 0) {
       this.props.history.push('/');
@@ -49,33 +49,23 @@ export class Login extends Component {
       }
     })
       .then(res => {
-        // axios.post(`${serverURL}/logtofile`, {
-        //   data: {
-        //     data: 'First message',
-        //     role: "Customer"
-        //   }
-        // })
-        // .then(res => {
-        //   console.log(res);
-        // })
-        // console.log(res);
         this.props.getToken(res.data['token'], email);
         this.props.history.push('/');
       })
       .catch(err => {
-          
         Raven.captureException("Login: " + err);
-        this.props.openModal(ModalKey.ERROR_MODAL, {...err.response.data})
-       
+        if (err && err.response && err.response.data.code === 401) {
+          this.props.openModal(ModalKey.ERROR_MODAL, { ...err.response.data })
+        }
       })
   }
 
   render() {
     return (
-      
+
       <div className="master-container">
         <script src="https://cdn.ravenjs.com/3.26.4/raven.min.js"
-    crossOrigin="anonymous"></script>
+          crossOrigin="anonymous"></script>
         <div className="Login container">
           {this.props.auth_token ? this.props.history.push('/') : null}
           <form onSubmit={this.handleSubmit}>

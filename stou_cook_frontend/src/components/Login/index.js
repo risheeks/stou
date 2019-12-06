@@ -48,7 +48,7 @@ export class Login extends Component {
         this.props.getToken(res.data['token'], email);
       })
       .catch(err => {
-        if(err.response.data.code === 401) {
+        if(err && err.response && err.response.data.code === 401) {
           this.props.openModal(ModalKey.ERROR_MODAL, {...err.response.data})
         }
       })

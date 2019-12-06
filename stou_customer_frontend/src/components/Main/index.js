@@ -62,7 +62,8 @@ class Main extends Component {
         if (tempToken && tempEmail) {
             const data = {
                 token: tempToken,
-                email: tempEmail
+                email: tempEmail,
+                role: 2
             }
             console.log(tempToken)
             await axios.post(`${serverURL}/checklogin`, { data })

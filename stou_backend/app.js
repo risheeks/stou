@@ -2067,24 +2067,32 @@ app.use('/resetpassword', function (req, res, next) {
 
 
 app.use('/checklogin', function (req, res, next) {
-  const o = checkLogin(req.body['data']['email'], req.body['data']['token']);
+  const o = checkLogin(req.body['data']['email'], req.body['data']['token'], req.body['data']['role']);
   res.status(o['code']);
   res.send(o);
 });
 
 
-function checkLogin(email, token) {
+function checkLogin(email, token, role) {
   var o = {};
   const tok = revLoginTokens[email];
-  if (tok === token) {
-    o['code'] = 200;
-    o['message'] = '';
-    o['token'] = token;
-  } else {
-    o['code'] = 401;
-    o['message'] = 'Unauthorized client error';
-  }
-  return o;
+  con.getConnection(function (err, connection) {
+    if (err) console.log(err);
+    var q = 'SELECT BANNED FROM USER WHERE EMAIL = "' + email + '" AND ROLE = ' + role + ';';
+    connection.query(q, function (err, rows) {
+      connection.release();
+      if (err) console.log(err);
+      if (tok === token && !rows[0].BANNED) {
+        o['code'] = 200;
+        o['message'] = '';
+        o['token'] = token;
+      } else {
+        o['code'] = 401;
+        o['message'] = 'Unauthorized client error';
+      }
+      return o;
+    });
+  });
 }
 
 app.use('/login', function (req, res, next) {
