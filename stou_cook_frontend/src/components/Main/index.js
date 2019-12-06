@@ -127,12 +127,12 @@ class Main extends Component {
                 <Route exact path="/" render={() => <Home auth_token={auth_token} email={email} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
                 <Route path="/login" render={() => <Login auth_token={auth_token} email={email} getToken={getToken} openModal={openModal} closeModal={closeModal} showModal={showModal} />} />
                 <Route path="/register" render={() => <Register auth_token={auth_token} email={email} getToken={getToken} />} />
-                <ProtectedRoute isAllowed={loggedIn} path="/addfood" render={() => <AddFoodItem auth_token={auth_token} email={email} />} />
+                <ProtectedRoute isAllowed={loggedIn} path="/addfood" render={() => <AddFoodItem auth_token={auth_token} email={email} openModal={openModal}/>} />
                 <ProtectedRoute isAllowed={loggedIn} path="/profile" render={() => <Profile auth_token={auth_token} email={email} />} />
-                <Route path="/privacyPolicy" render={() => <PrivacyPolicy auth_token={auth_token} email={email} />} />
+                <Route path="/privacyPolicy" render={() => <PrivacyPolicy auth_token={auth_token} email={email} openModal={openModal} />} />
                 <ProtectedRoute isAllowed={loggedIn} path="/orders" render={() => <Orders auth_token={auth_token} email={email} openModal={openModal} />} />
                 <ProtectedRoute isAllowed={loggedIn} path="/homecookmenu" render={() => <MenuModal auth_token={auth_token} email={email} openModal={openModal} />} />
-                <ProtectedRoute isAllowed={loggedIn} path="/homecookrequest" render={() => <Requests auth_token={auth_token} email={email} />} />
+                <ProtectedRoute isAllowed={loggedIn} path="/homecookrequest" render={() => <Requests auth_token={auth_token} email={email} openModal={openModal}/>} />
                 <MyModal {...modalProps} closeModal={closeModal} />
                 {loggedIn ? <Chat auth_token={auth_token} email={email} /> : null}
             </Router>

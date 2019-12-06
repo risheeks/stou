@@ -104,6 +104,36 @@ class Chat extends React.Component {
         })
     }
 
+    componentDidMount() {
+        const chatManager = new ChatManager({
+            instanceLocator: instanceLocator,
+            userId: this.props.email,
+            tokenProvider: new TokenProvider({
+                url: tokenUrl,
+
+            })
+        })
+        chatManager.connect({
+            onAddedToRoom: room => {
+                this.getRooms();
+            },
+            onRemovedFromRoom: room => {
+                this.getRooms();
+            },
+            onUserLeftRoom: (room, user) => {
+                this.getRooms();
+            },
+            onUserJoRoom: (room, user) => {
+                this.getRooms();
+            }
+        })
+            .then(currentUser => {
+                this.setState({ currentUser });
+                this.getRooms();
+            })
+            .catch(err => console.log('error on connecting: ', err))
+    }
+
     componentDidUpdate(prevProps) {
         if (this.props.email !== prevProps.email && this.props.email !== null) {
             const chatManager = new ChatManager({

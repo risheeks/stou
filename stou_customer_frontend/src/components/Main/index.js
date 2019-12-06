@@ -196,6 +196,7 @@ class Main extends Component {
                         auth_token={auth_token}
                         email={email}
                         location={zipcode}
+                        openModal={openModal}
                     />}
                 />
                 <ProtectedRoute isAllowed={loggedIn} path="/orders" render={() =>

@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { Image, ListGroup, Form } from "react-bootstrap";
 import NavLink from 'react-bootstrap/NavLink';
-import { AiTwotoneFire } from "react-icons/ai"; 
+import { AiTwotoneFire } from "react-icons/ai";
 import { ModalKey } from '../../../constants/ModalKeys';
-class ProfileModal extends Component {
+class MenuModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -36,10 +36,10 @@ class ProfileModal extends Component {
                     <Form.Label className='text-profile-modal'><h1 className='text-profile-name-modal'>{this.props.name}'s menu</h1></Form.Label>
                 </Modal.Header>
                 <Modal.Body>
-                <i className="fire-text"><p><b>Best Seller</b></p><AiTwotoneFire className="fire-icon"/></i>
+                    {this.props.topFood ? <i className="fire-text"><p><b>Best Seller</b></p><AiTwotoneFire className="fire-icon" /></i> : null}
                     {this.props.fooditems ? (
                         <div>
-                            <ListGroup className="food-option-view-menu-top">
+                            {this.props.topFood ? <ListGroup className="food-option-view-menu-top">
                                 <ListGroup.Item className="food-option-view-menu-top">
                                     <div className="food-option-inner">
                                         <div>
@@ -63,8 +63,8 @@ class ProfileModal extends Component {
                                         <p className="vfo-price">${topFood.price}</p>
                                     </div>
                                 </ListGroup.Item>
-                            </ListGroup>
-                            <br />
+                            </ListGroup> : null}
+                            {this.props.topFood ? <br /> : null}
                             <p><b>Menu</b></p>
                             <ListGroup>
                                 {this.props.fooditems.map(item => (
@@ -82,7 +82,7 @@ class ProfileModal extends Component {
                                                     </NavLink>
                                                 </div>
                                                 <div className="vfo-description">
-                                                    <p>{topFood.description}</p>
+                                                    <p>{item.description}</p>
                                                 </div>
                                                 <div className="vfo-description">
                                                     <p>Calories: {item.calories}</p>
@@ -109,4 +109,4 @@ class ProfileModal extends Component {
     }
 }
 
-export default ProfileModal;
+export default MenuModal;
