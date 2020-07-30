@@ -1,6 +1,7 @@
 stou
 
-Links -->  http://stoucook.herokuapp.com                   http://stoufood.herokuapp.com
+Links -->   http://stoucook.herokuapp.com
+            http://stoufood.herokuapp.com
 
 STOU_ADMIN_FRONTEND
 
