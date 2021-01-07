@@ -12,7 +12,7 @@ import Footer from '../Common/Footer';
 import Profile from '../Profile';
 import FavoriteHomeCooksList from '../FavoriteHomeCooks';
 import '../../styles/Main.css';
-import MyModal from '../../../../stou_customer_frontend/src/components/Common/Modals';
+import MyModal from '../Common/Modals';
 
 import { getToken, signOut, changeLocation } from '../../actions/login.action';
 import { openModal, closeModal } from '../../actions/modal.action';
@@ -62,7 +62,8 @@ class Main extends Component {
         if (tempToken && tempEmail) {
             const data = {
                 token: tempToken,
-                email: tempEmail
+                email: tempEmail,
+                role: 2
             }
             console.log(tempToken)
             await axios.post(`${serverURL}/checklogin`, { data })
@@ -94,8 +95,17 @@ class Main extends Component {
             channel.bind('order-update', function (data) {
                 const audio = new Audio(notificationSound);
                 audio.play();
-                console.log(openModal)
                 openModal(ModalKey.ORDER_UPDATE, { ...data });
+            });
+            channel.bind('cook-online', function(data) {
+                const audio = new Audio(notificationSound);
+                audio.play();
+                openModal(ModalKey.COOK_ONLINE, { ...data });
+            });
+            channel.bind('request-update', function(data) {
+                const audio = new Audio(notificationSound);
+                audio.play();
+                openModal(ModalKey.REQUEST_UPDATE, { ...data });
             });
             if (loggedIn) {
                 const newLocation = await this.getLocation();
@@ -212,7 +222,7 @@ class Main extends Component {
                 loggedIn={loggedIn}
                 />
                 <MyModal {...modalProps} closeModal={closeModal} />
-                <Chat auth_token={auth_token} email={email} />
+                {loggedIn ? <Chat auth_token={auth_token} email={email} /> : null}
             </Router>
         );
     }

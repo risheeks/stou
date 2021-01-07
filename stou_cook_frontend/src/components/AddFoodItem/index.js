@@ -8,8 +8,8 @@ import imageCompression from 'browser-image-compression';
 import "../../styles/Main.css";
 import { serverURL } from "../../config/index.js"
 import { firebaseConfig } from '../../config';
-
-
+import Raven from 'raven-js';
+import { ModalKey } from '../../constants/ModalKeys';
 
 export class AddFoodItem extends Component {
   constructor(props) {
@@ -103,6 +103,12 @@ export class AddFoodItem extends Component {
     })
       .then(res => {
         this.props.history.push('/orders');
+      })
+      .catch(err => {
+        Raven.captureException("Login: " + err);
+        if (err && err.response) {
+          this.props.openModal(ModalKey.ERROR_MODAL, { ...err.response.data })
+        }
       })
   }
 
@@ -238,7 +244,7 @@ export class AddFoodItem extends Component {
               <Button
                 block
                 bsSize="large"
-                className="submit-button"
+                variant="danger"
                 disabled={!this.validateForm()}
                 onClick={this.handleSubmit}
               >

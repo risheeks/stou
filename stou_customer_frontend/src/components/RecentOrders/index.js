@@ -5,7 +5,7 @@ import { serverURL } from '../../config';
 import NavLink from 'react-bootstrap/NavLink';
 import { ModalKey } from '../../constants/ModalKeys';
 import defaultpicture from '../../constants/images/full_red_logo.png';
-
+import Raven from 'raven-js';
 class RecentOrders extends Component {
     constructor(props) {
         super(props);
@@ -27,6 +27,7 @@ class RecentOrders extends Component {
                 });
             })
             .catch(err => {
+                Raven.captureException("GetRecentOrders: " + err);
                 this.setState({
                     recent: []
                 });
@@ -47,6 +48,7 @@ class RecentOrders extends Component {
                     });
                 })
                 .catch(err => {
+                    Raven.captureException("GetRecentOrders: " + err);
                     this.setState({
                         recent: []
                     });
@@ -67,6 +69,7 @@ class RecentOrders extends Component {
                 });
             })
             .catch(err => {
+                Raven.captureException("GetRecentOrders: " + err);
                 this.setState({
                     recent: []
                 });

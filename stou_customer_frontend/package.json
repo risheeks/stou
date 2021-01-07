@@ -6,6 +6,7 @@
     "@livechat/ui-kit": "^0.4.0-10",
     "@pusher/chatkit": "^0.7.18",
     "@pusher/chatkit-client": "^1.13.2",
+    "@sentry/browser": "^5.10.1",
     "axios": "^0.19.0",
     "bootstrap": "^4.3.1",
     "browser-image-compression": "^1.0.6",
@@ -15,6 +16,7 @@
     "paypal-checkout": "^4.0.296",
     "prop-types": "^15.7.2",
     "pusher-js": "^5.0.2",
+    "raven-js": "^3.27.2",
     "react": "^16.9.0",
     "react-async-script-loader": "^0.3.0",
     "react-bootstrap": "^1.0.0-beta.12",
@@ -28,9 +30,11 @@
     "react-scripts": "3.1.2",
     "react-scrollbar": "^0.5.6",
     "redux": "^4.0.4",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "rimraf": "3.0.0"
   },
   "scripts": {
+    "preinstall": "npm install -g rimraf",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

@@ -83,7 +83,7 @@ class FoodModal extends Component {
                         <div>
                             <Image rounded className="vfo-image" src={item.picture} />
                         </div>
-                        <div className="vfo-info">
+                        <div className="vfo-info-modal">
                             <div className="vfo-foodname">
                                 <p>{item.name}</p>
                             </div>

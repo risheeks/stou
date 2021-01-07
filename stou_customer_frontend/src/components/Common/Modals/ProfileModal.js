@@ -6,6 +6,7 @@ import Accordion from 'react-bootstrap/Accordion'
 import { useState } from 'react';
 import axios from 'axios';
 import { serverURL } from '../../../config';
+import Raven from 'raven-js';
 
 class ProfileModal extends Component {
     
@@ -18,10 +19,27 @@ class ProfileModal extends Component {
     }
     componentDidMount() {
         this.getReviewRating();
+        this.getNumReviews();
     }
     setOpen = (open) => {
         this.setState({open:open})
         // console.log(this.state.reviewRating[1])
+    }
+
+    getNumReviews = () => {
+        axios.post(`${serverURL}/getviews`, {
+            data: {
+                cookEmail: this.props.cook_email,
+            }
+        })
+            .then(res => {
+                this.setState({
+                   views : res.data.data
+                });
+            })
+            .catch(err => {
+                Raven.captureException("GetViews: " + err);
+            })
     }
 
     getReviewRating = () => {
@@ -37,10 +55,15 @@ class ProfileModal extends Component {
             });
             console.log(this.state.reviewRating)
         })
+        .catch(err => {
+            Raven.captureException("GetReviewRating: " + err);
+        })
     }
 
+
+
     render() {
-        let { showModal, closeModal, description} = this.props;
+        let { showModal, closeModal, description, rating} = this.props;
         let {open} = this.state
         return (
             
@@ -55,9 +78,14 @@ class ProfileModal extends Component {
                     </Col>
                     <Col>
                     <Form.Label className='text-profile-modal'><h1 className='text-profile-name-modal'>{this.props.name}</h1></Form.Label>
+                    <div className="rating-profile">
+                    <CustomRating rating={rating} readonly={true} bowlSize="22px"/>
+                     </div>
                     <Form.Label><h3 className='text-profile-description-modal'>{this.props.description ? this.props.description : "I am pationate about cooking"}</h3></Form.Label>
                     </Col>
+                    
                 </Row>
+                
                 </Modal.Body>
                 <Modal.Footer className="profile-footer-modal">
                 <div className="footer-review-top">
@@ -71,8 +99,8 @@ class ProfileModal extends Component {
                             >
                             Review
                         </Button>
-                        
-                        <div className="">
+                        {/* <br/> */}
+                        <div className="review-button-margin">
                        
                         {this.state.reviewRating.map(item => (
                             <Collapse in={open}>

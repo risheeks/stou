@@ -3,6 +3,8 @@ import { Modal, Button, Form, FormControl} from 'react-bootstrap';
 import { ROLE } from '../../../constants';
 import axios from 'axios';
 import { serverURL } from '../../../config';
+import Raven from 'raven-js';
+
 
 class FeedbackModal extends Component {
     constructor(props) {
@@ -26,6 +28,10 @@ class FeedbackModal extends Component {
         })
         .then(res => {
           console.log(res.data);
+          this.props.closeModal();
+        })
+        .catch(err => {
+            Raven.captureException("SetFeedBack: " + err);
         })
       }
     handleChange = e => {

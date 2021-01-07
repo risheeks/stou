@@ -9,7 +9,7 @@ import { ModalKey } from '../../constants/ModalKeys';
 import { tokenUrl, instanceLocator } from '../../config'
 import { ChatManager, TokenProvider } from '@pusher/chatkit-client'
 import { PayPalButton } from "react-paypal-button-v2";
-
+import Raven from 'raven-js';
 
 const CLIENT = {
     sandbox: 'AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC',
@@ -181,8 +181,14 @@ class Checkout extends Component {
                     .then(res => {
                         console.log(res.data.code);
                     })
+                    .catch(err => {
+                        Raven.captureException("UsePromoCode: " + err);
+                    })
                 }
 
+            })
+            .catch(err => {
+                Raven.captureException("PlaceOrder: " + err);
             })
     }
 
@@ -213,15 +219,15 @@ class Checkout extends Component {
     }
     validate = (street, city, state, zipcode) => {
         if (street.length === 0) {
-            return "hidden"
+            return false
         } else if (city.length === 0) {
-            return "hidden"
+            return false
         } else if (state.length === 0) {
-            return "hidden"
+            return false
         } else if (parseInt(zipcode) !== parseInt(this.props.zipcode)) {
-            return "hidden"
+            return false
         }
-        return ""
+        return true
 
     }
     applyDiscount = (e) => {
@@ -251,6 +257,9 @@ class Checkout extends Component {
                     this.setState({promo_code_success:promo_code})
                 }
             }
+        })
+        .catch(err => {
+            Raven.captureException("CheckPromoCode: " + err);
         })
         
     }
@@ -307,8 +316,10 @@ class Checkout extends Component {
                             </ListGroup.Item>
                         </ListGroup>
                         <br/>
-                        <div className="paypal-button-div" style={{ visibility: this.validate(this.state.street, this.state.city, this.state.state, this.state.zipcode) }}>
+                        {this.validate(this.state.street, this.state.city, this.state.state, this.state.zipcode) ?
+                        <div className="paypal-button-div">
                             <PayPalButton
+                            
                             className="paypal-button"
                             amount={total}
                             onSuccess={(details, data) =>  {
@@ -329,7 +340,7 @@ class Checkout extends Component {
                                 clientId: "AQz8o-Lc6iEClKWllJjLUo0qT7Sd-ORu0rD-fBiaYNvfErmTm5xM6aAJ2EBSFVaXAC9iVct84qgtDURC"
                             }}
                             />
-                        </div>
+                        </div> : null}
                         <Button variant="primary" onClick={this.onTest}>Checkout</Button>
                         
                     </div>
@@ -378,6 +389,7 @@ class Checkout extends Component {
                                     </Col>
                                     <Col>
                                         <Button variant="primary" onClick={(e) => this.applyDiscount(e)}>Enter</Button>
+                                        
                                     </Col>
                                 </Row>
                             </Form.Group>

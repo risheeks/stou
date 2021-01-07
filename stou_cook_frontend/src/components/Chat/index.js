@@ -116,19 +116,26 @@ class Chat extends React.Component {
             })
             chatManager.connect({
                 onAddedToRoom: room => {
-                    this.getRooms()
+                    this.getRooms();
                 },
                 onRemovedFromRoom: room => {
-                    this.getRooms()
+                    this.getRooms();
+                },
+                onUserLeftRoom: (room, user) => {
+                    this.getRooms();
+                },
+                onUserJoRoom: (room, user) => {
+                    this.getRooms();
                 }
             })
                 .then(currentUser => {
-                    this.setState({ currentUser })
-                    this.getRooms()
+                    this.setState({ currentUser });
+                    this.getRooms();
                 })
                 .catch(err => console.log('error on connecting: ', err))
         }
     }
+
 
     cSChat = () => {
         this.state.currentUser.createRoom({
@@ -141,13 +148,13 @@ class Chat extends React.Component {
                 this.getRooms();
             })
         
+
     }
 
     getRooms() {
         const rooms = this.state.currentUser.rooms;
         const messages = this.state.messages;
-        console.log(rooms.length);
-        if(rooms && rooms.length < 1) {
+        if (rooms && rooms.length < 1) {
             this.setState({
                 messages: {},
                 roomId: '',
@@ -160,19 +167,16 @@ class Chat extends React.Component {
         }
         this.setState({
             messages: messages,
-            roomId: rooms[0].id
+            roomId: rooms[0].id,
+            joinedRooms: []
         },
             () => {
                 this.subscribeToRoom(rooms[0].id);
                 for (let i = 0; i < rooms.length; i++) {
-                    this.subscribeToRoom(rooms[i].id);
+                    this.subscribeToRoom(rooms[i].id)
                 }
             }
         )
-
-        this.setState({
-            joinedRooms: this.state.currentUser.rooms
-        });
     }
 
     subscribeToRoom(roomId) {
@@ -189,6 +193,11 @@ class Chat extends React.Component {
 
             }
         })
+            .then(room => {
+                this.setState({
+                    joinedRooms: [...this.state.joinedRooms, room]
+                })
+            })
             .catch(err => console.log('error on subscribing to room: ', err))
     }
 
@@ -219,7 +228,9 @@ class Chat extends React.Component {
                             rooms={this.state.joinedRooms}
                             changeRoomId={this.changeRoomId}
                             ownId={this.props.email}
+
                             cSChat={this.cSChat}
+
                         />
                         <Maximized
                             messages={this.state.roomId && this.state.roomId !== '' ? this.state.messages[this.state.roomId] : []}

@@ -7,6 +7,7 @@ import OrderModal from './OrderModal';
 import MenuModal from './MenuModal'
 import ResetPasswordModal from './ResetPasswordModal';
 import ErrorModal from './ErrorModal';
+import RequestModal from './RequestModal';
 
 class MyModal extends Component {
     render() {
@@ -26,6 +27,8 @@ class MyModal extends Component {
                 return <ResetPasswordModal {...this.props} />;
             case ModalKey.ERROR_MODAL:
                 return <ErrorModal {...this.props} />;
+            case ModalKey.REQUEST_MODAL:
+                return <RequestModal {...this.props} />;
             default:
                 return null;
         }

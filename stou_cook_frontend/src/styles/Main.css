@@ -370,6 +370,14 @@ align-self: center;
   }
 }
 
+.margin-container {
+  margin-top: 1rem;
+}
+
+.page-title {
+  font-size: 150%;
+}
+
 .ViewFood {
   border: 1px solid rgb(202, 202, 202);
   /* width: 100% !important; */
@@ -389,7 +397,7 @@ align-self: center;
   color: rgba(111, 95, 95, 0.67);
   font-size: 0.75em;
   text-align: left;
-
+  margin-top: -1rem;
 }
 
 .vfo-chefname {

@@ -31,23 +31,6 @@ function mapDispatchToProps(dispatch) {
 }
 
 class Main extends Component {
-    async componentDidMount() {
-        let tempToken = localStorage.getItem('auth_token');
-        let tempEmail = localStorage.getItem('email');
-        if(tempToken && tempEmail) {
-            const data = {
-                token: tempToken,
-                email: tempEmail
-            }
-            await axios.post(`${serverURL}/checklogin`, {data})
-                .then(res => {
-                    this.props.getToken(tempToken, tempEmail);
-                })
-                .catch(err => {
-                    this.props.signOut();
-                })
-        }
-    }
 
     render() {
         const { auth_token, email, modalProps, closeModal, openModal } = this.props;
@@ -57,7 +40,7 @@ class Main extends Component {
             <Router>
                 <Header loggedIn={loggedIn} />
                 <Route exact path="/" render={() => <Home  openModal={openModal} />} />
-                <Route exact path="/feedback" render={() => <Feedback  openModal={openModal} auth_token={auth_token} email={email} />} />
+                <Route exact path="/feedback" render={() => <Feedback  openModal={openModal} />} />
                 <MyModal {...modalProps} closeModal={closeModal} />
                 <CSChat auth_token={auth_token} email='admin' />
             </Router>            

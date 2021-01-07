@@ -5,7 +5,10 @@ import axios from 'axios';
 import { serverURL } from '../../../config';
 import { pusher } from '../../../config';
 import { ModalKey } from "../../../constants/ModalKeys";
- class RequestModal extends Component {
+import notificationSound from '../../../constants/sounds/notification.mp3';
+import Raven from 'raven-js';
+ 
+class RequestModal extends Component {
     constructor(props) {
       super(props);
       this.state = {
@@ -14,27 +17,42 @@ import { ModalKey } from "../../../constants/ModalKeys";
       };
     }
 
+    handleChangeRequest = event => {
+        
+        this.setState({ request: event.target.value });
+        
+    }
+
+    handleChangeDescription = event => {
+        
+        this.setState({ description: event.target.value });
+        
+    }
+
     AddRequest = () => {
-        //console.log(this.state.feedback)
+        const { openModal, closeModal } = this.props;
 
         axios.post(`${serverURL}/addrequest`, {
-          data: {
-            cookEmail: this.props.email,
-            customerEmail: this.props.cookEmail,
-            ItemName: this.state.request,
-            ItemDescription: this.state.description            
-          }
+            data: {
+                cookEmail: this.props.cookEmail,
+                customerEmail: this.props.email,
+                itemName: this.state.request,
+                itemDescription: this.state.description            
+            }
         })
         .then(res => {
-            console.log(res.data);
-            /*let channel = pusher.subscribe(`cook-${this.props.email}`);
-            channel.bind('new-order', function (data) {
+            let channel = pusher.subscribe(`cook-${this.props.cookEmail}`);
+            channel.bind('new-request', function (data) {
+
             const audio = new Audio(notificationSound);
             audio.play();
             openModal(ModalKey.NEW_ORDER, {...data});
-            });*/
+            closeModal();
+            });
+        }).catch(err => {
+            Raven.captureException("AddRequest: " + err);
         })
-      }
+    }
 
     render() {
         let { showModal, closeModal, description} = this.props;
@@ -55,6 +73,7 @@ import { ModalKey } from "../../../constants/ModalKeys";
                                     name="requests"
                                     className=""
                                     value={this.state.request}
+                                    onChange={this.handleChangeRequest}
                                 />
                              </FormLabel>
                         </FormGroup>
@@ -70,6 +89,7 @@ import { ModalKey } from "../../../constants/ModalKeys";
                               name="requestHomeCook"
                               className=""  
                               value={this.state.description}
+                              onChange={this.handleChangeDescription}
                             />
                             </FormLabel>
                         </FormGroup>
@@ -80,7 +100,7 @@ import { ModalKey } from "../../../constants/ModalKeys";
                         <Button 
                             block
                             bsSize="large"
-                            className="submit-button"
+                            variant="danger"
                             onClick={this.AddRequest}
                             >
                             Submit

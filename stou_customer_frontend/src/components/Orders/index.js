@@ -3,6 +3,7 @@ import { ToggleButtonGroup, ToggleButton, ListGroup, Button, Image } from 'react
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { ModalKey } from '../../constants/ModalKeys';
+import Raven from 'raven-js';
 
 class Orders extends Component {
     constructor(props) {
@@ -33,6 +34,9 @@ class Orders extends Component {
                 order.orderStatus = orderStatus
                 this.props.openModal(ModalKey.ORDER_STATUS, { order, setOrders: this.setOrders });
             })
+            .catch(err => {
+                Raven.captureException("SetOrderStatus: " + err);
+            })
     }
 
     setOrders = orders_type => {
@@ -47,6 +51,7 @@ class Orders extends Component {
                 });
             })
             .catch(err => {
+                Raven.captureException("GetCustomOrders: " + err);
                 this.setState({
                     orders: []
                 });
@@ -78,8 +83,8 @@ class Orders extends Component {
                     <ListGroup.Item className="order-item-div" action onClick={e => this.handleOrder(e, order)}>
                         {this.renderOrderInfo(order)}
                         <div className="order-item-button-div">
-                            <Button className={order.orderStatus === 'delivered' || order.orderStatus === 'cancelled' || order.orderStatus === 'request_cancel' ? 'hidden' : ''} variant="danger" onClick={e => this.setOrderStatus("request_cancel", order)}>Cancel</Button>
-                            {order.orderStatus}
+                            <p style={{paddingTop: '12px'}}>{order.orderStatus}</p>
+                            {order.orderStatus === 'placed' || order.orderStatus === 'in_progress' ? <Button variant="danger" onClick={e => this.setOrderStatus("request_cancel", order)} style={{marginLeft: '20px'}}>Cancel</Button> : null}
                         </div>
                     </ListGroup.Item>
                 )}

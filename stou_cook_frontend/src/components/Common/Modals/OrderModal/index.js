@@ -31,6 +31,20 @@ class OrderModal extends Component {
                     items: Array.from(res.data)
                 });
             })
+        const chatManager = new ChatManager({
+            instanceLocator: instanceLocator,
+            userId: this.props.order.cookEmail,
+            tokenProvider: new TokenProvider({
+                url: tokenUrl,
+
+            })
+        })
+        chatManager.connect()
+            .then(currentUser => {
+                this.setState({ currentUser })
+                // this.getRooms()
+            })
+            .catch(err => console.log('error on connecting: ', err))
     }
 
     componentDidUpdate(prevProps) {
@@ -168,6 +182,9 @@ class OrderModal extends Component {
             case "request_cancel": {
                 return this.renderRequestCancel();
             }
+            case "cancelled": {
+                return this.renderPast();
+            }
             default: {
                 return this.renderNew();
             }
@@ -179,7 +196,7 @@ class OrderModal extends Component {
         const { items, order } = this.state;
 
         return (
-            <Modal show={showModal} onHide={order.orderStatus !== 'delivered' || order.rating ? () => closeModal() : () => {return}}>
+            <Modal show={showModal} onHide={order.orderStatus !== 'delivered' || order.rating ? () => closeModal() : () => { return }}>
                 <Modal.Header closeButton={order.orderStatus !== 'delivered' || order.rating}>
                     <b>{order.orderStatus === 'request_cancel' ? order.name + " is requesting order cancellation" : "Order details"}</b>
                 </Modal.Header>
@@ -187,7 +204,7 @@ class OrderModal extends Component {
                     {this.renderOrderInfo(order)}
                     <OrderProgress status={order.orderStatus} />
                     {order.orderStatus == 'delivered' && !order.rating ?
-                        <Rate order={order} closeModal={closeModal} setOrders={this.props.setOrders}/> : null
+                        <Rate order={order} closeModal={closeModal} setOrders={this.props.setOrders} /> : null
                     }
                     <ListGroup className="bag-itemlist-container">
                         <ListGroup.Item>

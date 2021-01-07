@@ -29,6 +29,7 @@ import {
     ChatList,
     ChatListItem
 } from '@livechat/ui-kit'
+
 import { Button } from "react-bootstrap";
 import { tokenUrl, instanceLocator } from '../../config'
 import { ChatManager, TokenProvider } from '@pusher/chatkit-client'
@@ -100,19 +101,21 @@ class RoomList extends React.Component {
         this.props.changeRoomId(id);
     }
 
+
     cSChat = e => {
         this.props.cSChat();
     }
 
     renderRooms() {
         const { rooms } = this.props;
-        console.log(rooms);
-        if (rooms[0] && rooms.length > 0 && rooms[0].users && rooms[0].users.length > 0) {
+        let checkRooms = true;
+        if (checkRooms) {
             return (
                 <ChatList style={{ width: 200 }}>
                     <ChatListItem>
                         <Button
                             style={{ width: 162 }}
+
                             onClick={this.cSChat}>
                             Chat with Us
                     </Button>
@@ -128,6 +131,7 @@ class RoomList extends React.Component {
                             </Column>
                         </ChatListItem>
                     ) : null}
+
                 </ChatList>
             );
         }

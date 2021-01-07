@@ -4,6 +4,8 @@ import axios from 'axios';
 import { serverURL } from '../../config';
 import NavLink from 'react-bootstrap/NavLink';
 import { ModalKey } from '../../constants/ModalKeys';
+import { FaTruck } from "react-icons/fa";
+import Raven from 'raven-js';
 
 class ViewFoodOptions extends Component {
   constructor(props) {
@@ -25,6 +27,7 @@ class ViewFoodOptions extends Component {
           });
         })
         .catch(err => {
+          Raven.captureException("GetAllFod: " + err);
           this.setState({
             foodoptions: []
           });
@@ -42,6 +45,7 @@ class ViewFoodOptions extends Component {
           });
         })
         .catch(err => {
+          Raven.captureException("GetAllFod: " + err);
           this.setState({
             foodoptions: []
           });
@@ -61,6 +65,7 @@ class ViewFoodOptions extends Component {
           })
         })
         .catch(err => {
+          Raven.captureException("Filter: " + err);
           this.setState({
             foodoptions: []
           });
@@ -105,11 +110,13 @@ class ViewFoodOptions extends Component {
                   <div className="vfo-chefname">
                     <p className="delivery-time">by </p><NavLink className="food-link-chef delivery-time">{item.homecook}</NavLink>
                   </div>
-                  <div className="vfo-estimatedTime">
-                    <p className="delivery-time">Estimated time: {item.delivery_time ? item.delivery_time.toString(): "-"}</p>
+                </div>
+                <div>
+                <p className="vfo-price">${item.price}</p>
+                <div className="vfo-time">
+                  <i className="eyeViews-text"><FaTruck />  {item.delivery_time ? item.delivery_time.toString(): "-"} mins</i>
                   </div>
                 </div>
-                <p className="vfo-price">${item.price}</p>
               </div>
             </ListGroup.Item>
           ))}

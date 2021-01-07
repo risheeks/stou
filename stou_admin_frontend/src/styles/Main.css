@@ -100,6 +100,9 @@ body {
 
 }
 
+.leaveRoom-button {
+  border-radius: 0px;
+}
 
 .message {
   margin: 15px 0;

@@ -7,7 +7,10 @@ class PrivacyModal extends Component {
         super(props);
         
     }
-
+    
+    onClick =()=> {
+        this.props.closeModal();
+    }
 
     render() {
         const { showModal, closeModal} = this.props;
@@ -102,7 +105,7 @@ class PrivacyModal extends Component {
                         
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="success">Thank you for using Stou</Button>
+                    <Button variant="success" onClick={this.onClick}>Thank you!</Button>
                 </Modal.Footer>
             </Modal>
         );

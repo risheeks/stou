@@ -1,6 +1,9 @@
 import Pusher from 'pusher-js';
 
-export const serverURL = `http://localhost:5000`;
+console.log(process.env)
+
+export const serverURL = process.env.REACT_APP_API_URL;
+
 export const firebaseConfig = {
     apiKey: "AIzaSyCKRmXkIQqNtPTM-_MMvsQYMH1tSm7IlNM",
     authDomain: "stou-79b9a.firebaseapp.com",

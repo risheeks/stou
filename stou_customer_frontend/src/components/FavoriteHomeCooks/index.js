@@ -4,6 +4,7 @@ import { Row, Col, Container, Button, ListGroup, FormControl, FormLabel, Image }
 import FavoriteHomeCook from './favoriteHomecooks';
 import axios from 'axios';
 import { serverURL } from '../../config';
+import Raven from 'raven-js';
 
 class FavoriteHomeCooksList extends Component {
 	constructor(props) {
@@ -20,23 +21,35 @@ class FavoriteHomeCooksList extends Component {
 				email: this.props.email,
 			}
 		})
-			.then(res => {
-				console.log(res.data)
-				this.setState({
-					favhomecooks: Array.from(res.data)
-				});
+		.then(res => {
+			console.log(res.data)
+			this.setState({
+				favhomecooks: Array.from(res.data)
 			});
+		})
+		.catch(err =>{
+			Raven.captureException("GetFavHomeCooks: " + err);
+		})
 		console.log(this.state.favhomecooks)
 	}
 
 	componentDidMount() {
 		this.getFavHomecooks();
-		return;
 	}
+
+	componentDidUpdate(prevProps) {
+		if(prevProps.email !== this.props.email) {
+			this.getFavHomecooks();
+		}
+	}
+
 	render() {
 		return (
 			<Container className="master-container">
-				<Container className="homecook-container">
+					<div className="orders-container">
+						<p className="page-title"><b>Your Favorite Homecooks</b></p>
+					</div>
+					<Container className="homecook-container">
 					{this.state.favhomecooks.map(item => (
 						<FavoriteHomeCook
 							openModal={this.props.openModal}

@@ -9,6 +9,7 @@ import { serverURL } from "../../config/index.js"
 import { firebaseConfig } from "../../config/index.js"
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import FavoriteFood from './FavoriteFood';
+import Raven from 'raven-js';
 
 export default class Profile extends React.Component {
   constructor(props) {
@@ -111,6 +112,9 @@ export default class Profile extends React.Component {
       .then(res => {
         console.log(res.data);
       })
+      .catch(err => {
+        Raven.captureException("EditProfile: " + err);
+      })
   }
   updateProfile = e => {
     if (!this.state.avatarURL) {
@@ -145,6 +149,9 @@ export default class Profile extends React.Component {
             this.setState({ avatarURL: this.state.defaultURL });
           }
         }
+      })
+      .catch(err => {
+        Raven.captureException("Profile: " + err);
       })
 
 
@@ -194,7 +201,10 @@ export default class Profile extends React.Component {
           pastfood: Array.from(res.data.data)
         });
         console.log(this.state.pastfood)
-      });
+      })
+      .catch(err => {
+        Raven.captureException("GetPastFood: " + err);
+      })
   }
 
 
@@ -236,7 +246,7 @@ export default class Profile extends React.Component {
               <br />
               <Button
                 block
-                className="submit-button"
+                variant="danger"
                 onClick={this.updateProfile}
               >
                 Update

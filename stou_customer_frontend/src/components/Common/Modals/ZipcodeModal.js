@@ -3,6 +3,7 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import { ROLE } from '../../../constants';
 import axios from 'axios';
 import { serverURL } from '../../../config';
+import Raven from 'raven-js';
 
 class ZipcodeModal extends Component {
     constructor(props) {
@@ -41,7 +42,10 @@ class ZipcodeModal extends Component {
             .then(res => {
                 this.props.changeLocation(zipcode)
                 this.props.closeModal();
+            }).catch(err => {
+                Raven.captureException("SetLocation: " + err);
             })
+            
     }
 
     render() {

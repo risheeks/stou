@@ -6,6 +6,8 @@ import { serverURL } from '../../config';
 import { withRouter } from 'react-router-dom';
 import ResetPassword from '../ResetPassword';
 import { ModalKey } from "../../constants/ModalKeys";
+import Raven from 'raven-js';
+
 
 export class Login extends Component {
   constructor(props) {
@@ -48,7 +50,8 @@ export class Login extends Component {
         this.props.getToken(res.data['token'], email);
       })
       .catch(err => {
-        if(err.response.data.code === 401) {
+        if(err && err.response && err.response.data.code === 401) {
+          Raven.captureException("Login: " + err);
           this.props.openModal(ModalKey.ERROR_MODAL, {...err.response.data})
         }
       })
@@ -84,7 +87,7 @@ export class Login extends Component {
           <div>
             <Button
               block
-              className="submit-button"
+              variant="danger"
               disabled={!this.validateForm()}
               onClick={this.handleSubmit}
             >

@@ -18,11 +18,12 @@ import PrivacyPolicy from '../PrivacyPolicy';
 import { openModal, closeModal } from '../../actions/modal.action';
 import { ModalKey } from '../../constants/ModalKeys';
 import axios from 'axios';
-import { serverURL } from '../../config';
+import { serverURL, pusher } from '../../config';
 import { ROLE } from '../../constants';
 import Orders from '../Orders';
 import Requests from '../Requests';
 import MenuModal from '../Common/Modals/MenuModal.js'
+import notificationSound from '../../constants/sounds/notification.mp3';
 
 function mapStateToProps(state) {
     return {
@@ -51,7 +52,8 @@ class Main extends Component {
         if(tempToken && tempEmail) {
             const data = {
                 token: tempToken,
-                email: tempEmail
+                email: tempEmail,
+                role: 1
             }
             await axios.post(`${serverURL}/checklogin`, {data})
                 .then(res => {
@@ -75,10 +77,18 @@ class Main extends Component {
     }
 
     async componentDidUpdate(prevProps) {
-        if (prevProps !== this.props) {
-            const { auth_token, email, zipcode } = this.props;
+        if (prevProps.email !== this.props.email || prevProps.zipcode !== this.props.zipcode) {
+            const { auth_token, email, zipcode, openModal } = this.props;
             const loggedIn = auth_token && auth_token.length > 0;
-            if (loggedIn) {
+            let channel = pusher.subscribe(`cook-${email}`);
+            channel.bind('request_added', function (data) {
+                
+                const audio = new Audio(notificationSound);
+                audio.play();
+                openModal(ModalKey.REQUEST_MODAL, { ...data });
+                
+            });
+            if (loggedIn && this.props.zipcode !== prevProps.zipcode) {
                 const newLocation = await this.getLocation();
                 if (!newLocation || newLocation === '') {
                     this.props.openModal(ModalKey.ZIPCODE, { email: email, changeLocation: this.props.changeLocation });
@@ -88,6 +98,7 @@ class Main extends Component {
                 }
             }
         }
+
     }
 
     getLocation = async () => {
@@ -123,7 +134,9 @@ class Main extends Component {
                 <Route path="/homecookmenu" render={() => <MenuModal auth_token={auth_token} email={email} openModal={openModal} />} />
                 <Route path="/homecookrequest" render={() => <Requests auth_token={auth_token} email={email} />} />
                 <MyModal {...modalProps} closeModal={closeModal} />
-                 <Chat auth_token={auth_token} email={email} role='cook'/>
+
+                {loggedIn ? <Chat auth_token={auth_token} email={email} /> : null}
+
             </Router>
         );
     }

@@ -5,6 +5,7 @@ import { Row, Col, Container, Button, ListGroup, FormControl, FormLabel, Image }
 import HomeCook from './HomeCook';
 import axios from 'axios';
 import { serverURL } from '../../config';
+import Raven from 'raven-js';
 
 class ListOfHomeCooks extends Component {
 	constructor(props) {
@@ -34,7 +35,10 @@ class ListOfHomeCooks extends Component {
                 this.setState({
                     homecooks: Array.from(res.data.data)
 				});
-			});
+			})
+			.catch(err => {
+				Raven.captureException("GetHomeCooks: " + err);
+			})
 			
 	}
 
@@ -49,6 +53,7 @@ class ListOfHomeCooks extends Component {
 							cook_email = {item.email}
 							picture={item.profilePicture}
 							description={item.aboutMe}
+							numViews = {item.numViews}
 							rating={item.rating}
 							addToOrder={this.props.addToOrder}
 							isFav={item.isFavorite}
