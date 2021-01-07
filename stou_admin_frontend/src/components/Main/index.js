@@ -15,6 +15,7 @@ import axios from 'axios';
 import { serverURL } from '../../config';
 import Feedback from '../Feedback';
 import Chat from '../Chat';
+import CSChat from '../CSChat';
 
 function mapStateToProps(state) {
     return {
@@ -41,8 +42,8 @@ class Main extends Component {
                 <Route exact path="/" render={() => <Home  openModal={openModal} />} />
                 <Route exact path="/feedback" render={() => <Feedback  openModal={openModal} />} />
                 <MyModal {...modalProps} closeModal={closeModal} />
-            </Router>
-            <Chat/>
+                <CSChat auth_token={auth_token} email='admin' />
+            </Router>            
             </div>
         );
     }

@@ -1,6 +1,7 @@
 import Pusher from 'pusher-js';
 
-export const serverURL = process.env.REACT_APP_API_URL;
+
+export const serverURL = `https://stou-de20c.appspot.com`;
 
 export const firebaseConfig = {
     apiKey: "AIzaSyCKRmXkIQqNtPTM-_MMvsQYMH1tSm7IlNM",
