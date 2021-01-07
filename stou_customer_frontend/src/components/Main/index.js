@@ -42,9 +42,9 @@ function mapDispatchToProps(dispatch) {
 }
 
 const ProtectedRoute
-    = ({ isAllowed, ...props }) =>
+    = ({ isAllowed, ...rest }) =>
         isAllowed
-            ? <Route {...props} />
+            ? <Route {...rest} />
             : <Redirect to="/login" />;
 
 class Main extends Component {
@@ -177,35 +177,36 @@ class Main extends Component {
                         openModal={openModal}
                     />}
                 />
-                <Route path="/favoriteHomecooks" render={() =>
+                <ProtectedRoute isAllowed={loggedIn} path="/favoriteHomecooks" render={() =>
                     <FavoriteHomeCooksList
                         openModal={openModal}
                         auth_token={auth_token}
                         email={email}
                     />}
                 />
-                <Route path="/requests" render={() =>
+                <ProtectedRoute isAllowed={loggedIn} path="/requests" render={() =>
                     <Requests
                         openModal={openModal}
                         auth_token={auth_token}
                         email={email}
                     />}
                 />
-                <Route path="/profile" render={() =>
+                <ProtectedRoute isAllowed={loggedIn} path="/profile" render={() =>
                     <Profile
                         auth_token={auth_token}
                         email={email}
                         location={zipcode}
+                        openModal={openModal}
                     />}
                 />
-                <Route path="/orders" render={() =>
+                <ProtectedRoute isAllowed={loggedIn} path="/orders" render={() =>
                     <Orders
                         openModal={openModal}
                         auth_token={auth_token}
                         email={email}
                     />}
                 />
-                <Route path="/checkout" render={() =>
+                <ProtectedRoute isAllowed={loggedIn} path="/checkout" render={() =>
                     <Checkout
                         auth_token={auth_token}
                         email={email}

@@ -244,8 +244,8 @@ app.use('/shareapp', function (req, res, next) {
         o['code'] = 202;
         res.status(202);
         let a = generatePromoCode();
-        let text = 'App link, Enjoy 10% off on your order with this promo code ' + a;
-        sendEmail(email, "", text, 'ENJOY STOU');
+        let text = 'Hey there,\nWant delicious homecooked food? Your friend got you covered!\nEnjoy 10% off on your order with this promo code ' + a + '\nLog on to https://stoufood.herokuapp.com and Just Stou It!\n';
+        sendEmail(email, "", text, '10% off of your next Stou order');
         o['message'] = 'Shared App Successfully';
         res.send(o);
       } else {
@@ -1779,14 +1779,21 @@ app.use('/profile', function (req, res, next) {
 });
 
 app.use('/filter', function (req, res, next) {
-  const json = req.body['data'];
-  const cuisines = json['cuisines'];
-  const allergenList = json['allergens'];
+  const cuisines = req.body['data']['cuisines'];
+  const allergens = req.body['data']['allergens'];
+  const location = req.body['data']['location'];
   var o = {};
-
+  console.log(cuisines)
   con.getConnection(function (err, connection) {
     if (err) console.log(err);
-    var q = 'SELECT * FROM FOOD, FOOD_ALLERGEN, USER WHERE USER.EMAIL=FOOD.COOK_EMAIL AND FOOD.FOOD_ID=FOOD_ALLERGEN.FOOD_ID AND INSTR("' + cuisines + '",FOOD.CUISINE)>0 AND INSTR("' + allergenList + '",FOOD_ALLERGEN.ALLERGEN)=0';
+    let q = `SELECT DISTINCT(FOOD_ID), FOODS.*, USER.FIRST_NAME, USER.LAST_NAME FROM USER JOIN (SELECT * FROM FOOD WHERE FOOD_ID NOT IN (SELECT FOOD.FOOD_ID FROM FOOD JOIN FOOD_ALLERGEN ON FOOD_ALLERGEN.FOOD_ID=FOOD.FOOD_ID WHERE ALLERGEN IN (${allergens}))) AS FOODS ON FOODS.COOK_EMAIL=USER.EMAIL WHERE USER.LOCATION BETWEEN "${parseInt(location) - 2}" AND "${parseInt(location) + 2}" AND CUISINE IN (${cuisines}) AND USER.online=1;`;
+    if (cuisines === '""') {
+      q = `SELECT DISTINCT(FOOD_ID), FOODS.*, USER.FIRST_NAME, USER.LAST_NAME FROM USER JOIN (SELECT * FROM FOOD WHERE FOOD_ID NOT IN (SELECT FOOD.FOOD_ID FROM FOOD JOIN FOOD_ALLERGEN ON FOOD_ALLERGEN.FOOD_ID=FOOD.FOOD_ID WHERE ALLERGEN IN (${allergens}))) AS FOODS ON FOODS.COOK_EMAIL=USER.EMAIL WHERE USER.LOCATION BETWEEN "${parseInt(location) - 2}" AND "${parseInt(location) + 2}" AND USER.online=1;`;
+    }
+    else if (allergens === '""') {
+      q = `SELECT DISTINCT(FOOD_ID), FOOD.*, USER.FIRST_NAME, USER.LAST_NAME FROM FOOD JOIN USER ON FOOD.COOK_EMAIL=USER.EMAIL WHERE USER.LOCATION BETWEEN "${parseInt(location) - 2}" AND "${parseInt(location) + 2}" AND CUISINE IN (${cuisines}) AND USER.online=1;`;
+    }
+    console.log(q)
     // var q = 'select * from FOOD, FOOD_ALLERGEN where FOOD.CUISNE like \'' + cuisines + '\' AND Allergen NOT LIKE \'' + allergenList + '\';';
     connection.query(q, function (err, result) {
       connection.release();
@@ -2018,13 +2025,13 @@ function sendEmail(email, password = "", text, subject = 'Password Reset') {
   var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'markvadesamuel1998@gmail.com',
-      pass: 'soccermanager'
+      user: 'stoufood@gmail.com',
+      pass: 'CurryOrBiryani'
     }
   });
 
   var mailOptions = {
-    from: 'markvadesamuel1998@gmail.com',
+    from: 'stoufood@gmail.com',
     to: email.toString(),
     subject: subject,
     text: text
@@ -2067,13 +2074,9 @@ app.use('/resetpassword', function (req, res, next) {
 
 
 app.use('/checklogin', function (req, res, next) {
-  const o = checkLogin(req.body['data']['email'], req.body['data']['token'], req.body['data']['role']);
-  res.status(o['code']);
-  res.send(o);
-});
-
-
-function checkLogin(email, token, role) {
+  const email = req.body['data']['email'];
+  const token = req.body['data']['token']
+  const role = req.body['data']['role'];
   var o = {};
   const tok = revLoginTokens[email];
   con.getConnection(function (err, connection) {
@@ -2090,9 +2093,15 @@ function checkLogin(email, token, role) {
         o['code'] = 401;
         o['message'] = 'Unauthorized client error';
       }
-      return o;
+      res.status(o['code']);
+      res.send(o);
     });
   });
+});
+
+
+function checkLogin(email, token, role) {
+  
 }
 
 app.use('/login', function (req, res, next) {

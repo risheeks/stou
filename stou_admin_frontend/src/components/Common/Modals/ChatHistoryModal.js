@@ -7,7 +7,7 @@ import axios from 'axios';
 import { serverURL } from "../../../config";
 import {tokenUrl, instanceLocator} from '../../../config'
 import { ChatManager, TokenProvider } from '@pusher/chatkit-client'
-import RoomList from "../../Chat/RoomList";
+import RoomList from "../../ChatHistory/RoomList";
 
 class ChatHistoryModal extends Component {
     constructor(props) {

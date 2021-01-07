@@ -95,7 +95,7 @@ export class AddFoodItem extends Component {
         calories: calories,
         description: description,
         allergens: chosenAllergens,
-        cuisine: chosenCuisines[0],
+        cuisine: chosenCuisines,
         picture: fireBaseURL,
         deliveryTime: zipcode,
         token: this.props.auth_token

@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
+import { Button, FormGroup, FormControl, FormLabel, Image } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { serverURL } from '../../config';
 import { withRouter } from 'react-router-dom';
 import { ModalKey } from '../../constants/ModalKeys';
 import Raven from 'raven-js';
+import stoulogo from '../../constants/images/mainlogo.png';
 
 export class Login extends Component {
   constructor(props) {
@@ -60,13 +61,18 @@ export class Login extends Component {
       })
   }
 
+  handleReset = e => {
+    e.preventDefault();
+    this.props.openModal(ModalKey.RESET_PASSWORD, );
+  }
+
   render() {
     return (
-
       <div className="master-container">
         <script src="https://cdn.ravenjs.com/3.26.4/raven.min.js"
           crossOrigin="anonymous"></script>
         <div className="Login container">
+          <Image className="logo-image" src={stoulogo}></Image>
           {this.props.auth_token ? this.props.history.push('/') : null}
           <form onSubmit={this.handleSubmit}>
             <FormGroup controlId="email" bsSize="large">
@@ -97,6 +103,7 @@ export class Login extends Component {
                 Login
             </Button>
               <Link to="/register" className="btn btn-link">Register</Link>
+              <Link to="/reset" className="btn btn-link" onClick={this.handleReset}>Reset Password</Link>
             </div>
           </form>
         </div>
